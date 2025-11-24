@@ -2274,6 +2274,11 @@ function sendToBackend(text, askSuggestions = false) {
 function sendMessage() {
   const t = input.value.trim();
   if (!t) return;
+const welcomeScreen = messagesEl.querySelector('.welcome-screen');
+if (welcomeScreen) {
+  messagesEl.innerHTML = '';
+}
+
   appendMessage(t,'user');
   input.value = '';
   sendToBackend(t, true);
@@ -2286,7 +2291,6 @@ function pulseLogoOnce() {
 
 sendBtn.addEventListener('click', sendMessage);
 input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-
 showWelcomeScreen();
 
 const ro = new MutationObserver(()=> messagesEl.scrollTop = messagesEl.scrollHeight);
