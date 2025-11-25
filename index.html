@@ -32,12 +32,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>AILA — Interface</title>
-<!-- pang markdown paragraph style -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
-
-<!-- dito yung style sa interface no need - Joshua Narvasa -->
 <style>
+/* --- Message List Fade-Out Effect --- */
 
 .dropdown-item {
   display: block;
@@ -158,18 +156,49 @@
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.messages {
-  flex: 1;
-  padding: 20px;
-  overflow: flex;
-  flex-direction: column;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  scroll-behavior: smooth;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  max-height: 480px; 
+    .messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto; /* CORRECTED: This enables vertical scrolling */
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+    }
+/* --- Horizontally Scrollable Tables (Corrected) --- */
+.msg .content table {
+  display: block; /* Allows overflow properties to work on the table */
+  width: 100%;    /* Explicitly set width to contain the scrolling area */
+  overflow-x: auto; /* Enables horizontal scrolling ONLY when the table is too wide */
+  border-spacing: 0; /* Removes default spacing */
 }
+
+/* Apply nowrap to cells to force horizontal overflow */
+.msg .content th,
+.msg .content td {
+  padding: 10px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap; /* CRITICAL: Prevents cell content from wrapping */
+}
+
+/* --- Custom Scrollbar for Tables --- */
+.msg .content table::-webkit-scrollbar {
+  height: 8px;
+}
+.msg .content table::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+.msg .content table::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+.msg .content table::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
 .composer {
   position: sticky;
   margin-bottom: 20px;
@@ -343,14 +372,43 @@ textarea#input { transition: height 160ms ease; -webkit-text-size-adjust: 100%; 
   .title{font-weight:700;font-size:15px;color:#e8fbff}
   .subtitle{font-size:12px;color:var(--muted)}
 
-  .main{display:flex;flex-direction:column;flex:1;overflow:hidden}
-  .messages{flex:1;padding:20px;overflow:auto;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
-  .msg{max-width:78%;padding:12px 16px;border-radius:14px;line-height:1.45;font-size:15px;box-shadow:0 12px 40px rgba(2,6,23,0.45);opacity:0;transform:translateY(12px);animation:msgEnter .32s ease forwards}
+  .main{
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    overflow:hidden}
+  .messages{
+    flex:1;
+    padding:20px;
+    overflow:auto;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    scroll-behavior:smooth
+  }
   @keyframes msgEnter{to{opacity:1;transform:translateY(0)}}
-  .msg.bot{align-self:flex-start;background:linear-gradient(180deg,var(--bubble), rgba(255,255,255,0.02));color:#dff8ff;border-top-left-radius:6px; border:1px solid rgba(0,0,0,0.12)}
-  .msg.user{align-self:flex-end;background:linear-gradient(180deg,var(--user), #064e4e);color:#eafff4;border-top-right-radius:6px;border:1px solid rgba(0,0,0,0.12)}
+  .msg.user {
+    align-self: flex-end;
+    background: var(--user);
+    color: #eafff4;
+    border-radius: 16px;     /* A radius that works well with a shorter height */
+    padding: 3px 16px !important;       /* CRITICAL: Reduced vertical padding for a tighter fit */
+    max-width: 78%;
+    overflow-wrap: break-word;
+    line-height: 1.4;        /* Prevents extra vertical space on multi-line messages */
+  }
+    .msg.bot {
+    /* --- Style Overrides to Remove the Box and Stretch --- */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    width: 100%;          /* Force the container to take full width */
+    max-width: none;      /* CRITICAL: Override the base max-width from .msg */
+    box-sizing: border-box; /* Ensure padding is included in the width */
 
-  .msg:hover{filter:drop-shadow(0 6px 18px rgba(0,0,0,0.2))}
+    /* --- Preserved Styles --- */
+    color: #dff8ff;
+  }
 
   .faq-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;opacity:0;transform:translateY(6px);animation:faqIn .34s ease forwards;animation-delay:.04s}
   @keyframes faqIn{to{opacity:1;transform:translateY(0)}}
@@ -678,7 +736,7 @@ textarea#input {
     justify-content: center;
     background: linear-gradient(135deg, var(--accent1), var(--accent2));
     box-shadow: 0 14px 40px rgba(0,210,255,0.06);
-    margin-bottom: 15px;
+    margin-bottom: 0;
     animation: breathe 2.6s ease-in-out infinite;
   }
 
@@ -716,13 +774,13 @@ textarea#input {
     background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
     border: 1px solid rgba(255,255,255,0.03);
     color: #e6fbff;
-    padding: 5px 15px !important;
+    padding: 10px 15px;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
-    display: inline-block;
+    display: flex;
   }
 
   .welcome-btn:hover {
@@ -782,7 +840,7 @@ textarea#input {
         padding-left: 10px ;
         padding-right: 15px ;
         border-radius: 100px !important;
-        padding-bottom: 15px;
+        padding-bottom: 12.5px;
       }
       .messages{
         padding-bottom: 120px !important;
@@ -814,13 +872,50 @@ textarea#input {
   .msg a{color:var(--accent1);text-decoration:underline}
   
 /* --- Mobile View Enhancements --- */
-@media (max-width: 630px) {
-  body{
-    overflow-y: hidden;
-    overflow-x: hidden;
+/* --- FORCED UNIFIED MOBILE & TABLET VIEW --- */
+@media (max-width: 900px) {
+
+  /* 1. Reset the page to prevent any scrolling or extra space. */
+  html, body {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
   }
+
+  /* 2. Force the .app container to cover the entire screen. */
+  .app {
+    position: fixed !important;  /* Lock position to the viewport */
+    top: 0 !important;           /* Align to the top */
+    left: 0 !important;          /* Align to the left */
+    width: 100vw !important;     /* Force full viewport width */
+    height: 100% !important;    /* Force full viewport height */
+    margin: 0 ;
+    padding: 0 ;       /* CRITICAL: Remove all padding */
+    border-radius: 0 !important;
+    max-width: none !important;
+  }
+
+  /* 3. Make the chat fill the app container. */
+  .chat {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  /* 4. Hide internal scrollbars for a cleaner look. */
+  .messages::-webkit-scrollbar { display: none; }
+  .messages {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+
   .composer {
-    padding-left: 10px;
+    padding-left: 15px;
+    padding-bottom: 12.5px;
     gap: 8px;
   }
   textarea#input {
@@ -829,28 +924,13 @@ textarea#input {
   }
   .footer-disclaimer {
         position: absolute;
-        bottom: 5px; /* Sits at the very bottom */
+        bottom: 10px; /* Sits at the very bottom */
         left: 0;
         right: 0;
         text-align: center;
         font-size: 12px;
         color: var(--muted);
         z-index: 5;
-      }
-      .app {
-        width: 100%;
-        height: 100%;    /* Use vh (viewport height) to guarantee it fills the screen */
-        padding: 0;
-        margin: 0;
-        border-radius: 0;
-        max-width: none;
-        max-height: none;
-      }
-      .chat {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-        max-height: none;
       }
 
   /* --- 2. Header & Brand --- */
@@ -863,24 +943,25 @@ textarea#input {
   .brand {
     gap: 12px; 
   }
-  .title {
-    font-size: 18px;
-  }
   .logo-area {
     width: 40px;
     height: 40px;
   }
-
-  /* --- Hide the scrollbar inside the messages list --- */
-  .messages::-webkit-scrollbar {
-        display: none; /* For Chrome, Safari, etc. */
-      }
-      .messages {
-        -ms-overflow-style: none;  /* For IE and Edge */
-        scrollbar-width: none;  /* For Firefox */
-      }
   .msg {
     max-width: 90%;
+    font-size: 14px;
+  }
+  .welcome-btn {
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.03);
+    color: #e6fbff;
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
   }
   .welcome-logo {
     width: 85px;
@@ -888,6 +969,12 @@ textarea#input {
   }
   .welcome-title {
     font-size: 24px;
+    font-weight: 600px;
+    width: 100%;
+  }
+  .welcome-subtitle{
+    font-size: 14px;
+    width: 100%;
   }
 
   }
