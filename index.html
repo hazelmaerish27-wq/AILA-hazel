@@ -902,9 +902,14 @@ textarea#input {
       .composer {
         background: transparent !important; /* Removes the unwanted black box */
         border-top: none !important;
+        display: flex !important;
+        gap: 10px !important;
+        padding: 8px 12px !important;
         /* Add horizontal padding to create margins on the left and right */
         padding-left: 10px !important;
         padding-right: 10px !important;
+        border-radius: 28px !important;
+        padding-bottom: 10px !important;
       }
 
       textarea#input {
@@ -918,6 +923,11 @@ textarea#input {
         /* A more noticeable background and a shadow to lift it from the page */
         background: rgba(28, 39, 53, 0.041) !important; 
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.445) !important;
+        overflow-y: hidden !important;
+        resize: none !important;
+        min-height: 24px !important; /* Adjust height to match line-height */
+        height: 55px !important; 
+        line-height: 24px !important; /* Helps with vertical text alignment */
       }
  
   .msg a{color:var(--accent1);text-decoration:underline}
