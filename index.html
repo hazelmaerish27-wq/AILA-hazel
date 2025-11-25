@@ -1269,7 +1269,7 @@ const faqs = [
 /* dito mo e ccustomize if may babagohin or e dadagdag na template questions */
 const offlineResponses = {
   // random templated questions //
-  "video": "https://www.youtube.com/watch?v=2jZHx5BvmO0",
+  "picture": "TESTING IMAGE https://drive.google.com/file/d/18TLwYfyQ7ODgG3cb7nvFYiK_li54ibMs/view",
   "Hi": "Hellow kuys! I'm AILA. Here is a test video to see if it works:  https://drive.google.com/file/d/1NcZ5BYRyabR3HtbeQrcvKkq8jRoehmQ9/view",
   "Orientation to data processing": `Hi kuys!👋
   \n**Orientation to Data Processing**
@@ -2076,21 +2076,35 @@ const input = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const logoArea = document.getElementById('logo');
 
-function convertVideoLinksToEmbeds(text) {
+function convertMediaLinks(text) {
   let processedText = text;
 
-  // This regex will find both YouTube and Google Drive links.
+  // Regex for image URLs ending in common formats
+  const imageUrlRegex = /(https?:\/\/[^\s<>()]+?\.(?:png|jpg|jpeg|gif|webp))/gi;
+  
+  // Regex for video URLs (YouTube, Google Drive)
   const videoUrlRegex = /https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/|drive\.google\.com\/file\/d\/)[\w-]+(?:[\/?][\w-.=&]*)?/g;
 
+  // First, process image URLs and turn them into HTML <img> tags
+  processedText = processedText.replace(imageUrlRegex, (url) => {
+    return `<img src="${url}" alt="Embedded Image from AILA" style="max-width: 100%; border-radius: 12px; margin-top: 10px;" />`;
+  });
+
+  // Next, process video URLs into Markdown-style links
   processedText = processedText.replace(videoUrlRegex, (url) => {
-    let linkText = "Click to watch video";
+    // If the URL is already inside an <img> tag we just created, don't touch it.
+    if (processedText.includes(`src="${url}"`)) {
+      return url;
+    }
+    
+    let linkText = "[Click to watch video]";
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
       linkText = "[Click to watch YouTube video]";
     } else if (url.includes('drive.google.com')) {
       linkText = "[Click to watch Google Drive video]";
     }
-    // This creates a Markdown-style link, which will be converted to a proper <a> tag later.
-    return `${linkText}(${url})`;
+    // This creates a Markdown link, which our sanitizer will turn into a safe, clickable <a> tag.
+    return `\n${linkText}(${url})\n`;
   });
 
   return processedText;
@@ -2112,18 +2126,16 @@ marked.setOptions({ breaks: true, gfm: true });
 function renderSafeMarkdown(mdText) {
   if (typeof mdText !== 'string') mdText = String(mdText || '');
 
-  // CORRECTED: The regular expression no longer uses double backslashes
-  const urlRx = /(\b(https?:\/\/|www\.)[^\s<>()]+)/gi;
-
-  const pre = mdText.replace(urlRx, (m)=>{ if (m.startsWith('<') && m.endsWith('>')) return m; return `<${m}>`; });
-  const raw = marked.parse(pre);
+  // The 'marked' library will handle link parsing automatically.
+  const raw = marked.parse(mdText);
   
-  // UPDATED: Allow iframe, div, and necessary attributes for video embeds
+  // UPDATED: Allow 'img' tags for pictures, but keep 'iframe' disallowed for safety.
   return DOMPurify.sanitize(raw, { 
-      ADD_TAGS: ['iframe', 'div'], 
-      ADD_ATTR: ['target', 'rel', 'style', 'allow', 'allowfullscreen', 'src', 'frameborder', 'class'] 
+      ADD_TAGS: ['img'], 
+      ADD_ATTR: ['target', 'rel', 'style', 'src', 'alt', 'class'] 
   });
 }
+
 
 /* welcome logo */
 /* welcome screen*/
@@ -2173,7 +2185,7 @@ function appendMessage(text, who = 'bot', attachFAQs = false, suggestions = []) 
     // --- NEW LOGIC: Convert video links before rendering ---
     let contentToRender = text;
     if (who === 'bot') {
-        contentToRender = convertVideoLinksToEmbeds(text);
+        contentToRender = convertMediaLinks(text);
     }
     // --- END NEW LOGIC ---
 
