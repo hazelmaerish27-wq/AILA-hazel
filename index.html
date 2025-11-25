@@ -800,16 +800,17 @@ textarea#input {
   transition: height 0.2s ease;
 }
   .welcome-screen {
-    min-height: calc(100vh - 80px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
-    padding: 40px 20px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Makes it fit its container */
+  text-align: center;
+  padding: 20px; /* Adjusts the outer spacing */
+  box-sizing: border-box; /* Ensures padding is calculated correctly */
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
   .welcome-logo {
     width: 100px;
     height: 100px;
@@ -837,19 +838,20 @@ textarea#input {
   }
 
   .welcome-subtitle {
-    font-size: 16px;
-    color: var(--muted);
-    margin-bottom: 40px;
-    max-width: 500px;
-  }
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 30px; /* Was 40px */
+  max-width: 500px;
+}
+
 
   .welcome-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    margin-bottom: 60px;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  /* The large margin-bottom has been removed to fix the spacing */
+}
 
   .welcome-btn {
     background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
