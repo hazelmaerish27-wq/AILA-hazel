@@ -126,7 +126,7 @@
   .app{display:flex;align-items:center;justify-content:center;height:100vh;padding:20px;box-sizing:border-box}
 
 .chat {
-  width: 940px; 
+  width: 1200px; 
   max-width: 95vw;
   height: 100vh; 
   max-height: 92vh;
@@ -175,7 +175,6 @@
   margin-bottom: 20px;
   bottom: 0;
   padding: 12px 16px;
-  background: linear-gradient(180deg, rgba(3,6,10,0.9), rgba(4,8,16,0.98));
   border-top: 1px solid rgba(255,255,255,0.03);
   display: flex;
   gap: 10px;
@@ -263,7 +262,7 @@
   margin-top: 10px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-@media (max-width: 880px) {
+@media (max-width: 900px) {
   .chat {
     width: 94vw;
     height: 88vh;
@@ -349,15 +348,18 @@
   --tap-size: 44px;
 }
 
-@media (max-width: 880px) {
-  .app { padding: 10px; }
-  .chat {
-    width: 100vw;
-    max-width: 100vw;
-    height: calc(100vh - 10px);
-    border-radius: 12px;
-    margin: 0;
-  }
+@media (max-width: 900px) {
+      .app { 
+        height: 725px;
+      }
+      .chat {
+        width: 100vw;
+        max-width: 100vw;
+        height: 60vh;
+        max-height: 100vh; /* Ensure it doesn't exceed viewport height */
+        border-radius: 0;
+        margin: 0;
+      }
 
 .header {
     padding: 10px;
@@ -365,19 +367,13 @@
   }
 
 .brand { gap: 10px; }
-.title { font-size: 14px; }
-.subtitle { font-size: 11px; }
-
-.logo-area { width:48px; height:48px; overflow:hidden; border-radius:10px; }
-.logo-area img { width:100%; height:100%; object-fit:cover; display:block; }
-
 .messages { padding: 12px; max-height: calc(100vh - 220px); } /* leave space for header + composer */
-.msg { font-size: 15px; max-width: 88%; }
+.msg { font-size: 12px; max-width: 88%; }
 
 .welcome-title { font-size: 22px; }
 .welcome-subtitle { font-size: 14px; max-width: 92%; }
 
-.welcome-btn, .faq-btn, .sugg-btn, .dropdown-item, .header-feedback-btn, .orient-btn {
+.faq-btn, .sugg-btn, .dropdown-item, .header-feedback-btn, .orient-btn {
     min-height: var(--tap-size);
     padding: 10px 14px;
     font-size: 15px;
@@ -388,6 +384,7 @@ textarea#input, #input {
     min-height: 56px;
     font-size: 16px;
     padding: 12px;
+    padding-top: 20px;
     line-height: 1.45;
   }
 
@@ -422,8 +419,11 @@ textarea#input { transition: height 160ms ease; -webkit-text-size-adjust: 100%; 
 @media (max-width: 520px) {
   body { font-size: 15px; }
 }
-
+.header {
+  border-radius: 20px;
+}
 .header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(6px)}
+
 .brand{display:flex;align-items:center;gap:14px}
 .logo-area{
   width:56px;
@@ -588,18 +588,6 @@ input:checked + .faq-toggle-slider:hover {
   .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}
   @keyframes dotBlink{0%{opacity:.15;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}100%{opacity:.15;transform:translateY(0)}}
 
-  .composer {
-  position: sticky;
-  bottom: 0;
-  padding: 12px 16px;
-  background: linear-gradient(180deg, rgba(3,6,10,0.9), rgba(4,8,16,0.98));
-  border-top: 1px solid rgba(255,255,255,0.03);
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  max-width: 100%;
-  box-sizing: border-box;
-}
 textarea#input {
   flex: 1;
   min-height: 48px;
@@ -701,14 +689,6 @@ textarea#input.voice-active {
 
 /* --- End of New Styles --- */
 
-.composer {
-    position: relative;
-    padding: 12px 16px;
-    box-sizing: border-box;
-    border-top: 1px solid rgba(255,255,255,0.03);
-    background: linear-gradient(180deg, rgba(3,6,10,0.9), rgba(4,8,16,0.98));
-}
-
 textarea#input {
     width: 100%;
     min-height: 52px;
@@ -809,10 +789,9 @@ textarea#input {
   text-align: center;
   padding: 20px; /* Adjusts the outer spacing */
   box-sizing: border-box; /* Ensures padding is calculated correctly */
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
 }
 
-  .welcome-logo {
+ .welcome-logo {
     width: 100px;
     height: 100px;
     border-radius: 14px;
@@ -827,29 +806,30 @@ textarea#input {
 
   @keyframes breathe {0%{transform:translateY(0) scale(1); box-shadow:0 14px 40px rgba(0,210,255,0.04)}50%{transform:translateY(-6px) scale(1.03); box-shadow:0 30px 80px rgba(0,210,255,0.14)}100%{transform:translateY(0) scale(1); box-shadow:0 14px 40px rgba(0,210,255,0.04)}}
 
-  .welcome-title {
-    font-size: 32px;
+.welcome-title {
+    font-size: 38px;
     font-weight: 700;
-    margin-top: 1;
-    margin-bottom: 1px;
     background: linear-gradient(135deg, var(--accent1), var(--accent2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  .welcome-subtitle {
-  font-size: 16px;
+.welcome-subtitle {
+  font-size: 14px;
   color: var(--muted);
-  margin-bottom: 30px; /* Was 40px */
+  margin-bottom: 10px;
+  margin-top: 10px;
   max-width: 500px;
 }
 
 
-  .welcome-actions {
+.welcome-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  padding-top: 15px;
+  scale: 1 !important;
+  gap: 5px !important;
   justify-content: center;
   /* The large margin-bottom has been removed to fix the spacing */
 }
@@ -858,9 +838,9 @@ textarea#input {
     background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
     border: 1px solid rgba(255,255,255,0.03);
     color: #e6fbff;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 5px 15px !important;
+    border-radius: 10px;
+    font-size: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-decoration: none;
@@ -902,7 +882,7 @@ textarea#input {
        /* --- Final Composer & Pill Text Area Style --- */
        .footer-disclaimer {
         position: absolute;
-        bottom: 25px; /* Sits at the very bottom */
+        bottom: 30px; /* Sits at the very bottom */
         left: 0;
         right: 0;
         text-align: center;
@@ -912,45 +892,46 @@ textarea#input {
       }
       
       .composer {
-        background: transparent !important; /* Removes the unwanted black box */
         border-top: none !important;
         display: flex !important;
         gap: 10px !important;
         position: absolute !important;
         bottom: 0;
-        left: 5px;
+        left: 8px;
         right: 5px;
-        z-index: 10;
-        padding: 8px 12px !important;
-        background: transparent !important;
+        z-index: 200;
         border-top: none !important;
-        /* Add horizontal padding to create margins on the left and right */
-        padding-left: 10px !important;
-        padding-right: 10px !important;
-        border-radius: 28px !important;
-        padding-bottom: 9.5px !important;
+        padding-left: 10px ;
+        padding-right: 15px ;
+        border-radius: 100px !important;
+        padding-bottom: px;
       }
       .messages{
         padding-bottom: 120px !important;
       }
-
       textarea#input {
         border-radius: 24px !important;
         padding: 13px 48px 13px 20px !important;
         overflow-y: hidden !important;   /* Permanently removes scrollbar */
         resize: none !important;
-        /* A slightly more subtle border */
         border: 1px solid rgba(255, 255, 255, 0.1) !important; 
         min-height: 48px !important;
-        /* A more noticeable background and a shadow to lift it from the page */
         background: #1C2532 !important; 
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.445) !important;
         overflow-y: hidden !important;
         resize: none !important;
         min-height: 24px !important; /* Adjust height to match line-height */
         height: 55px !important; 
-        line-height: 24px !important; /* Helps with vertical text alignment */
+        line-height: 25px ; /* Helps with vertical text alignment */
       }
+      #voiceBtn {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+          position: sticky;
+      }
+      #voiceBtn:hover {
+          background-color: rgba(255, 255, 255, 0.15) !important;
+      }
+
  
   .msg a{color:var(--accent1);text-decoration:underline}
   
@@ -959,8 +940,8 @@ textarea#input {
 /* --- Mobile View Enhancements --- */
 @media (max-width: 900px) {
   .footer-disclaimer {
-        position: absolute;
-        bottom: 5 px !important; /* Sits at the very bottom */
+        position: center;
+        bottom: 10px !important; /* Sits at the very bottom */
         left: 0;
         right: 0;
         text-align: center;
@@ -968,7 +949,6 @@ textarea#input {
         color: var(--muted);
         z-index: 5;
       }
-  /* Make app container and chat window full screen */
   .app {
     padding: 0;
   }
@@ -1001,10 +981,6 @@ textarea#input {
     height: 40px;
   }
 
-  /* Adjust composer and messages for smaller screens */
-  .composer {
-    padding: 8px 10px;
-  }
   .messages {
     padding: 10px;
   }
@@ -1013,8 +989,15 @@ textarea#input {
           min-height: 48px !important;
           height: 48px !important;
           border-radius: 24px !important;
-          padding-bottom: 20px !important;
+          padding-bottom: 15px !important;
+          line-height: 100px;
       }
+      .composer{
+          padding-left: 15px;
+          padding-right: 8px;
+          right: 5px;
+          left: 5px;
+        }
       .composer-actions {
           right: 18px; /* MOVED LEFT: Pulls container fully inside the border */
           width: 32px;
@@ -1116,7 +1099,7 @@ textarea#input {
 </div>
 </div>
 <div class="footer-disclaimer">
-  AILA can make mistakes. Check important info.
+  AILA can make mistakes. Always ask the LA in charge.
 </div>
 <script>
 // N8N chat webhook link constant
@@ -2144,7 +2127,7 @@ function showWelcomeScreen() {
            alt="AILA Logo"
            style="width:100%; height:100%; object-fit:cover; border-radius:14px;">
     </div>
-    <h1 class="welcome-title">Welcome to AILA</h1>
+    <h1 class="welcome-title" style="margin-bottom: 5px">Welcome to AILA</h1>
     <p class="welcome-subtitle">Hi kuys! I'm AILA, Feel free to ask any questions related to our Kaizenset ICT Data Processing</p>
     <div class="welcome-actions">
       <button class="welcome-btn" onclick="useSuggestion('Overview')">Overview</button>
