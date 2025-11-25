@@ -871,12 +871,20 @@ textarea#input {
     <div class="main">
       <div class="messages" id="messages" aria-live="polite" role="log">
       </div>
-      <div class="composer">
-        <textarea id="input" placeholder="Type a message..." aria-label="Message input"></textarea>
-        <button id="sendBtn" class="send">Send</button>
-      </div>
     </div>
+    <div class="composer">
+  <textarea id="input" placeholder="Ask anything..." aria-label="Message input"></textarea>
+  <div class="composer-actions">
+    <button id="voiceBtn" class="composer-btn" title="Use voice">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3
+0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+    </button>
+    <button id="sendBtn" class="send">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    </button>
   </div>
+</div>
+</div>
 </div>
 <script>
 // N8N chat webhook link constant
