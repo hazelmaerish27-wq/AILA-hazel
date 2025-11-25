@@ -725,6 +725,56 @@ button#sendBtn.sending {
     font-size: 13px;
   }
 }
+/* New styles for positioning buttons inside the text area */
+.composer {
+    position: relative; /* This is essential for positioning the buttons inside */
+}
+
+textarea#input {
+    /* Add space on the right so text doesn't go under the buttons */
+    padding-right: 85px !important;
+    border-radius: 24px; /* Makes the textarea have rounded corners */
+    height: 52px;
+    min-height: 52px;
+    padding-left: 20px;
+    padding-top: 15px;
+}
+
+.composer-actions {
+    position: absolute; /* Take the buttons out of the normal document flow */
+    right: 8px;      /* Anchor them to the right side of the composer */
+    top: 50%;          /* Center them vertically */
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Clean up button styles */
+.composer-btn, .send {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    border-radius: 50%;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.composer-btn:hover, .send:hover {
+    background-color: rgba(255,255,255,0.08);
+    color: #e6fbff;
+}
+
+/* Hide the send button by default. We'll show it with JS. */
+#sendBtn {
+    display: none;
+}
+
 .composer:focus-within {
   box-shadow: 0 -2px 20px rgba(0,210,255,0.1);
 }
