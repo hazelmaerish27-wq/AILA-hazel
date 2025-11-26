@@ -98,7 +98,6 @@
   color: var(--muted);
   border: 1px solid rgba(255,255,255,0.04);
   padding: 8px 12px;
-  margin-left: 15px;
   margin-right: 15px;
   border-radius: 8px;
   cursor: pointer;
@@ -274,33 +273,12 @@
   transform: translateY(0);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.faq-buttons.hidden {
-  display: none;
-}
-.welcome-actions.hidden {
-  opacity: 0;
-  transform: translateY(-20px);
-  pointer-events: none;
-  max-height: 0;
-  overflow: hidden;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.sugg-buttons.hidden {
-  opacity: 0;
-  transform: translateY(-20px);
-  pointer-events: none;
-  max-height: 0;
-  overflow: hidden;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+
 .welcome-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 2px;
   justify-content: center;
-  margin-bottom: 40px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sugg-buttons {
@@ -394,12 +372,12 @@ textarea#input { transition: height 160ms ease; -webkit-text-size-adjust: 100%; 
     font-size:12px;
     color:var(--muted)
   }
-
   .main{
     display:flex;
     flex-direction:column;
     flex:1;
     overflow:hidden}
+
   .messages{
     flex:1;
     padding:20px;
@@ -420,19 +398,19 @@ textarea#input { transition: height 160ms ease; -webkit-text-size-adjust: 100%; 
     overflow-wrap: break-word;
     line-height: 1.4;        /* Prevents extra vertical space on multi-line messages */
   }
-    .msg.bot {
-    /* --- Style Overrides to Remove the Box and Stretch --- */
+  .msg.bot {
     background: transparent;
     border: none;
     box-shadow: none;
-    width: 80vw;          /* Force the container to take full width */
-    max-width: none;      /* CRITICAL: Override the base max-width from .msg */
+    /* CORRECTED: Use 100% to respect the parent's padding */
+    width: 100%; 
+    max-width: 100%;
+    padding-bottom: 100px;
     box-sizing: border-box;
     overflow-wrap: break-word;
-
-    /* --- Preserved Styles --- */
     color: #dff8ff;
   }
+
 
   .faq-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;opacity:0;transform:translateY(6px);animation:faqIn .34s ease forwards;animation-delay:.04s}
   @keyframes faqIn{to{opacity:1;transform:translateY(0)}}
@@ -462,100 +440,6 @@ textarea#input { transition: height 160ms ease; -webkit-text-size-adjust: 100%; 
   background: linear-gradient(180deg, var(--accent1), var(--accent2));
   color: #042022;
   box-shadow: 0 8px 25px rgba(0,210,255,0.15);
-}
-.orient-btn.hidden {
-  opacity: 0 !important;
-  transform: translateY(-10px) scale(0.95) !important;
-  pointer-events: none !important;
-  visibility: hidden !important;
-}
-.orient-btn:not(.hidden) {
-  animation: buttonAppear 0.3s ease-out;
-}
-.faq-toggle-container {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  padding: 2px 3px;
-  border-radius: 5px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.05);
-  transition: all 0.2s ease;
-}
-.faq-toggle-container.active {
-  background: rgba(47,226,122,0.08);
-  border-color: rgba(47,226,122,0.2);
-}
-.faq-toggle-container.inactive {
-  background: rgba(255,92,108,0.08);
-  border-color: rgba(255,92,108,0.2);
-}
-.faq-toggle-label {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-.faq-toggle-container.active .faq-toggle-label {
-  color: #2fe27a;
-}
-.faq-toggle-container.inactive .faq-toggle-label {
-  color: #ff5c6c;
-}
-.faq-toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 42px;
-  height: 22px;
-}
-.faq-toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-.faq-toggle-slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255,92,108,0.2);
-  border: 1px solid rgba(255,92,108,0.3);
-  transition: 0.3s ease;
-  border-radius: 22px;
-}
-.faq-toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  bottom: 2px;
-  background: #ff5c6c;
-  transition: 0.3s ease;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(255,92,108,0.3);
-}
-input:checked + .faq-toggle-slider {
-  background: rgba(47,226,122,0.2);
-  border-color: rgba(47,226,122,0.4);
-}
-input:checked + .faq-toggle-slider:before {
-  transform: translateX(20px);
-  background: #2fe27a;
-  box-shadow: 0 2px 6px rgba(47,226,122,0.4);
-}
-.faq-toggle-slider:hover {
-  background: rgba(255,92,108,0.25);
-  border-color: rgba(255,92,108,0.4);
-}
-input:checked + .faq-toggle-slider:hover {
-  background: rgba(47,226,122,0.25);
-  border-color: rgba(47,226,122,0.5);
-}
-.faq-buttons.hidden {
-  display: none !important;
 }
   .typing{display:inline-flex;gap:6px;align-items:center;padding:6px 8px;border-radius:10px;background:rgba(0,0,0,0.12);margin-top:6px}
   .dot{width:7px;height:7px;border-radius:50%;background:#dff7ff;opacity:.4;animation:dotBlink 1s infinite}
@@ -785,13 +669,11 @@ textarea#input {
 
 
 .welcome-actions {
-  display: flex;
-  flex-wrap: wrap;
-  padding-top: 15px;
-  scale: 1 !important;
+  display: fixed;
+  padding-bottom: 5px;
+  scale: 0.9 !important;
   gap: 5px !important;
   justify-content: center;
-  /* The large margin-bottom has been removed to fix the spacing */
 }
 
   .welcome-btn {
@@ -841,14 +723,14 @@ textarea#input {
            
        /* --- Final Composer & Pill Text Area Style --- */
        .footer-disclaimer {
-        position: absolute;
+        position: fixed !important;
+        padding-top: 20px;
         bottom: 30px; /* Sits at the very bottom */
         left: 0;
         right: 0;
         text-align: center;
         font-size: 12px;
         color: var(--muted);
-        z-index: 5;
       }
       
       .composer {
@@ -894,7 +776,149 @@ textarea#input {
 
  
   .msg a{color:var(--accent1);text-decoration:underline}
-  
+  /* --- Modal Styles --- */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 25, 47, 0.5);
+  backdrop-filter: blur(8px) saturate(180%);
+  -webkit-backdrop-filter: blur(8px) saturate(180%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+.modal-content {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  width: 90vw;
+  max-width: 700px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+.modal-backdrop.visible .modal-content {
+  transform: scale(1);
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 28px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+.modal-close-btn:hover {
+  color: #fff;
+}
+.modal-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+.modal-body::-webkit-scrollbar { width: 6px; }
+.modal-body::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--accent2), var(--accent1)); border-radius: 3px; }
+
+/* --- Tools Modal Navigation --- */
+.tools-nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 10px;
+}
+.tools-nav-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid transparent;
+  color: var(--muted);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tools-nav-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.tools-nav-btn.active {
+  background: linear-gradient(180deg, var(--accent1), var(--accent2));
+  color: #042022;
+  font-weight: 600;
+  border-color: rgba(255,255,255,0.2);
+}
+.tools-pane {
+  display: none;
+}
+.tools-pane.active {
+  display: block;
+}
+
+/* --- Placeholder for clickable questions --- */
+.placeholder-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.placeholder-section .question-link {
+  display: block;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  color: #e6fbff;
+  text-decoration: none;
+  transition: background 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.placeholder-section .question-link:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+/* --- Style update for new welcome buttons --- */
+.welcome-btn {
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 100px;
+  font-size: 13px;
+}
+.welcome-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
 /* --- Mobile View Enhancements --- */
 /* --- FORCED UNIFIED MOBILE & TABLET VIEW --- */
 @media (max-width: 900px) {
@@ -905,32 +929,22 @@ textarea#input {
 
   /* 1. Reset the page to prevent any scrolling or extra space. */
   html, body {
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    width: 100% !important; height: 100% !important;
+    padding: 0 !important; margin: 0 !important;
     overflow: hidden !important;
   }
-
   /* 2. Force the .app container to cover the entire screen. */
   .app {
-    position: fixed !important;  /* Lock position to the viewport */
-    top: 0 !important;           /* Align to the top */
-    left: 0 !important;          /* Align to the left */
-    width: 100vw !important;     /* Force full viewport width */
-    height: 100% !important;    /* Force full viewport height */
-    margin: 0 ;
-    padding: 0 ;       /* CRITICAL: Remove all padding */
-    border-radius: 0 !important;
-    max-width: none !important;
+    position: fixed !important; top: 0 !important; left: 0 !important;
+    width: 100vw !important; height: 100% !important;
+    margin: 0; padding: 0;
+    border-radius: 0 !important; max-width: none !important;
   }
 
   /* 3. Make the chat fill the app container. */
   .chat {
-    width: 100% !important;
-    height: 100% !important;
-    max-height: none !important;
-    border-radius: 0 !important;
+    width: 100% !important; height: 100% !important;
+    max-height: none !important; border-radius: 0 !important;
     border: none !important;
   }
 
@@ -951,14 +965,13 @@ textarea#input {
     font-size: 16px;
   }
   .footer-disclaimer {
-        position: absolute;
-        bottom: 10px; /* Sits at the very bottom */
+        position: fixed;
+        bottom: 8px;
         left: 0;
         right: 0;
         text-align: center;
         font-size: 12px;
         color: var(--muted);
-        z-index: 5;
       }
 
   /* --- 2. Header & Brand --- */
@@ -1025,19 +1038,13 @@ textarea#input {
           <span class="ver">Ver-0.10</span>
         </div>
       </div>
-
-      <div style="display:flex;align-items:center;gap:1px;">
-        <div class="faq-toggle-container">
-      <span class="faq-toggle-label"></span>
-      <label class="faq-toggle-switch">
-        <input type="checkbox" id="faqToggle" checked>
-        <span class="faq-toggle-slider"></span>
-      </label>
-    </div>
-    
-<!--feedback button-->
+<div style="display:flex;align-items:center;">
+    <button id="toolsHeaderBtn" class="header-feedback-btn" title="Tools">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+    </button>
     <button id="feedbackBtn" class="header-feedback-btn">📝</button>
-  </div>
+</div>
+
 </div>
 
 <!-- text box -->
@@ -1062,13 +1069,142 @@ textarea#input {
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
     </button>
   </div>
+  <div class="footer-disclaimer">
+    AILA can make mistakes. Always ask the LA in charge.
+  </div>
 </div>
 </div>
 </div>
-<div class="footer-disclaimer">
-  AILA can make mistakes. Always ask the LA in charge.
+<div id="universalModal" class="modal-backdrop">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle" class="modal-title"></h2>
+      <button id="modalCloseBtn" class="modal-close-btn">&times;</button>
+    </div>
+    <div id="modalBody" class="modal-body">
+      <!-- Modal content will be injected here by JavaScript -->
+    </div>
+  </div>
 </div>
 <script>
+  
+// ============== START: MODAL SCRIPT ==============
+// This entire block handles the functionality for the new modal pop-ups.
+
+// Get references to all the modal elements from the HTML
+const modal = document.getElementById('universalModal');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const modalCloseBtn = document.getElementById('modalCloseBtn');
+const toolsHeaderBtn = document.getElementById('toolsHeaderBtn');
+
+/**
+ * Closes the modal by removing the 'visible' class.
+ */
+function closeModal() {
+  if (modal) {
+    modal.classList.remove('visible');
+  }
+}
+
+/**
+ * Generates placeholder HTML content for a given section.
+ * This creates a list of clickable questions.
+ * @param {string} sectionTitle The title of the section (e.g., "Modules").
+ * @returns {string} HTML string for the placeholder content.
+ */
+function getPlaceholderContent(sectionTitle) {
+    return `
+        <div class="placeholder-section" style="text-align: left;">
+            <h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>
+            <a href="#" class="question-link" onclick="useSuggestion('What is the first topic for ${sectionTitle}?'); closeModal();">What is the first topic for ${sectionTitle}?</a>
+            <a href="#" class="question-link" onclick="useSuggestion('Give me an overview of ${sectionTitle}.'); closeModal();">Give me an overview of ${sectionTitle}.</a>
+            <a href="#" class="question-link" onclick="useSuggestion('Where can I find more resources for ${sectionTitle}?'); closeModal();">Where can I find more resources for ${sectionTitle}?</a>
+        </div>
+    `;
+}
+
+/**
+ * Opens and populates the modal based on the content type.
+ * @param {string} contentType - The type of content to display ('tools', 'modules', etc.).
+ */
+function openModal(contentType) {
+    let title = '';
+    let bodyContent = '';
+
+    // Logic for the special "Tools" modal with internal navigation
+    if (contentType === 'tools') {
+        title = 'Tools & Resources';
+        bodyContent = `
+            <div class="tools-nav">
+                <button class="tools-nav-btn active" data-target="tools-modules">Modules</button>
+                <button class="tools-nav-btn" data-target="tools-orientation">Orientation</button>
+                <button class="tools-nav-btn" data-target="tools-materials">Materials</button>
+            </div>
+            <div class="tools-content">
+                <div id="tools-modules" class="tools-pane active">${getPlaceholderContent('Modules')}</div>
+                <div id="tools-orientation" class="tools-pane">${getPlaceholderContent('Orientation')}</div>
+                <div id="tools-materials" class="tools-pane">${getPlaceholderContent('Learning Materials')}</div>
+            </div>
+        `;
+    } else { // Logic for the simpler modals
+        switch (contentType) {
+            case 'modules':
+                title = 'Modules';
+                bodyContent = getPlaceholderContent('Modules');
+                break;
+            case 'orientation':
+                title = 'Orientation';
+                bodyContent = getPlaceholderContent('Orientation');
+                break;
+            case 'materials':
+                title = 'Learning Materials';
+                bodyContent = getPlaceholderContent('Learning Materials');
+                break;
+        }
+    }
+
+    // Set the content and make the modal visible
+    modalTitle.textContent = title;
+    modalBody.innerHTML = bodyContent;
+    modal.classList.add('visible');
+
+    // If the "Tools" modal was opened, set up its internal navigation button listeners
+    if (contentType === 'tools') {
+        const navButtons = modal.querySelectorAll('.tools-nav-btn');
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Deactivate the currently active button and content pane
+                const currentActiveBtn = modal.querySelector('.tools-nav-btn.active');
+                if(currentActiveBtn) currentActiveBtn.classList.remove('active');
+                
+                const currentActivePane = modal.querySelector('.tools-pane.active');
+                if(currentActivePane) currentActivePane.classList.remove('active');
+                
+                // Activate the new button and its corresponding content pane
+                btn.classList.add('active');
+                const targetId = btn.getAttribute('data-target');
+                const targetPane = document.getElementById(targetId);
+                if(targetPane) targetPane.classList.add('active');
+            });
+        });
+    }
+}
+
+// Main event listeners for opening and closing the modal
+if(modalCloseBtn) modalCloseBtn.addEventListener('click', closeModal);
+if(toolsHeaderBtn) toolsHeaderBtn.addEventListener('click', () => openModal('tools'));
+
+// Also close the modal if the user clicks on the dark backdrop
+if(modal) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+}
+// ============== END: MODAL SCRIPT ==============
+
 // N8N chat webhook link constant
 const CHAT_WEBHOOK = 'https://laict.app.n8n.cloud/webhook/aila-chat';
 
@@ -1091,138 +1227,6 @@ document.addEventListener('keydown', (e) => {
     });
   }
 });
-const faqToggle = document.getElementById('faqToggle');
-const faqToggleContainer = document.querySelector('.faq-toggle-container');
-
-let faqVisible = localStorage.getItem('faqVisible');
-if (faqToggle && faqToggleContainer) {
-  if (faqVisible === null) {
-    faqVisible = 'true';
-    localStorage.setItem('faqVisible', faqVisible);
-  }
-  
-  faqToggle.checked = faqVisible === 'true';
-  updateToggleState();
-  
-  faqToggle.addEventListener('change', function() {
-    faqVisible = this.checked ? 'true' : 'false';
-    localStorage.setItem('faqVisible', faqVisible);
-    updateToggleState();
-    showToggleNotification();
-  });
-}
-
-function updateToggleState() {
-  if (faqToggle && faqToggle.checked) {
-    faqToggleContainer.classList.add('active');
-    faqToggleContainer.classList.remove('inactive');
-    showAllQuickButtons();
-  } else {
-    faqToggleContainer.classList.add('inactive');
-    faqToggleContainer.classList.remove('active');
-    hideAllQuickButtons();
-  }
-}
-
-function showAllQuickButtons() {
-  const faqButtons = document.querySelectorAll('.faq-buttons');
-  faqButtons.forEach(btn => {
-    btn.classList.remove('hidden');
-  });
-  
-  const welcomeButtons = document.querySelectorAll('.welcome-actions');
-  welcomeButtons.forEach(btn => {
-    btn.classList.remove('hidden');
-  });
-  
-  const suggButtons = document.querySelectorAll('.sugg-buttons');
-  suggButtons.forEach(btn => {
-    btn.classList.remove('hidden');
-  });
-  
-  const faqToggleBtns = document.querySelectorAll('.sugg-btn');
-  faqToggleBtns.forEach(btn => {
-    btn.classList.remove('hidden');
-  });
-  
-  const orientButtons = document.querySelectorAll('.orient-btn');
-  orientButtons.forEach(btn => {
-    btn.classList.remove('hidden');
-    btn.style.opacity = '1';
-    btn.style.transform = 'translateY(0) scale(1)';
-    btn.style.pointerEvents = 'auto';
-  });
-  
-  const quickAskButtons = document.querySelectorAll('.faq-btn, .welcome-btn, .sugg-btn, .orient-btn');
-  quickAskButtons.forEach(btn => {
-    btn.classList.remove('hidden');
-    btn.style.opacity = '1';
-    btn.style.transform = 'translateY(0) scale(1)';
-    btn.style.pointerEvents = 'auto';
-  });
-}
-
-function hideAllQuickButtons() {
-  const faqButtons = document.querySelectorAll('.faq-buttons');
-  faqButtons.forEach(btn => {
-    btn.classList.add('hidden');
-  });
-  
-  const welcomeButtons = document.querySelectorAll('.welcome-actions');
-  welcomeButtons.forEach(btn => {
-    btn.classList.add('hidden');
-  });
-  
-  const suggButtons = document.querySelectorAll('.sugg-buttons');
-  suggButtons.forEach(btn => {
-    btn.classList.add('hidden');
-  });
-  
-  const faqToggleBtns = document.querySelectorAll('.sugg-btn');
-  faqToggleBtns.forEach(btn => {
-    btn.classList.add('hidden');
-  });
-  
-  const orientButtons = document.querySelectorAll('.orient-btn');
-  orientButtons.forEach(btn => {
-    btn.classList.add('hidden');
-    btn.style.opacity = '0';
-    btn.style.transform = 'translateY(-10px) scale(0.95)';
-    btn.style.pointerEvents = 'none';
-  });
-  
-  const quickAskButtons = document.querySelectorAll('.faq-btn, .welcome-btn, .sugg-btn, .orient-btn');
-  quickAskButtons.forEach(btn => {
-    btn.classList.add('hidden');
-    btn.style.opacity = '0';
-    btn.style.transform = 'translateY(-10px) scale(0.95)';
-    btn.style.pointerEvents = 'none';
-  });
-}
-
-function applyToggleToCurrentView() {
-  if (faqToggle && faqToggle.checked) {
-    showAllQuickButtons();
-  } else {
-    hideAllQuickButtons();
-  }
-}
-
-const originalShowWelcomeScreen = showWelcomeScreen;
-showWelcomeScreen = function() {
-  originalShowWelcomeScreen();
-  applyToggleToCurrentView();
-};
-
-const originalAppendMessage = appendMessage;
-appendMessage = function(text, who='bot', attachFAQs=false, suggestions=[]) {
-  const result = originalAppendMessage(text, who, attachFAQs, suggestions);
-  setTimeout(() => {
-    applyToggleToCurrentView();
-  }, 50);
-  
-  return result;
-};
 
 // feedback button area functionality
 const feedbackBtn = document.getElementById('feedbackBtn');
@@ -2150,11 +2154,21 @@ function showWelcomeScreen() {
     <h1 class="welcome-title" style="margin-bottom: 5px">Welcome to AILA</h1>
     <p class="welcome-subtitle">Hi kuys! I'm AILA, Feel free to ask any questions related to our Kaizenset ICT Data Processing</p>
     <div class="welcome-actions">
-      <button class="welcome-btn" onclick="useSuggestion('Overview')">Overview</button>
-      <button class="welcome-btn" onclick="useSuggestion('Origin')">Origin</button>
-      <button class="welcome-btn" onclick="useSuggestion('Hi')">Hi</button>
-      <button class="welcome-btn" onclick="useSuggestion('Orientation to data processing')">Orientation to data processing</button>
-    </div>
+    <button class="welcome-btn" onclick="useSuggestion('Overview')">Overview</button>
+    <button class="welcome-btn" onclick="openModal('modules')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <span>Modules</span>
+    </button>
+    <button class="welcome-btn" onclick="openModal('orientation')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <span>Orientation</span>
+    </button>
+    <button class="welcome-btn" onclick="openModal('materials')">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <span>Learning Materials</span>
+    </button>
+</div>
+
   </div>
 `;
 
@@ -2182,214 +2196,44 @@ function appendMessage(text, who = 'bot', attachFAQs = false, suggestions = []) 
     const wrap = document.createElement('div');
     wrap.className = 'msg ' + who;
 
-    // --- NEW LOGIC: Convert video links before rendering ---
+    // Convert video/image links before rendering
     let contentToRender = text;
     if (who === 'bot') {
         contentToRender = convertMediaLinks(text);
     }
-    // --- END NEW LOGIC ---
 
-    wrap.innerHTML = renderSafeMarkdown(contentToRender); // Use the processed content
+    wrap.innerHTML = renderSafeMarkdown(contentToRender);
 
+    // Make all links open in a new tab for security
     wrap.querySelectorAll('a').forEach(a => {
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener noreferrer');
     });
 
+    // Add the "Modules" button to bot messages
     if (who === 'bot') {
         const actionWrap = document.createElement('div');
         actionWrap.className = 'sugg-buttons';
 
-        const dropdownContainer = document.createElement('div');
-        dropdownContainer.style.position = 'relative';
-        dropdownContainer.style.display = 'inline-block';
-        dropdownContainer.style.marginRight = '8px';
-
-        const dropdownBtn = document.createElement('button');
-        dropdownBtn.className = 'sugg-btn';
-        dropdownBtn.textContent = '📋 Quick Actions';
-        dropdownBtn.style.position = 'relative';
-
-        const dropdownContent = document.createElement('div');
-        dropdownContent.style.position = 'absolute';
-        dropdownContent.style.top = '100%';
-        dropdownContent.style.left = '0';
-        dropdownContent.style.display = 'none';
-        dropdownContent.style.minWidth = '240px';
-        dropdownContent.style.background = 'linear-gradient(180deg, var(--glass-2), rgba(255,255,255,0.006))';
-        dropdownContent.style.border = '1px solid rgba(255,255,255,0.03)';
-        dropdownContent.style.borderRadius = '10px';
-        dropdownContent.style.boxShadow = '0 8px 25px rgba(0,0,0,0.3)';
-        dropdownContent.style.padding = '8px';
-        dropdownContent.style.marginTop = '4px';
-        dropdownContent.style.zIndex = '9999';
-        dropdownContent.style.maxWidth = '300px';
-
-        // templated questions and buttons section
-        const faqSection = document.createElement('div');
-        faqSection.style.marginBottom = '8px';
-        // show up buttons
-        // suggestion button area
-        const faqToggleBtn = document.createElement('button');
-        faqToggleBtn.className = 'dropdown-item sugg-btn';
-        faqToggleBtn.textContent = '📚 Click here kuys!';
-        faqToggleBtn.style.width = '100%';
-        faqToggleBtn.style.marginBottom = '4px';
-
-        const faqDiv = document.createElement('div');
-        faqDiv.className = 'faq-buttons';
-        faqDiv.style.display = 'none';
-        faqDiv.style.flexWrap = 'wrap';
-        faqDiv.style.gap = '4px';
-        faqDiv.style.marginTop = '4px';
-        faqDiv.style.maxHeight = '200px';
-        faqDiv.style.overflowY = 'auto';
-
-        faqs.forEach(q => {
-            const fb = document.createElement('button');
-            fb.className = 'faq-btn';
-            fb.textContent = q;
-            fb.style.fontSize = '12px';
-            fb.style.padding = '6px 8px';
-            fb.addEventListener('click', () => onFaqClick(fb, q));
-            faqDiv.appendChild(fb);
-        });
-        const moduleSection = document.createElement('div');
-        moduleSection.style.marginBottom = '8px';
-
-        // module button area
-        const moduleBtn = document.createElement('button');
-        moduleBtn.className = 'dropdown-item sugg-btn';
-        moduleBtn.textContent = '📦 Modules';
-        moduleBtn.style.width = '100%';
-        moduleBtn.style.marginBottom = '1px';
-
-        const moduleDiv = document.createElement('div');
-        moduleDiv.className = 'faq-buttons';
-        moduleDiv.style.display = 'none';
-        moduleDiv.style.flexWrap = 'wrap';
-        moduleDiv.style.gap = '4px';
-        moduleDiv.style.marginTop = '4px';
-
-        const module1Btn = document.createElement('button');
-        module1Btn.className = 'faq-btn';
-        module1Btn.textContent = 'Module 1: Understanding the MRP System';
-        module1Btn.addEventListener('click', () => {
-            appendMessage('Tell me about Module 1: Understanding the MRP System', 'user');
-            sendToBackend('Tell me about Module 1', true);
-            dropdownContent.style.display = 'none';
-        });
-
-        const module2Btn = document.createElement('button');
-        module2Btn.className = 'faq-btn';
-        module2Btn.textContent = 'Module 2: Working with MRP Data Using Spreadsheet';
-        module2Btn.addEventListener('click', () => {
-            appendMessage('Tell me about Module 2: Working with MRP Data Using Spreadsheet', 'user');
-            sendToBackend('Tell me about Module 2', true);
-            dropdownContent.style.display = 'none';
-        });
-
-        const module3Btn = document.createElement('button');
-        module3Btn.className = 'faq-btn';
-        module3Btn.textContent = 'Module 3: Data Analysis and Visualization';
-        module3Btn.addEventListener('click', () => {
-            appendMessage('Tell me about Module 3: Data Analysis and Visualization', 'user');
-            sendToBackend('Tell me about Module 3', true);
-            dropdownContent.style.display = 'none';
-        });
-
-        const transmoduleBtn = document.createElement('button');
-        transmoduleBtn.className = 'faq-btn';
-        transmoduleBtn.textContent = 'Transfer Between Modules';
-        transmoduleBtn.addEventListener('click', () => {
-            appendMessage('How to transfer between modules', 'user');
-            sendToBackend('How to transfer between modules', true);
-            dropdownContent.style.display = 'none';
-        });
-
-        const orientBtn = document.createElement('button');
-        orientBtn.className = 'faq-btn';
-        orientBtn.textContent = '📊 Orientation to Data Processing';
-        orientBtn.addEventListener('click', () => {
-            const orientationText = "Orientation to data processing";
-            appendMessage(orientationText, 'user');
-            sendToBackend(orientationText, true);
-            dropdownContent.style.display = 'none';
-        });
-
-        moduleDiv.appendChild(module1Btn);
-        moduleDiv.appendChild(module2Btn);
-        moduleDiv.appendChild(module3Btn);
-        moduleDiv.appendChild(transmoduleBtn);
-        moduleDiv.appendChild(orientBtn);
-
-        faqToggleBtn.addEventListener('click', (e) => {
+        const modulesBtn = document.createElement('button');
+        modulesBtn.className = 'sugg-btn';
+        modulesBtn.textContent = '📦 Modules';
+        
+        // This button now correctly opens the simple "Modules" modal
+        modulesBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const isVisible = faqDiv.style.display === 'flex';
-            faqDiv.style.display = isVisible ? 'none' : 'flex';
-            if (!isVisible) moduleDiv.style.display = 'none';
+            openModal('modules'); 
         });
 
-        moduleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isVisible = moduleDiv.style.display === 'flex';
-            moduleDiv.style.display = isVisible ? 'none' : 'flex';
-            if (!isVisible) faqDiv.style.display = 'none';
-        });
-
-        faqSection.appendChild(faqToggleBtn);
-        faqSection.appendChild(faqDiv);
-
-        moduleSection.appendChild(moduleBtn);
-        moduleSection.appendChild(moduleDiv);
-
-        dropdownContent.appendChild(faqSection);
-        dropdownContent.appendChild(moduleSection);
-
-        dropdownContainer.appendChild(dropdownBtn);
-        dropdownContainer.appendChild(dropdownContent);
-
-        actionWrap.appendChild(dropdownContainer);
+        actionWrap.appendChild(modulesBtn);
         wrap.appendChild(actionWrap);
-
-        setTimeout(() => {
-            let isDropdownOpen = false;
-
-            dropdownBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                isDropdownOpen = !isDropdownOpen;
-                dropdownContent.style.display = isDropdownOpen ? 'block' : 'none';
-
-                if (!isDropdownOpen) {
-                    faqDiv.style.display = 'none';
-                    moduleDiv.style.display = 'none';
-                }
-            });
-
-            document.addEventListener('click', () => {
-                if (isDropdownOpen) {
-                    isDropdownOpen = false;
-                    dropdownContent.style.display = 'none';
-                    faqDiv.style.display = 'none';
-                    moduleDiv.style.display = 'none';
-                }
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && isDropdownOpen) {
-                    isDropdownOpen = false;
-                    dropdownContent.style.display = 'none';
-                    faqDiv.style.display = 'none';
-                    moduleDiv.style.display = 'none';
-                }
-            });
-        }, 100);
     }
 
     messagesEl.appendChild(wrap);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     return wrap;
 }
+
 
 const safe = (fn) => { try { fn(); } catch(e) { console.warn('safe error', e); } };
 safe(() => {
