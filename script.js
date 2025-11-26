@@ -39,13 +39,29 @@ const modalQuestions = {
     "Show me the performance checklist.",
     "Is there a manual for the workflow procedure?",
   ],
-  Other: [
-    "How do I create a pivot table?",
-    "Explain the XLOOKUP formula.",
-    "Guide me through data connection between sheets.",
-  ],
-};
-// =================================================================
+Other: {
+    'General Concepts': [
+        "Overview",
+        "Origin",
+        "What's in ICT?",
+        "Main developer of AILA?",
+        "References"
+    ],
+    'MRP Fundamentals': [
+        "What is MRP?",
+        "What is MPS?",
+        "What is BOM?",
+        "What is Inventory?",
+        "What is PO?"
+    ],
+    'Skills & Process': [
+        "How to do dashboard?",
+        "Data connection between sheets",
+        "How can I prepare for oral validation",
+        "Three types of data "
+    ]
+  }
+};// =================================================================
 
 // ============== START: MODAL SCRIPT ==============
 // This entire block handles the functionality for the new modal pop-ups.
@@ -80,76 +96,67 @@ function closeModal() {
 }
 
 /**
- * Generates HTML for the modal. It handles descriptions (_DESC_), direct links
- * (URLs), and questions for each item in the dropdowns.
+ * Generates HTML for the modal. It handles Modules, Other, and simple question lists.
  * @param {string} sectionTitle The key to look up in the modalQuestions object.
  * @returns {string} HTML string for the modal's content.
  */
 function getPlaceholderContent(sectionTitle) {
-  const sectionData = modalQuestions[sectionTitle] || {};
-  let contentHTML = "";
+    const sectionData = modalQuestions[sectionTitle] || {};
+    let contentHTML = '';
 
-  // --- SPECIAL LOGIC FOR MODULES DROPDOWN ---
-  if (sectionTitle === "Modules") {
-    for (const moduleName in sectionData) {
-      const links = sectionData[moduleName];
-      let subLinksHTML = "";
+    // --- SPECIAL LOGIC FOR MODULES DROPDOWN ---
+    if (sectionTitle === 'Modules') {
+        for (const moduleName in sectionData) {
+            const links = sectionData[moduleName];
+            let subLinksHTML = '';
 
-      for (const key in links) {
-        const value = links[key];
-
-        // Case 1: It's a description
-        if (key === "_DESC_") {
-          subLinksHTML += `<p class="description">${value}</p>`;
-        }
-        // Case 2: It's a URL
-        else if (
-          value &&
-          (value.startsWith("http://") || value.startsWith("https://"))
-        ) {
-          subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()">${key}</a>`;
-        }
-        // Case 3: It's a question
-        else {
-          const question = value || `${key} for ${moduleName}`;
-          subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${question.replace(
-            /'/g,
-            "\\'"
-          )}'); closeModal();">${key}</a>`;
-        }
-      }
-
-      contentHTML += `
+            for (const key in links) {
+                const value = links[key];
+                if (key === '_DESC_') {
+                    subLinksHTML += `<p class="description">${value}</p>`;
+                } else if (value && (value.startsWith('http://') || value.startsWith('https://'))) {
+                    subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()">${key}</a>`;
+                } else {
+                    const question = value || `${key} for ${moduleName}`;
+                    subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${question.replace(/'/g, "\\'")}'); closeModal();">${key}</a>`;
+                }
+            }
+            contentHTML += `
                 <div class="module-dropdown">
-                    <button class="module-dropdown-btn">
-                        <span>${moduleName}</span>
-                        <svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
+                    <button class="module-dropdown-btn"><span>${moduleName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     <div class="module-dropdown-content">${subLinksHTML}</div>
-                </div>
-            `;
+                </div>`;
+        }
     }
-  }
-  // --- FALLBACK LOGIC FOR OTHER SECTIONS (Orientation, etc.) ---
-  else {
-    const questions = Array.isArray(sectionData) ? sectionData : [];
-    if (questions.length > 0) {
-      contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
-      contentHTML += questions
-        .map(
-          (q) =>
-            `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(
-              /'/g,
-              "\\'"
-            )}'); closeModal();">${q}</a>`
-        )
-        .join("");
-    }
-  }
+    // --- NEW LOGIC FOR OTHER (FAQs) DROPDOWN ---
+    else if (sectionTitle === 'Other') {
+        for (const categoryName in sectionData) {
+            const questions = sectionData[categoryName];
+            let subLinksHTML = '';
 
-  return `<div class="placeholder-section">${
-    contentHTML || `<p>Coming soon.</p>`
-  }</div>`;
+            questions.forEach(q => {
+                subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${q.replace(/'/g, "\\'")}'); closeModal();">${q}</a>`;
+            });
+
+            contentHTML += `
+                <div class="module-dropdown">
+                    <button class="module-dropdown-btn"><span>${categoryName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                    <div class="module-dropdown-content">${subLinksHTML}</div>
+                </div>`;
+        }
+    }
+    // --- FALLBACK LOGIC FOR SIMPLE SECTIONS (Orientation, etc.) ---
+    else {
+        const questions = Array.isArray(sectionData) ? sectionData : [];
+        if (questions.length > 0) {
+            contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
+            contentHTML += questions.map(q =>
+                `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(/'/g, "\\'")}'); closeModal();">${q}</a>`
+            ).join('');
+        }
+    }
+
+    return `<div class="placeholder-section">${contentHTML || `<p>Coming soon.</p>`}</div>`;
 }
 
 /**
@@ -1132,52 +1139,6 @@ const input = document.getElementById("input");
 const sendBtn = document.getElementById("sendBtn");
 const logoArea = document.getElementById("logo");
 
-function convertMediaLinks(text) {
-  let processedText = text;
-
-  // Regex for image URLs ending in common formats
-  const imageUrlRegex = /(https?:\/\/[^\s<>()]+?\.(?:png|jpg|jpeg|gif|webp))/gi;
-
-  // Regex for video URLs (YouTube, Google Drive)
-  const videoUrlRegex =
-    /https?:\/\/(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/|drive\.google\.com\/file\/d\/)[\w-]+(?:[\/?][\w-.=&]*)?/g;
-
-  // First, process image URLs and turn them into HTML <img> tags
-  processedText = processedText.replace(imageUrlRegex, (url) => {
-    return `<img src="${url}" alt="Embedded Image from AILA" style="max-width: 100%; border-radius: 12px; margin-top: 10px;" />`;
-  });
-
-  // Next, process video URLs into Markdown-style links
-  processedText = processedText.replace(videoUrlRegex, (url) => {
-    // If the URL is already inside an <img> tag we just created, don't touch it.
-    if (processedText.includes(`src="${url}"`)) {
-      return url;
-    }
-
-    let linkText = "[Click to watch video]";
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
-      linkText = "[Click to watch YouTube video]";
-    } else if (url.includes("drive.google.com")) {
-      linkText = "[Click to watch Google Drive video]";
-    }
-    // This creates a Markdown link, which our sanitizer will turn into a safe, clickable <a> tag.
-    return `\n${linkText}(${url})\n`;
-  });
-
-  return processedText;
-
-  // Replace Google Drive links
-  processedText = processedText.replace(gdriveRegex, (match, fileId) => {
-    console.log("[AILA Debug] Found Google Drive video. ID:", fileId); // DEBUG
-    if (!fileId) return match;
-    const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-    console.log("[AILA Debug] Constructed Google Drive Embed URL:", embedUrl); // DEBUG
-    return `<div class="video-container"><iframe src="${embedUrl}"></iframe></div>`;
-  });
-
-  return processedText;
-}
-
 /* Marked + DOMPurify */
 marked.setOptions({ breaks: true, gfm: true });
 function renderSafeMarkdown(mdText) {
@@ -1204,7 +1165,7 @@ function showWelcomeScreen() {
            style="width:100%; height:100%; object-fit:cover; border-radius:14px;">
     </div>
     <h1 class="welcome-title" style="margin-bottom: 5px">Welcome to AILA</h1>
-    <p class="welcome-subtitle">Hi kuys! I'm AILA, Feel free to ask any questions related to our Kaizenset ICT Data Processing</p>
+    <p class="welcome-subtitle">Hi kuys! I'm joshua, Feel free to ask any questions related to our Kaizenset ICT Data Processing</p>
     <div class="welcome-actions">
       <button class="welcome-btn" onclick="useSuggestion('Overview')">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -1255,13 +1216,7 @@ function appendMessage(
   const wrap = document.createElement("div");
   wrap.className = "msg " + who;
 
-  // Convert video/image links before rendering
-  let contentToRender = text;
-  if (who === "bot") {
-    contentToRender = convertMediaLinks(text);
-  }
-
-  wrap.innerHTML = renderSafeMarkdown(contentToRender);
+  wrap.innerHTML = renderSafeMarkdown(text);
 
   // Make all links open in a new tab for security
   wrap.querySelectorAll("a").forEach((a) => {
