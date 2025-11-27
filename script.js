@@ -5,27 +5,32 @@
 const modalQuestions = {
   Modules: {
     "Module 1: Understanding the MRP System": {
-      _DESC_3_: "wala muna",
+      _DESC_3_: "➡ wala muna",
       "Information Sheet": "nothing",
       "Activity Sheet": "nothing",
-      _DESC_1_: "This is the tool for the LA's",
+      _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "nothing",
-      _DESC_2_: "Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
+      _DESC_2_: "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLSeIsO_7TlYWT8i6hXBVmTw6-3UFH8kYQ3ipll0lC9KxvOwOFg/viewform",
     },
     "Module 2: Spreadsheet-Based MRP Simulation": {
+      _DESC_3_: "➡ wala muna",
       "Information Sheet": "nothing",
       "Activity Sheet": "nothing",
+      _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "nothing",
-
+      _DESC_2_: "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLScMn2q_BgZrUmJdSQyRqhiHcKNmDY7uxbWg07CZ1G7zajyC8w/viewform?usp=header",
     },
     "Module 3: Data Analysis and Visualization": {
+      _DESC_3_: "➡ wala muna",
       "Information Sheet": "nothing",
       "Activity Sheet": "nothing",
+      _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "nothing",
+      _DESC_2_: "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLSexDGWOZ6CLnjh7WbItGeeShHdwzLGgUBa8m0B81_AeNSLOmw/viewform",
     },
