@@ -1,5 +1,5 @@
 /* --- Custom Icon Link Styles --- */
-.msg .icon-link {
+.icon-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -19,13 +19,13 @@
   transition: all 0.2s ease;
 }
 
-.msg .icon-link:hover {
+.icon-link:hover {
   background-color: rgba(255, 255, 255, 0.12);
   color: #e6fbff;
   transform: translateY(-1px);
 }
 
-.msg .icon-link img {
+.icon-link img {
   width: 16px;
   height: 16px;
 }

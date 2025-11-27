@@ -141,98 +141,64 @@ function closeModal() {
 }
 
 /**
- * Generates HTML for the modal. It handles descriptions, links, and questions
- * within dropdowns for Modules and Other sections.
+ * Generates HTML for the modal. Now with automatic icon links!
  * @param {string} sectionTitle The key to look up in the modalQuestions object.
  * @returns {string} HTML string for the modal's content.
  */
 function getPlaceholderContent(sectionTitle) {
-  const sectionData = modalQuestions[sectionTitle] || {};
-  let contentHTML = "";
+    const sectionData = modalQuestions[sectionTitle] || {};
+    let contentHTML = '';
 
-  // --- SPECIAL LOGIC FOR MODULES DROPDOWN ---
-  if (sectionTitle === "Modules") {
-    for (const moduleName in sectionData) {
-      const links = sectionData[moduleName];
-      let subLinksHTML = "";
+    // --- Logic for MODULES & OTHER (Sections with Dropdowns) ---
+    if (sectionTitle === 'Modules' || sectionTitle === 'Other') {
+        for (const categoryName in sectionData) {
+            const items = sectionData[categoryName];
+            let subLinksHTML = '';
 
-      for (const key in links) {
-        const value = links[key];
-        // MODIFIED: Check if the key *starts with* _DESC_
-        if (key.startsWith("_DESC_")) {
-          subLinksHTML += `<p class="description">${value}</p>`;
-        }
-        // It's a URL
-        else if (
-          value &&
-          (value.startsWith("http://") || value.startsWith("https://"))
-        ) {
-          subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()">${key}</a>`;
-        }
-        // It's a question
-        else {
-          const question = value || `${key} for ${moduleName}`;
-          subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${question.replace(
-            /'/g,
-            "\\'"
-          )}'); closeModal();">${key}</a>`;
-        }
-      }
+            // Handle Modules, which have objects as values
+            if (typeof items === 'object' && !Array.isArray(items)) {
+                for (const key in items) {
+                    const value = items[key];
+                    if (key.startsWith('_DESC_')) {
+                        subLinksHTML += `<p class="description">${value}</p>`;
+                    } else if (typeof value === 'string' && (value.startsWith('http'))) {
+                        const iconPath = getIconForUrl(value);
+                        subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()" class="icon-link"><img src="${iconPath}" alt=""><span>${key}</span></a>`;
+                    } else {
+                        subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${String(value).replace(/'/g, "\\'")}'); closeModal();">${key}</a>`;
+                    }
+                }
+            }
+            // Handle Other, which has arrays as values
+            else if (Array.isArray(items)) {
+                items.forEach(item => {
+                    if (typeof item === 'object' && item.desc) {
+                        subLinksHTML += `<p class="description">${item.desc}</p>`;
+                    } else if (typeof item === 'string') {
+                        subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${item.replace(/'/g, "\\'")}'); closeModal();">${item}</a>`;
+                    }
+                });
+            }
 
-      contentHTML += `
-                <div class="module-dropdown">
-                    <button class="module-dropdown-btn"><span>${moduleName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
-                    <div class="module-dropdown-content">${subLinksHTML}</div>
-                </div>`;
-    }
-  }
-  // --- UPDATED LOGIC FOR OTHER (FAQs) DROPDOWN ---
-  else if (sectionTitle === "Other") {
-    for (const categoryName in sectionData) {
-      const items = sectionData[categoryName]; // This is an array
-      let subLinksHTML = "";
-
-      items.forEach((item) => {
-        // NEW: Check if the item is a description object
-        if (typeof item === "object" && item !== null && item.desc) {
-          subLinksHTML += `<p class="description">${item.desc}</p>`;
-        }
-        // It's a regular question string
-        else if (typeof item === "string") {
-          subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${item.replace(
-            /'/g,
-            "\\'"
-          )}'); closeModal();">${item}</a>`;
-        }
-      });
-
-      contentHTML += `
+            contentHTML += `
                 <div class="module-dropdown">
                     <button class="module-dropdown-btn"><span>${categoryName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     <div class="module-dropdown-content">${subLinksHTML}</div>
                 </div>`;
+        }
     }
-  }
-  // --- FALLBACK LOGIC FOR SIMPLE SECTIONS (Orientation, etc.) ---
-  else {
-    const questions = Array.isArray(sectionData) ? sectionData : [];
-    if (questions.length > 0) {
-      contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
-      contentHTML += questions
-        .map(
-          (q) =>
-            `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(
-              /'/g,
-              "\\'"
-            )}'); closeModal();">${q}</a>`
-        )
-        .join("");
+    // --- FALLBACK LOGIC FOR SIMPLE SECTIONS (Orientation, etc.) ---
+    else {
+        const questions = Array.isArray(sectionData) ? sectionData : [];
+        if (questions.length > 0) {
+            contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
+            contentHTML += questions.map(q =>
+                `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(/'/g, "\\'")}'); closeModal();">${q}</a>`
+            ).join('');
+        }
     }
-  }
 
-  return `<div class="placeholder-section">${
-    contentHTML || `<p>Coming soon.</p>`
-  }</div>`;
+    return `<div class="placeholder-section">${contentHTML || `<p>Coming soon.</p>`}</div>`;
 }
 
 /**
@@ -1215,6 +1181,26 @@ const logoArea = document.getElementById("logo");
 
 /* Marked + DOMPurify */
 marked.setOptions({ breaks: true, gfm: true });
+// --- Custom Renderer for Marked.js to create icon links ---
+const renderer = new marked.Renderer();
+renderer.link = (href, title, text) => {
+  // Don't style internal links that run functions
+  if (href.startsWith('#') || href.startsWith('javascript:')) {
+    return `<a href="${href}">${text}</a>`;
+  }
+  
+  const iconPath = getIconForUrl(href);
+  
+  // Return the HTML for our new pill-style link
+  return `
+    <a href="${href}" target="_blank" rel="noopener noreferrer" class="icon-link">
+      <img src="${iconPath}" alt="">
+      <span>${text}</span>
+    </a>
+  `;
+};
+marked.use({ renderer }); // Apply this new renderer
+
 function renderSafeMarkdown(mdText) {
   if (typeof mdText !== "string") mdText = String(mdText || "");
 
