@@ -5,10 +5,12 @@
 const modalQuestions = {
   Modules: {
     "Module 1: Understanding the MRP System": {
+      _DESC_3_: "wala muna",
       "Information Sheet": "nothing",
       "Activity Sheet": "nothing",
+      _DESC_1_: "This is the tool for the LA's",
       "Performance Checklist": "nothing",
-      _DESC_: "Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
+      _DESC_2_: "Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLSeIsO_7TlYWT8i6hXBVmTw6-3UFH8kYQ3ipll0lC9KxvOwOFg/viewform",
     },
@@ -74,15 +76,22 @@ const modalCloseBtn = document.getElementById("modalCloseBtn");
 const toolsHeaderBtn = document.getElementById("toolsHeaderBtn");
 // Add event listener for module dropdowns inside the modal
 modalBody.addEventListener("click", function (e) {
-  const dropdownBtn = e.target.closest(".module-dropdown-btn");
-  if (!dropdownBtn) return; // Exit if the click wasn't on a dropdown button
+  const clickedBtn = e.target.closest(".module-dropdown-btn");
+  if (!clickedBtn) return; // Exit if the click wasn't on a dropdown button
 
-  dropdownBtn.classList.toggle("active");
-  const content = dropdownBtn.nextElementSibling;
+  // Check if the button we clicked is already active
+  const wasActive = clickedBtn.classList.contains("active");
 
-  if (content && content.classList.contains("module-dropdown-content")) {
-    content.style.display =
-      content.style.display === "block" ? "none" : "block";
+  // First, close all dropdowns in the modal by removing the 'active' class
+  const allDropdownBtns = modalBody.querySelectorAll(".module-dropdown-btn");
+  allDropdownBtns.forEach(btn => {
+    btn.classList.remove("active");
+  });
+
+  // If the button we clicked wasn't already active, make it active now.
+  // This opens the clicked dropdown and ensures all others are closed.
+  if (!wasActive) {
+    clickedBtn.classList.add("active");
   }
 });
 
@@ -96,7 +105,8 @@ function closeModal() {
 }
 
 /**
- * Generates HTML for the modal. It handles Modules, Other, and simple question lists.
+ * Generates HTML for the modal. It handles descriptions, links, and questions
+ * within dropdowns for Modules and Other sections.
  * @param {string} sectionTitle The key to look up in the modalQuestions object.
  * @returns {string} HTML string for the modal's content.
  */
@@ -112,15 +122,21 @@ function getPlaceholderContent(sectionTitle) {
 
             for (const key in links) {
                 const value = links[key];
-                if (key === '_DESC_') {
+                // MODIFIED: Check if the key *starts with* _DESC_
+                if (key.startsWith('_DESC_')) {
                     subLinksHTML += `<p class="description">${value}</p>`;
-                } else if (value && (value.startsWith('http://') || value.startsWith('https://'))) {
+                }
+                // It's a URL
+                else if (value && (value.startsWith('http://') || value.startsWith('https://'))) {
                     subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()">${key}</a>`;
-                } else {
+                }
+                // It's a question
+                else {
                     const question = value || `${key} for ${moduleName}`;
                     subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${question.replace(/'/g, "\\'")}'); closeModal();">${key}</a>`;
                 }
             }
+
             contentHTML += `
                 <div class="module-dropdown">
                     <button class="module-dropdown-btn"><span>${moduleName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
@@ -128,14 +144,21 @@ function getPlaceholderContent(sectionTitle) {
                 </div>`;
         }
     }
-    // --- NEW LOGIC FOR OTHER (FAQs) DROPDOWN ---
+    // --- UPDATED LOGIC FOR OTHER (FAQs) DROPDOWN ---
     else if (sectionTitle === 'Other') {
         for (const categoryName in sectionData) {
-            const questions = sectionData[categoryName];
+            const items = sectionData[categoryName]; // This is an array
             let subLinksHTML = '';
 
-            questions.forEach(q => {
-                subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${q.replace(/'/g, "\\'")}'); closeModal();">${q}</a>`;
+            items.forEach(item => {
+                // NEW: Check if the item is a description object
+                if (typeof item === 'object' && item !== null && item.desc) {
+                    subLinksHTML += `<p class="description">${item.desc}</p>`;
+                }
+                // It's a regular question string
+                else if (typeof item === 'string') {
+                    subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${item.replace(/'/g, "\\'")}'); closeModal();">${item}</a>`;
+                }
             });
 
             contentHTML += `
