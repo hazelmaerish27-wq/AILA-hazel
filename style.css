@@ -1,13 +1,14 @@
 /* --- Custom Icon Link Styles --- */
 .icon-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  flex-direction: column;
   gap: 6px;
   /* Appearance */
-  background-color: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.034);
+  border: 1px solid rgba(255, 255, 255, 0.068);
   border-radius: 999px; /* Pill shape */
-  padding: 4px 10px 4px 6px; /* T, R, B, L */
+  padding: 4px 15px 4px 6px; /* T, R, B, L */
   margin: 0 2px;
   /* Text & Font */
   text-decoration: none !important; /* Overrides default */
@@ -27,7 +28,8 @@
 
 .icon-link img {
   width: 16px;
-  height: 16px;
+  padding-right: 10px;
+  height: 100%;
 }
 
 /* Remove default underline on all message links */

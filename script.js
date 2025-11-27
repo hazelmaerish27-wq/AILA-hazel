@@ -2,13 +2,13 @@
 // ============== ICON HELPER FUNCTIONS ============================
 // =================================================================
 const iconMap = {
-    "docs.google.com/document": "icons/docs.png",
-    "docs.google.com/spreadsheets": "icons/sheets.png",
-    "drive.google.com": "icons/drive.png",
-    "forms.gle": "icons/forms.png",
-    "docs.google.com/forms": "icons/forms.png",
-    "classroom.google.com": "icons/classroom.png",
-    "sites.google.com": "icons/sites.png"
+    "docs.google.com/document": "icon/docs.png",
+    "docs.google.com/spreadsheets": "icon/sheets.png",
+    "drive.google.com": "icon/drive.png",
+    "forms.gle": "icon/forms.png",
+    "docs.google.com/forms": "icon/forms.png",
+    "classroom.google.com": "icon/classroom.png",
+    "sites.google.com": "icon/sites.png"
 };
 const defaultIcon = "icons/external.png";
 
@@ -73,9 +73,10 @@ const modalQuestions = {
     "Where is the registration form?",
   ],
   "Learning Materials": [
-    "Google Sheets Get Started", "https://www.w3schools.com/googlesheets/google_sheets_get_started.php",
+    {"Google Sheets Get Started": 
+      {"test" : "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=506882268#gid=506882268",}},
     "Show me the performance checklist.",
-    "Is there a manual for the workflow procedure?",
+    "Is there a manual for the workflow procedure?", 
   ],
   Other: {
     "General Concepts": [
@@ -93,7 +94,14 @@ const modalQuestions = {
       "What is PO?",
     ],
     "Skills & Process": [
-      "How to do dashboard?",
+      {
+      "How to do dashboard?": { // The key is the dropdown title
+        "_DESC_": "Learn the steps from pivot tables to final charts.",
+        "Step 1: Create Pivot Tables": "pivot", // Sends 'pivot' query
+        "Step 2: Build Charts": "How to do dashboard?",
+        "Final Dashboard Example": "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=677970753#gid=677970753"
+      }
+    },
       "Data connection between sheets",
       "How can I prepare for oral validation",
       "Three types of data ",
@@ -141,63 +149,83 @@ function closeModal() {
 }
 
 /**
- * Generates HTML for the modal. Now with automatic icon links!
+ * Recursively builds HTML content for the modal based on a flexible data structure.
+ * It can render nested dropdowns, links with icons, descriptions, and simple questions.
+ *
+ * @param {object | Array} data - The data node from modalQuestions to render.
+ * @returns {string} The generated HTML string.
+ */
+function buildContentHTML(data) {
+    let html = '';
+
+    // Case 1: The data is an ARRAY (like in 'Orientation' or 'Other')
+    if (Array.isArray(data)) {
+        data.forEach(item => {
+            // An item in an array can be a simple question string...
+            if (typeof item === 'string') {
+                html += `<a href="#" class="question-link" onclick="useSuggestion('${item.replace(/'/g, "\\'")}'); closeModal();">${item}</a>`;
+            } 
+            // ...or an object for a description or a nested dropdown.
+            else if (typeof item === 'object' && item !== null) {
+                if (item.desc) {
+                    html += `<p class="description">${item.desc}</p>`;
+                } else {
+                    const key = Object.keys(item)[0];
+                    const value = item[key];
+                    // The object represents a dropdown, so we build it and recurse.
+                    html += `
+                        <div class="module-dropdown">
+                            <button class="module-dropdown-btn"><span>${key}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                            <div class="module-dropdown-content">
+                                ${buildContentHTML(value)}
+                            </div>
+                        </div>`;
+                }
+            }
+        });
+    } 
+    // Case 2: The data is an OBJECT (like in 'Modules' or a nested dropdown)
+    else if (typeof data === 'object' && data !== null) {
+        for (const key in data) {
+            const value = data[key];
+
+            if (key.startsWith('_DESC_')) {
+                html += `<p class="description">${value}</p>`;
+            }
+            // If the value is an object, it's a nested dropdown. Recurse.
+            else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                html += `
+                    <div class="module-dropdown">
+                        <button class="module-dropdown-btn"><span>${key}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+                        <div class="module-dropdown-content">
+                            ${buildContentHTML(value)}
+                        </div>
+                    </div>`;
+            }
+            // If the value is a string starting with http, it's a link.
+            else if (typeof value === 'string' && value.startsWith('http')) {
+                const iconPath = getIconForUrl(value);
+                html += `<a href="${value}" target="_blank" onclick="closeModal()" class="icon-link"><img src="${iconPath}" alt=""><span>${key}</span></a>`;
+            }
+            // Otherwise, it's a simple question with a custom query.
+            else if (typeof value === 'string') {
+                 html += `<a href="#" onclick="event.preventDefault(); useSuggestion('${value.replace(/'/g, "\\'")}'); closeModal();">${key}</a>`;
+            }
+        }
+    }
+    return html;
+}
+
+
+/**
+ * Main function to generate the modal content.
+ * This is now a simple wrapper around the powerful buildContentHTML function.
  * @param {string} sectionTitle The key to look up in the modalQuestions object.
  * @returns {string} HTML string for the modal's content.
  */
 function getPlaceholderContent(sectionTitle) {
     const sectionData = modalQuestions[sectionTitle] || {};
-    let contentHTML = '';
-
-    // --- Logic for MODULES & OTHER (Sections with Dropdowns) ---
-    if (sectionTitle === 'Modules' || sectionTitle === 'Other') {
-        for (const categoryName in sectionData) {
-            const items = sectionData[categoryName];
-            let subLinksHTML = '';
-
-            // Handle Modules, which have objects as values
-            if (typeof items === 'object' && !Array.isArray(items)) {
-                for (const key in items) {
-                    const value = items[key];
-                    if (key.startsWith('_DESC_')) {
-                        subLinksHTML += `<p class="description">${value}</p>`;
-                    } else if (typeof value === 'string' && (value.startsWith('http'))) {
-                        const iconPath = getIconForUrl(value);
-                        subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()" class="icon-link"><img src="${iconPath}" alt=""><span>${key}</span></a>`;
-                    } else {
-                        subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${String(value).replace(/'/g, "\\'")}'); closeModal();">${key}</a>`;
-                    }
-                }
-            }
-            // Handle Other, which has arrays as values
-            else if (Array.isArray(items)) {
-                items.forEach(item => {
-                    if (typeof item === 'object' && item.desc) {
-                        subLinksHTML += `<p class="description">${item.desc}</p>`;
-                    } else if (typeof item === 'string') {
-                        subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${item.replace(/'/g, "\\'")}'); closeModal();">${item}</a>`;
-                    }
-                });
-            }
-
-            contentHTML += `
-                <div class="module-dropdown">
-                    <button class="module-dropdown-btn"><span>${categoryName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
-                    <div class="module-dropdown-content">${subLinksHTML}</div>
-                </div>`;
-        }
-    }
-    // --- FALLBACK LOGIC FOR SIMPLE SECTIONS (Orientation, etc.) ---
-    else {
-        const questions = Array.isArray(sectionData) ? sectionData : [];
-        if (questions.length > 0) {
-            contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
-            contentHTML += questions.map(q =>
-                `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(/'/g, "\\'")}'); closeModal();">${q}</a>`
-            ).join('');
-        }
-    }
-
+    const contentHTML = buildContentHTML(sectionData);
     return `<div class="placeholder-section">${contentHTML || `<p>Coming soon.</p>`}</div>`;
 }
 
@@ -1181,25 +1209,6 @@ const logoArea = document.getElementById("logo");
 
 /* Marked + DOMPurify */
 marked.setOptions({ breaks: true, gfm: true });
-// --- Custom Renderer for Marked.js to create icon links ---
-const renderer = new marked.Renderer();
-renderer.link = (href, title, text) => {
-  // Don't style internal links that run functions
-  if (href.startsWith('#') || href.startsWith('javascript:')) {
-    return `<a href="${href}">${text}</a>`;
-  }
-  
-  const iconPath = getIconForUrl(href);
-  
-  // Return the HTML for our new pill-style link
-  return `
-    <a href="${href}" target="_blank" rel="noopener noreferrer" class="icon-link">
-      <img src="${iconPath}" alt="">
-      <span>${text}</span>
-    </a>
-  `;
-};
-marked.use({ renderer }); // Apply this new renderer
 
 function renderSafeMarkdown(mdText) {
   if (typeof mdText !== "string") mdText = String(mdText || "");
