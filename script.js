@@ -4,18 +4,19 @@
 // =================================================================
 const modalQuestions = {
   Modules: {
-//  "module title here"{
-//    "navigation title here": "output here", << put a ( , ) every end 
-//  },
+    //  "module title here"{
+    //    "navigation title here": "output here", << put a ( , ) every end
+    //  },
     "Spreadsheet Navigation & Data Familiarization": {
       _DESC_3_: "➡ wala muna",
       "Information Sheet": "Information Sheet",
       "Activity Sheet": "Activity Sheet",
       _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "Performance Checklist",
-      _DESC_2_: "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
+      _DESC_2_:
+        "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
-        "https://docs.google.com/forms/d/e/1FAIpQLSeIsO_7TlYWT8i6hXBVmTw6-3UFH8kYQ3ipll0lC9KxvOwOFg/viewform"
+        "https://docs.google.com/forms/d/e/1FAIpQLSeIsO_7TlYWT8i6hXBVmTw6-3UFH8kYQ3ipll0lC9KxvOwOFg/viewform",
     },
     "Data Processing Using Spreadsheet Formulas and Tools": {
       _DESC_3_: "➡ wala muna",
@@ -23,7 +24,8 @@ const modalQuestions = {
       "Activity Sheet": "nothing",
       _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "nothing",
-      _DESC_2_: "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
+      _DESC_2_:
+        "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLScMn2q_BgZrUmJdSQyRqhiHcKNmDY7uxbWg07CZ1G7zajyC8w/viewform?usp=header",
     },
@@ -33,7 +35,8 @@ const modalQuestions = {
       "Activity Sheet": "nothing",
       _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "nothing",
-      _DESC_2_: "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
+      _DESC_2_:
+        "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
       "Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLSexDGWOZ6CLnjh7WbItGeeShHdwzLGgUBa8m0B81_AeNSLOmw/viewform",
     },
@@ -49,29 +52,29 @@ const modalQuestions = {
     "Show me the performance checklist.",
     "Is there a manual for the workflow procedure?",
   ],
-Other: {
-    'General Concepts': [
-        "Overview",
-        "Origin",
-        "What's in ICT?",
-        "Main developer of AILA?",
-        "References"
+  Other: {
+    "General Concepts": [
+      "Overview",
+      "Origin",
+      "What's in ICT?",
+      "Main developer of AILA?",
+      "References",
     ],
-    'MRP Fundamentals': [
-        "What is MRP?",
-        "What is MPS?",
-        "What is BOM?",
-        "What is Inventory?",
-        "What is PO?"
+    "MRP Fundamentals": [
+      "What is MRP?",
+      "What is MPS?",
+      "What is BOM?",
+      "What is Inventory?",
+      "What is PO?",
     ],
-    'Skills & Process': [
-        "How to do dashboard?",
-        "Data connection between sheets",
-        "How can I prepare for oral validation",
-        "Three types of data "
-    ]
-  }
-};// =================================================================
+    "Skills & Process": [
+      "How to do dashboard?",
+      "Data connection between sheets",
+      "How can I prepare for oral validation",
+      "Three types of data ",
+    ],
+  },
+}; // =================================================================
 
 // ============== START: MODAL SCRIPT ==============
 // This entire block handles the functionality for the new modal pop-ups.
@@ -92,7 +95,7 @@ modalBody.addEventListener("click", function (e) {
 
   // First, close all dropdowns in the modal by removing the 'active' class
   const allDropdownBtns = modalBody.querySelectorAll(".module-dropdown-btn");
-  allDropdownBtns.forEach(btn => {
+  allDropdownBtns.forEach((btn) => {
     btn.classList.remove("active");
   });
 
@@ -119,75 +122,92 @@ function closeModal() {
  * @returns {string} HTML string for the modal's content.
  */
 function getPlaceholderContent(sectionTitle) {
-    const sectionData = modalQuestions[sectionTitle] || {};
-    let contentHTML = '';
+  const sectionData = modalQuestions[sectionTitle] || {};
+  let contentHTML = "";
 
-    // --- SPECIAL LOGIC FOR MODULES DROPDOWN ---
-    if (sectionTitle === 'Modules') {
-        for (const moduleName in sectionData) {
-            const links = sectionData[moduleName];
-            let subLinksHTML = '';
+  // --- SPECIAL LOGIC FOR MODULES DROPDOWN ---
+  if (sectionTitle === "Modules") {
+    for (const moduleName in sectionData) {
+      const links = sectionData[moduleName];
+      let subLinksHTML = "";
 
-            for (const key in links) {
-                const value = links[key];
-                // MODIFIED: Check if the key *starts with* _DESC_
-                if (key.startsWith('_DESC_')) {
-                    subLinksHTML += `<p class="description">${value}</p>`;
-                }
-                // It's a URL
-                else if (value && (value.startsWith('http://') || value.startsWith('https://'))) {
-                    subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()">${key}</a>`;
-                }
-                // It's a question
-                else {
-                    const question = value || `${key} for ${moduleName}`;
-                    subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${question.replace(/'/g, "\\'")}'); closeModal();">${key}</a>`;
-                }
-            }
+      for (const key in links) {
+        const value = links[key];
+        // MODIFIED: Check if the key *starts with* _DESC_
+        if (key.startsWith("_DESC_")) {
+          subLinksHTML += `<p class="description">${value}</p>`;
+        }
+        // It's a URL
+        else if (
+          value &&
+          (value.startsWith("http://") || value.startsWith("https://"))
+        ) {
+          subLinksHTML += `<a href="${value}" target="_blank" onclick="closeModal()">${key}</a>`;
+        }
+        // It's a question
+        else {
+          const question = value || `${key} for ${moduleName}`;
+          subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${question.replace(
+            /'/g,
+            "\\'"
+          )}'); closeModal();">${key}</a>`;
+        }
+      }
 
-            contentHTML += `
+      contentHTML += `
                 <div class="module-dropdown">
                     <button class="module-dropdown-btn"><span>${moduleName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     <div class="module-dropdown-content">${subLinksHTML}</div>
                 </div>`;
-        }
     }
-    // --- UPDATED LOGIC FOR OTHER (FAQs) DROPDOWN ---
-    else if (sectionTitle === 'Other') {
-        for (const categoryName in sectionData) {
-            const items = sectionData[categoryName]; // This is an array
-            let subLinksHTML = '';
+  }
+  // --- UPDATED LOGIC FOR OTHER (FAQs) DROPDOWN ---
+  else if (sectionTitle === "Other") {
+    for (const categoryName in sectionData) {
+      const items = sectionData[categoryName]; // This is an array
+      let subLinksHTML = "";
 
-            items.forEach(item => {
-                // NEW: Check if the item is a description object
-                if (typeof item === 'object' && item !== null && item.desc) {
-                    subLinksHTML += `<p class="description">${item.desc}</p>`;
-                }
-                // It's a regular question string
-                else if (typeof item === 'string') {
-                    subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${item.replace(/'/g, "\\'")}'); closeModal();">${item}</a>`;
-                }
-            });
+      items.forEach((item) => {
+        // NEW: Check if the item is a description object
+        if (typeof item === "object" && item !== null && item.desc) {
+          subLinksHTML += `<p class="description">${item.desc}</p>`;
+        }
+        // It's a regular question string
+        else if (typeof item === "string") {
+          subLinksHTML += `<a href="#" onclick="event.preventDefault(); useSuggestion('${item.replace(
+            /'/g,
+            "\\'"
+          )}'); closeModal();">${item}</a>`;
+        }
+      });
 
-            contentHTML += `
+      contentHTML += `
                 <div class="module-dropdown">
                     <button class="module-dropdown-btn"><span>${categoryName}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
                     <div class="module-dropdown-content">${subLinksHTML}</div>
                 </div>`;
-        }
     }
-    // --- FALLBACK LOGIC FOR SIMPLE SECTIONS (Orientation, etc.) ---
-    else {
-        const questions = Array.isArray(sectionData) ? sectionData : [];
-        if (questions.length > 0) {
-            contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
-            contentHTML += questions.map(q =>
-                `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(/'/g, "\\'")}'); closeModal();">${q}</a>`
-            ).join('');
-        }
+  }
+  // --- FALLBACK LOGIC FOR SIMPLE SECTIONS (Orientation, etc.) ---
+  else {
+    const questions = Array.isArray(sectionData) ? sectionData : [];
+    if (questions.length > 0) {
+      contentHTML += `<h3 style="color: var(--accent1); margin-bottom: 15px;">${sectionTitle} Questions</h3>`;
+      contentHTML += questions
+        .map(
+          (q) =>
+            `<a href="#" class="question-link" onclick="useSuggestion('${q.replace(
+              /'/g,
+              "\\'"
+            )}'); closeModal();">${q}</a>`
+        )
+        .join("");
     }
+  }
 
-    return `<div class="placeholder-section">${contentHTML || `<p>Coming soon.</p>`}</div>`;
+  return `<div class="placeholder-section">${
+    contentHTML || `<p>Coming soon.</p>`
+  }</div>`;
 }
 
 /**
