@@ -549,7 +549,7 @@ textarea#input {
   /* CORRECTED: Use 100% to respect the parent's padding */
   width: 100%;
   max-width: 100%;
-  padding-bottom: 100px;
+  padding-bottom: 10px;
   box-sizing: border-box;
   overflow-wrap: break-word;
   color: #dff8ff;
@@ -1370,6 +1370,9 @@ textarea#input {
 /* --- Mobile View Enhancements --- */
 /* --- FORCED UNIFIED MOBILE & TABLET VIEW --- */
 @media (max-width: 900px) {
+  .tools-nav .module-dropdown-content {
+    box-sizing: border-box;
+  }
   .module-dropdown-content {
     box-sizing: border-box;
   }

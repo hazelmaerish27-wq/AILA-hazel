@@ -73,12 +73,11 @@ const modalQuestions = {
     "Where is the registration form?",
   ],
   "Learning Materials": [
-    {"Google Sheets Get Started": 
-      {"test" : "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=506882268#gid=506882268",}},
+    {"Google Sheets Get Started": "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=506882268#gid=506882268"},
     "Show me the performance checklist.",
     "Is there a manual for the workflow procedure?", 
   ],
-  Other: {
+  "other": {
     "General Concepts": [
       "Overview",
       "Origin",
@@ -133,7 +132,7 @@ modalBody.addEventListener("click", function (e) {
   });
 
   // If the button we clicked wasn't already active, make it active now.
-  // This opens the clicked dropdown and ensures all others are closed.
+  // This opens the clicked dropdown and ensures all other are closed.
   if (!wasActive) {
     clickedBtn.classList.add("active");
   }
@@ -150,7 +149,7 @@ function closeModal() {
 
 /**
  * Recursively builds HTML content for the modal based on a flexible data structure.
- * It can render nested dropdowns, links with icons, descriptions, and simple questions.
+ * It can render nested dropdowns, direct links with icons, descriptions, and simple questions.
  *
  * @param {object | Array} data - The data node from modalQuestions to render.
  * @returns {string} The generated HTML string.
@@ -161,18 +160,22 @@ function buildContentHTML(data) {
     // Case 1: The data is an ARRAY (like in 'Orientation' or 'Other')
     if (Array.isArray(data)) {
         data.forEach(item => {
-            // An item in an array can be a simple question string...
+            // An item can be a simple string for a question link.
             if (typeof item === 'string') {
                 html += `<a href="#" class="question-link" onclick="useSuggestion('${item.replace(/'/g, "\\'")}'); closeModal();">${item}</a>`;
             } 
-            // ...or an object for a description or a nested dropdown.
+            // Or an object for a description, a direct link, or a dropdown.
             else if (typeof item === 'object' && item !== null) {
-                if (item.desc) {
-                    html += `<p class="description">${item.desc}</p>`;
-                } else {
-                    const key = Object.keys(item)[0];
-                    const value = item[key];
-                    // The object represents a dropdown, so we build it and recurse.
+                const key = Object.keys(item)[0];
+                const value = item[key];
+
+                // If the value is a string starting with 'http', it's a DIRECT LINK.
+                if (typeof value === 'string' && value.startsWith('http')) {
+                    const iconPath = getIconForUrl(value);
+                    html += `<a href="${value}" target="_blank" onclick="closeModal()" class="icon-link"><img src="${iconPath}" alt=""><span>${key}</span></a>`;
+                }
+                // If the value is an object, it's a DROPDOWN.
+                else if (typeof value === 'object' && value !== null) {
                     html += `
                         <div class="module-dropdown">
                             <button class="module-dropdown-btn"><span>${key}</span><svg class="arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
@@ -216,7 +219,6 @@ function buildContentHTML(data) {
     return html;
 }
 
-
 /**
  * Main function to generate the modal content.
  * This is now a simple wrapper around the powerful buildContentHTML function.
@@ -228,6 +230,7 @@ function getPlaceholderContent(sectionTitle) {
     const contentHTML = buildContentHTML(sectionData);
     return `<div class="placeholder-section">${contentHTML || `<p>Coming soon.</p>`}</div>`;
 }
+
 
 /**
  * Opens and populates the modal based on the content type.
@@ -245,7 +248,7 @@ function openModal(contentType) {
                 <button class="tools-nav-btn active" data-target="tools-Modules">Modules</button>
                 <button class="tools-nav-btn" data-target="tools-orientation">Orientation</button>
                 <button class="tools-nav-btn" data-target="tools-materials">Materials</button>
-                <button class="tools-nav-btn" data-target="tools-Other">Others</button>
+                <button class="tools-nav-btn" data-target="tools-other">other</button>
             </div>
             <div class="tools-content">
                 <div id="tools-Modules" class="tools-pane active">${getPlaceholderContent(
@@ -257,8 +260,8 @@ function openModal(contentType) {
                 <div id="tools-materials" class="tools-pane">${getPlaceholderContent(
                   "Learning Materials"
                 )}</div>
-                <div id="tools-Other" class="tools-pane">${getPlaceholderContent(
-                  "Other"
+                <div id="tools-other" class="tools-pane">${getPlaceholderContent(
+                  "other"
                 )}</div>
             </div>
         `;
@@ -268,6 +271,7 @@ function openModal(contentType) {
       case "modules":
         title = "Modules";
         bodyContent = getPlaceholderContent("Modules");
+
         break;
       case "orientation":
         title = "Orientation";
@@ -277,9 +281,9 @@ function openModal(contentType) {
         title = "Learning Materials";
         bodyContent = getPlaceholderContent("Learning Materials");
         break;
-      case "tutorials": // Added the 'tutorials' case
-        title = "Tutorials";
-        bodyContent = getPlaceholderContent("Tutorials");
+      case "other": // Added the other case
+        title = "other";
+        bodyContent = getPlaceholderContent("other");
         break;
     }
   }
@@ -427,7 +431,7 @@ AILA, **Artificial Intelligent Learning Assistant**, developed in the Kaizenset 
 \n
 Envisioned on the **9th of October**, accepted as an official project six days later, and fully launched to the public by the end of the month **(October 31, 2025)**.
 \n
-**Kaiser** envisions **AILA**, and together with others, began pioneering its creation, thankfuly **Josh** came and with his skills he took the lead as AILA’s head developer turning AILA to a powerful tool that solves long term challenges designed to improve efficiency and learning outcomes, making it a reliable support system for both trainees and facilitators.
+**Kaiser** envisions **AILA**, and together with other, began pioneering its creation, thankfuly **Josh** came and with his skills he took the lead as AILA’s head developer turning AILA to a powerful tool that solves long term challenges designed to improve efficiency and learning outcomes, making it a reliable support system for both trainees and facilitators.
 `,
   Overview: `Hi kuys!👋 AILA, which stands for **Artificial Intelligent Learning Assistant**, is an AI chatbot designed to assist ICT trainees and learning assistants.
 \n
