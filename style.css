@@ -3,11 +3,10 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  gap: 6px;
   /* Appearance */
   background-color: rgba(255, 255, 255, 0.034);
   border: 1px solid rgba(255, 255, 255, 0.068);
-  border-radius: 999px; /* Pill shape */
+  border-radius: 8px; /* Pill shape */
   padding: 4px 15px 4px 6px; /* T, R, B, L */
   margin: 0 2px;
   /* Text & Font */
@@ -27,8 +26,10 @@
 }
 
 .icon-link img {
-  width: 16px;
+  align-items: flex-start;
   padding-right: 10px;
+  padding-left: 5px;
+  width: 16px;
   height: 100%;
 }
 
