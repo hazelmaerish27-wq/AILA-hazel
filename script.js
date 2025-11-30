@@ -305,17 +305,23 @@ document.addEventListener("keydown", (event) => {
 });
 // ============== END: MODAL SCRIPT ==============
 // --- Sound Effects ---
+// --- Sound Effects ---
 let typingSound = null; // To control the looping typing sound
 
-function playSound(url) {
+/**
+ * A more robust function to play sound effects with volume control.
+ * @param {string} url - The path to the sound file.
+ * @param {number} [volume=1.0] - The volume, from 0.0 to 1.0.
+ */
+function playSound(url, volume = 1.0) {
   try {
-    // Creates a new audio object and plays it.
-    new Audio(url).play();
+    const audio = new Audio(url);
+    audio.volume = volume;
+    audio.play();
   } catch (error) {
     console.warn(`Could not play sound effect: ${url}`, error);
   }
 }
-
 // N8N chat webhook link constant
 const CHAT_WEBHOOK = "https://levercrafter.app.n8n.cloud/webhook/aila-chat";
 const OFFLINE_DATA_URL =
@@ -603,10 +609,10 @@ function showTyping() {
   messagesEl.scrollTop = messagesEl.scrollHeight;
   logoArea.classList.add("logo-glow");
 
-  // Start the looping typing sound
   if (!typingSound) {
     typingSound = new Audio("sfx/typing.mp3");
     typingSound.loop = true;
+    typingSound.volume = 0.3; // Very subtle volume
     typingSound
       .play()
       .catch((e) => console.warn("Typing sound failed to play:", e));
@@ -665,7 +671,7 @@ function sendToBackend(text, askSuggestions = false) {
       const reply = data.reply;
       //... inside the .then() block
       if (reply) {
-        playSound("sfx/receive.mp3"); // Play receive sound
+        playSound("sfx/receive.mp3", 0.7); // 70% volume, slightly quieter
         appendMessage(reply, "bot");
       }
       //...
@@ -687,7 +693,7 @@ function sendToBackend(text, askSuggestions = false) {
 function sendMessage() {
   const t = input.value.trim();
   if (!t) return;
-  playSound("sfx/send.mp3"); // Play send sound
+  playSound("sfx/send.mp3", 0.8); // 80% volume
   const welcomeScreen = messagesEl.querySelector(".welcome-screen");
   if (welcomeScreen) {
     messagesEl.innerHTML = "";
@@ -746,10 +752,10 @@ if (SpeechRecognition) {
 
   voiceBtn.addEventListener("click", () => {
     if (isListening) {
-      playSound("sfx/mic-off.mp3"); // Sound for stopping
+      playSound("sfx/mic-off.mp3", 0.9);
       stopListening();
     } else {
-      playSound("sfx/mic-on.mp3"); // Sound for starting
+      playSound("sfx/mic-on.mp3", 0.9);
       input.value = "";
       try {
         recognition.start();
@@ -917,93 +923,67 @@ async function loadOfflineData() {
 }
 
 /**
- * Initializes the app: shows a loading screen with a random tip,
- * loads data, then shows the main UI. Includes an interactive shatter effect with SFX.
+ * Initializes the app with a dynamic, multi-stage loading screen.
  */
 async function initializeApp() {
-  const loadingTips = [
-    "Tip: Ask about specific modules like MRP, BOM, or MPS.",
-    "Did you know? AILA can understand and display formatted tables.",
-    "Tip: Use 'Quick Actions' for common questions and modules.",
-    "You can find learning materials in the 'Tools & Resources' menu.",
-    "AILA is designed to work offline with pre-set answers.",
-  ];
+    // --- 1. Define loading screen content ---
+    const loadingStatuses = [ "Initializing session...", "Loading resources...", "Connecting to modules...", "Finalizing setup..." ];
+    const loadingTips = [ "Ask about specific modules like MRP, BOM, or MPS.", "AILA can understand and display formatted tables.", "Use 'Quick Actions' for common questions.", "Find learning materials in 'Tools & Resources'." ];
+    
+    // --- 2. Get references to all loading elements ---
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const inProgressDiv = document.getElementById('loading-in-progress');
+    const completeDiv = document.getElementById('loading-complete');
+    const statusText = document.getElementById('loading-status-text');
+    const tipText = document.getElementById('loading-tip');
+    const enterBtn = document.getElementById('enter-app-btn');
+    
+    let statusInterval, tipInterval;
 
-  const loadingOverlay = document.getElementById("loading-overlay");
-  const loadingTipElement = document.getElementById("loading-tip");
-  const logoContainer = document.getElementById("loading-logo-container");
-  const mainLogo = document.getElementById("loading-logo");
-
-  // --- 1. Start the looping ambient sound ---
-  const ambientSound = new Audio("sfx/loading-ambient.mp3");
-  ambientSound.loop = true;
-  ambientSound
-    .play()
-    .catch((e) => console.warn("Could not play ambient sound:", e));
-
-  // --- 2. Set the loading tip ---
-  const randomTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
-  if (loadingTipElement) {
-    loadingTipElement.textContent = "Tip: " + randomTip;
-  }
-
-  // --- 3. Create the shatter effect on click with SFX ---
-  if (logoContainer && mainLogo) {
-    let isShattered = false;
-    logoContainer.addEventListener("click", () => {
-      if (isShattered) return;
-
-      // Play the glass breaking sound
-      playSound("sfx/glass-break.mp3");
-
-      isShattered = true;
-      mainLogo.style.opacity = "0";
-
-      for (let i = 0; i < 16; i++) {
-        const piece = document.createElement("div");
-        piece.className = "shatter-piece";
-        const row = Math.floor(i / 4);
-        const col = i % 4;
-        piece.style.left = `${col * 25}%`;
-        piece.style.top = `${row * 25}%`;
-        piece.style.backgroundPosition = `-${col * 20}px -${row * 20}px`;
-        logoContainer.appendChild(piece);
+    // --- 3. Start the dynamic text animations ---
+    // Function to cycle through tips every 3 seconds
+    let tipIndex = 0;
+    tipText.textContent = "Tip: " + loadingTips[tipIndex];
+    tipInterval = setInterval(() => {
+        tipIndex = (tipIndex + 1) % loadingTips.length;
+        tipText.style.opacity = '0';
         setTimeout(() => {
-          const randomX = (Math.random() - 0.5) * 300;
-          const randomY = (Math.random() - 0.5) * 300;
-          const randomRot = (Math.random() - 0.5) * 720;
-          piece.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`;
-          piece.style.opacity = "0";
-        }, 10);
-      }
+            tipText.textContent = "Tip: " + loadingTips[tipIndex];
+            tipText.style.opacity = '1';
+        }, 300);
+    }, 3000);
 
-      setTimeout(() => {
-        mainLogo.style.opacity = "1";
-        logoContainer.innerHTML = "";
-        logoContainer.appendChild(mainLogo);
-        isShattered = false;
-      }, 900);
+    // Function to cycle through loading statuses
+    let statusIndex = 0;
+    const cycleStatus = () => {
+        if (statusIndex < loadingStatuses.length) {
+            statusText.textContent = loadingStatuses[statusIndex++];
+            setTimeout(cycleStatus, 750); // Change status text every 750ms
+        }
+    };
+    cycleStatus();
+
+    // --- 4. Start the actual data loading ---
+    await loadOfflineData();
+
+    // --- 5. Handle the completion state ---
+    clearInterval(tipInterval); // Stop the tips from changing
+    
+    // Show the "Complete" UI
+    inProgressDiv.classList.add('hidden');
+    completeDiv.classList.remove('hidden');
+    playSound('sfx/success.mp3', 0.8);
+
+    // --- 6. Set up the "Enter" button ---
+    enterBtn.addEventListener('click', () => {
+        playSound('sfx/whoosh.mp3', 0.8);
+        loadingOverlay.classList.remove('visible');
+        setTimeout(() => {
+            updateStatus("pending");
+            showWelcomeScreen();
+        }, 500); // Wait for fade-out animation
     });
-  }
-
-  // --- 4. Load the offline data ---
-  await loadOfflineData();
-
-  // --- 5. Hide the loader and play the transition sound ---
-  setTimeout(() => {
-    // Stop the ambient sound
-    ambientSound.pause();
-    ambientSound.currentTime = 0;
-
-    // Play the "whoosh" sound for entering the chat
-    playSound("sfx/whoosh.mp3");
-
-    if (loadingOverlay) loadingOverlay.classList.remove("visible");
-    updateStatus("pending");
-    showWelcomeScreen();
-  }, 500);
 }
-
 const ro = new MutationObserver(
   () => (messagesEl.scrollTop = messagesEl.scrollHeight)
 );
