@@ -1,7 +1,3 @@
-const statusOverlay = document.getElementById("status-overlay");
-const offlineModal = document.getElementById("offline-modal");
-const proceedOfflineBtn = document.getElementById("proceed-offline-btn");
-
 const iconMap = {
   "docs.google.com/document": "icons/docs.png",
   "docs.google.com/spreadsheets": "icons/sheets.png",
@@ -1416,6 +1412,7 @@ function onFaqClick(btn, question) {
 }
 
 /* send to backend; use offlineResponses if offline or network fails */
+/* send to backend; use offlineResponses if offline or network fails */
 function sendToBackend(text, askSuggestions = false) {
   showTyping();
   const payload = {
@@ -1426,11 +1423,12 @@ function sendToBackend(text, askSuggestions = false) {
     askForSuggestions: !!askSuggestions,
   };
 
-  // a function where it get's answer when offline mode is triggered
+  // This helper function will now ONLY be used when the connection completely fails.
   function getOfflineAnswer(q) {
     const foundKey = Object.keys(offlineResponses).find((k) =>
       q.toLowerCase().includes(k.toLowerCase())
     );
+    // This is the full offline message.
     return foundKey
       ? offlineResponses[foundKey]
       : `🔴OFFLINE: 
@@ -1439,34 +1437,42 @@ function sendToBackend(text, askSuggestions = false) {
       \n- *AILA can still response in templated answers given below, CLICK THE BUTTON*
       `;
   }
+
   // N8N fetch url
   fetch("https://levercrafter.app.n8n.cloud/webhook/aila-chat", {
-    // put your chatwebhook url here
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   })
     .then(async (res) => {
       hideTyping();
-      if (!res.ok) throw new Error("Network response not ok");
+      // If the server gives an error (like 500), jump to the .catch block
+      if (!res.ok) {
+        throw new Error(`Network response was not ok: ${res.statusText}`);
+      }
+      
       const data = await res.json().catch(() => ({}));
-      const reply = data && data.reply ? data.reply : getOfflineAnswer(text);
+      
+      // THIS IS THE FIX: We ONLY check for a reply here. No more offline fallback.
+      const reply = data.reply;
 
-      const suggestions = Array.isArray(data?.suggestions)
-        ? data.suggestions
-        : generateSuggestionsFromBoth(text, reply);
-
-      appendMessage(reply, "bot", false, suggestions);
+      if (reply) {
+        // If we got a reply from the AI, append it.
+        appendMessage(reply, "bot");
+      } else {
+        // If the AI is online but has no specific answer, give a clear message.
+        appendMessage("I'm online, but I don't have a specific answer for that. Try asking another way.", "bot");
+      }
       pulseLogoOnce();
     })
     .catch((err) => {
+      // THIS is the ONLY place where the full offline mode is triggered.
       hideTyping();
       console.warn("Offline mode triggered:", err);
-      const reply = getOfflineAnswer(text);
-      appendMessage(reply, "bot", true);
+      const offlineReply = getOfflineAnswer(text);
+      appendMessage(offlineReply, "bot", true); // Pass 'true' to show FAQ buttons
     });
 }
-
 function sendMessage() {
   const t = input.value.trim();
   if (!t) return;
@@ -1646,59 +1652,7 @@ input.addEventListener("keydown", (e) => {
     sendMessage();
   }
 });
-// --- START: App Initialization and Status Check ---
-
-/**
- * Checks if the N8N webhook is reachable.
- */
-async function checkN8nStatus() {
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000); // 2-second timeout
-
-        const response = await fetch(CHAT_WEBHOOK, {
-            method: 'HEAD', // Use HEAD for a lightweight check
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        return true; // If we get any response, the server is online
-    } catch (error) {
-        console.warn("N8N status check failed. Entering offline mode.", error);
-        return false;
-    }
-}
-
-/**
- * Initializes the application by checking server status.
- */
-async function initializeApp() {
-    const isOnline = await checkN8nStatus();
-    
-    // Hide the "Checking..." loading screen
-    if(statusOverlay) statusOverlay.classList.remove("visible");
-
-    if (isOnline) {
-        // If online, show the welcome screen immediately.
-        showWelcomeScreen();
-    } else {
-        // If offline, show the offline modal first.
-        if(offlineModal) offlineModal.classList.add("visible");
-    }
-}
-
-// This button lets the user continue to the app in offline mode.
-if(proceedOfflineBtn) {
-    proceedOfflineBtn.addEventListener("click", () => {
-        if(offlineModal) offlineModal.classList.remove("visible");
-        showWelcomeScreen(); // Now we show the welcome screen.
-    });
-}
-
-// This is the new starting point for the entire app.
-initializeApp();
-
-// --- END: App Initialization and Status Check ---
+showWelcomeScreen();
 
 const ro = new MutationObserver(
   () => (messagesEl.scrollTop = messagesEl.scrollHeight)
