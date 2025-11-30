@@ -1110,3 +1110,28 @@ window.addEventListener('pagehide', () => {
         typingSound.currentTime = 0;
     }
 });
+// --- Event Listener for Dynamic Copy Buttons ---
+messagesEl.addEventListener('click', (e) => {
+  // Check if the clicked element is a copy button
+  if (e.target.classList.contains('copy-btn')) {
+    const btn = e.target;
+    const pre = btn.closest('pre'); // Find the parent code block
+    if (pre) {
+      const code = pre.querySelector('code');
+      if (code) {
+        // Use the modern Clipboard API to copy the text
+        navigator.clipboard.writeText(code.innerText).then(() => {
+          // Provide visual feedback to the user
+          btn.textContent = 'Copied!';
+          // Reset the button text after 2 seconds
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy text: ', err);
+          btn.textContent = 'Error'; // Show an error message on the button
+        });
+      }
+    }
+  }
+});
