@@ -1391,7 +1391,7 @@ textarea#input {
 .footer-disclaimer {
   position: fixed !important;
   padding-top: 20px;
-  bottom: 30px;
+  bottom: 8px;
   /* Sits at the very bottom */
   left: 0;
   right: 0;
