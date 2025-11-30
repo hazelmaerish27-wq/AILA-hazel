@@ -27,19 +27,13 @@
   color: #e8fbff; /* Bright main text color */
   font-size: 16px;
 }
-
-#loading-tip {
-  color: var(--muted); /* Dimmer color for the tip */
-  font-size: 14px;
-  margin-top: 8px;
-  max-width: 300px;
-}
 /* --- Glowing, Floating Logo with Particle Aura --- */
 
 /* The container sets up the space for the particles */
 #loading-logo-container {
   position: relative;
   width: 80px;
+  padding-bottom: 20px;
   height: 80px;
   cursor: pointer;
   display: flex;
@@ -126,10 +120,16 @@
 
 /* --- Loading Screen Tip --- */
 #loading-tip {
+  text-align: center;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  /* Dimmer color for the tip */
+  font-size: 14px;
+  max-width: 300px;
   color: var(--muted);
   font-size: 14px;
-  margin-top: 10px;
-  max-width: 300px; /* Prevents the text from being too wide on large screens */
+  padding-top: 4px;
+  margin-top: 3px;
   text-align: center;
 }
 /* --- Status Overlay and Loader --- */
@@ -837,7 +837,7 @@ textarea#input {
   margin-top: 1px;
   max-height: fit-content;
   padding-bottom: 3px;
-  margin-bottom:2px;
+  margin-bottom: 2px;
   max-width: 60%;
   padding-left: 20px;
   padding-right: 20px; /* More balanced vertical and horizontal padding */
@@ -976,11 +976,12 @@ textarea#input {
 .typing {
   display: inline-flex;
   gap: 6px;
+  width: fit-content;
   align-items: center;
   padding: 6px 8px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.12);
   margin-top: 6px;
+  scale: 1.2;
 }
 
 .dot {
@@ -1022,7 +1023,7 @@ textarea#input {
   flex: 1; /* Allow it to grow and shrink */
   box-sizing: border-box; /* Ensures padding is included in the size */
   resize: none !important; /* Disable manual resizing */
-  
+
   /* --- Dynamic Height --- */
   min-height: 55px !important; /* The starting height */
   max-height: 150px !important; /* The maximum height it can grow to */
@@ -1361,12 +1362,16 @@ textarea#input {
   background: linear-gradient(180deg, var(--accent2), var(--accent1));
   border-radius: 6px;
   border: 3px solid transparent; /* Creates padding around the thumb */
-  background-clip: content-box;  /* Ensures the border doesn't have the background */
+  background-clip: content-box; /* Ensures the border doesn't have the background */
   transition: background 0.2s ease-in-out;
 }
 
 .messages::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--accent1), var(--accent2)); /* Invert gradient on hover */
+  background: linear-gradient(
+    180deg,
+    var(--accent1),
+    var(--accent2)
+  ); /* Invert gradient on hover */
   background-clip: content-box;
 }
 
@@ -1685,57 +1690,57 @@ textarea#input {
 /* --- FORCED UNIFIED MOBILE & TABLET VIEW --- */
 @media (max-width: 900px) {
   .msg.user {
-      align-self: flex-end;
-      background: var(--user);
-      color: #ffffffd8;
-      border-radius: 20px;
-      /* A very large value ensures a perfect pill shape */
-      padding-top: 1px;
-      margin-top: 1px;
-      margin-bottom: 2px;
-      padding-left: 20px;
-      padding-right: 20px;
-      font-size: 12px;
-      /* More balanced vertical and horizontal padding */
-      overflow-wrap: break-word;
-      line-height: 1;
-      height:fit-content;
-      /* Reduced line height to make the pill more compact */
-    }
+    align-self: flex-end;
+    background: var(--user);
+    color: #ffffffd8;
+    border-radius: 20px;
+    /* A very large value ensures a perfect pill shape */
+    padding-top: 1px;
+    margin-top: 1px;
+    margin-bottom: 2px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 12px;
+    /* More balanced vertical and horizontal padding */
+    overflow-wrap: break-word;
+    line-height: 1;
+    height: fit-content;
+    /* Reduced line height to make the pill more compact */
+  }
   /* Make the logo container smaller on mobile */
-    .msg pre {
-      border-radius: 8px;
-      padding: 12px;
-      margin: 10px 0;
-      width: 100%;
-      max-width: 100%;
-      position: relative;
-      box-sizing: border-box;
-      overflow-wrap: break-word;
+  .msg pre {
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+  }
+
+  #loading-logo-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Adjust the particle animation to use a smaller orbit */
+  #loading-logo-container::before,
+  #loading-logo-container::after {
+    animation-name: orbit-mobile;
+    /* Use the new mobile-specific animation */
+  }
+
+  /* A new keyframe rule for the smaller mobile orbit */
+  @keyframes orbit-mobile {
+    0% {
+      transform: rotate(0deg) translateX(65px) rotate(0deg);
     }
-  
-    #loading-logo-container {
-      width: 100px;
-      height: 100px;
+
+    100% {
+      transform: rotate(360deg) translateX(65px) rotate(-360deg);
     }
-  
-    /* Adjust the particle animation to use a smaller orbit */
-    #loading-logo-container::before,
-    #loading-logo-container::after {
-      animation-name: orbit-mobile;
-      /* Use the new mobile-specific animation */
-    }
-  
-    /* A new keyframe rule for the smaller mobile orbit */
-    @keyframes orbit-mobile {
-      0% {
-        transform: rotate(0deg) translateX(65px) rotate(0deg);
-      }
-  
-      100% {
-        transform: rotate(360deg) translateX(65px) rotate(-360deg);
-      }
-    }
+  }
   .status-indicator::before {
     bottom: auto;
     top: 150%;
@@ -1972,24 +1977,15 @@ textarea#input {
 #loading-status-text {
   color: #e8fbff;
   font-size: 16px;
+  margin-bottom: 15px;
   margin-top: 20px;
-  margin-bottom: 8px;
   font-weight: 500;
-}
-
-#loading-tip {
-  color: var(--muted);
-  font-size: 14px;
-  max-width: 300px;
-  text-align: center;
-  transition: opacity 0.3s ease;
 }
 
 #enter-app-btn {
   background: rgba(117, 113, 113, 0.062);
   color: #0420222c;
   border: none;
-  padding: 12px 24px;
   border-radius: 10px;
   font-size: 16px;
   font-weight: 600;
@@ -2012,6 +2008,7 @@ textarea#input {
 
 /* --- /* --- Checkmark Animation & Completion Layout (Corrected) --- */
 .completion-line {
+  padding-top: 20px;
   display: flex;
   align-items: center; /* This is the key to vertically centering the text and icon */
   justify-content: center;
@@ -2022,31 +2019,63 @@ textarea#input {
   margin: 0;
   font-size: 16px;
   color: #e8fbff;
+  margin-top: 20px;
+  margin-bottom: 15px;
 }
 
-.checkmark { 
+.checkmark {
   width: 28px; /* Slightly larger for better balance */
-  height: 28px; 
+  height: 28px;
   display: block;
   border-radius: 50%;
-  stroke-width: 3; 
-  stroke: #fff; 
+  stroke-width: 3;
+  stroke: #fff;
   /* ... rest of the animation properties ... */
-  stroke-miterlimit: 10; animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both; 
+  stroke-miterlimit: 10;
+  animation: fill 0.4s ease-in-out 0.4s forwards,
+    scale 0.3s ease-in-out 0.9s both;
 }
-.checkmark-circle { stroke-dasharray: 166; stroke-dashoffset: 166; stroke-width: 3; stroke-miterlimit: 10; stroke: var(--success); fill: none; animation: stroke .6s cubic-bezier(0.65, 0, 0.45, 1) forwards; }
-.checkmark-check { transform-origin: 50% 50%; stroke-dasharray: 48; stroke-dashoffset: 48; animation: stroke .3s cubic-bezier(0.65, 0, 0.45, 1) .8s forwards; }
-@keyframes stroke { 100% { stroke-dashoffset: 0; } }
-@keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
-@keyframes fill { 100% { box-shadow: inset 0px 0px 0px 30px var(--success); } }
-
+.checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 3;
+  stroke-miterlimit: 10;
+  stroke: var(--success);
+  fill: none;
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+.checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+@keyframes stroke {
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes scale {
+  0%,
+  100% {
+    transform: none;
+  }
+  50% {
+    transform: scale3d(1.1, 1.1, 1);
+  }
+}
+@keyframes fill {
+  100% {
+    box-shadow: inset 0px 0px 0px 30px var(--success);
+  }
+}
 
 /* --- New Glass-like Enter Button Style --- */
 #enter-app-btn {
   background: rgba(255, 255, 255, 0.05); /* Semi-transparent background */
   border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
   color: #e6fbff; /* Bright text color */
-  
+
   /* All other properties remain the same */
   padding: 12px 24px;
   border-radius: 10px;
@@ -2067,7 +2096,12 @@ textarea#input {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes button-appear { to { transform: scale(1); opacity: 1; } }
+@keyframes button-appear {
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
 /* --- Lively Loading Screen Text & Completion --- */
 #loading-in-progress {
@@ -2080,15 +2114,6 @@ textarea#input {
   font-size: 16px;
   margin: 0 0 8px 0;
   font-weight: 500;
-}
-
-#loading-tip {
-  color: var(--muted);
-  font-size: 14px;
-  max-width: 300px;
-  text-align: center;
-  transition: opacity 0.3s ease;
-  margin: 0;
 }
 
 #loading-complete {
@@ -2258,7 +2283,8 @@ textarea#input {
 }
 
 @keyframes float-up-down {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -2276,7 +2302,7 @@ textarea#input {
   position: relative;
 }
 .msg code {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: "Courier New", Courier, monospace;
   font-size: 14px;
   color: #e6fbff;
   white-space: pre-wrap;

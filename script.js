@@ -42,7 +42,7 @@ const modalQuestions = {
     //    "navigation title here": "output here", << put a ( , ) every end
     //  },
     "Spreadsheet Navigation & Data Familiarization": {
-      _DESC_3_: "➡ wala muna",
+      _DESC_3_: "➡ Module 1",
       "Information Sheet": "Module 1 Information Sheet",
       "Activity Sheet": "Module 1 Activity Sheet",
       _DESC_1_: "➡ This is the tool for the LA's",
@@ -53,25 +53,25 @@ const modalQuestions = {
         "https://docs.google.com/forms/d/e/1FAIpQLSeIsO_7TlYWT8i6hXBVmTw6-3UFH8kYQ3ipll0lC9KxvOwOFg/viewform",
     },
     "Data Processing Using Spreadsheet Formulas and Tools": {
-      _DESC_3_: "➡ wala muna",
-      "Information Sheet": "nothing",
-      "Activity Sheet": "nothing",
+      _DESC_3_: "➡ Module 2",
+      "Information Sheet": "Module 2 Information Sheet",
+      "Activity Sheet": "Module 2 Activity Sheet",
       _DESC_1_: "➡ This is the tool for the LA's",
       "Performance Checklist": "nothing",
       _DESC_2_:
         "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
-      "Assessment Form":
+      "Module 2 Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLScMn2q_BgZrUmJdSQyRqhiHcKNmDY7uxbWg07CZ1G7zajyC8w/viewform?usp=header",
     },
     "Spreadsheet Data Analysis Using Pivot Tables and Charts": {
-      _DESC_3_: "➡ wala muna",
-      "Information Sheet": "nothing",
-      "Activity Sheet": "nothing",
+      _DESC_3_: "➡ Module 3",
+      "Information Sheet": "Module 3 Information Sheet",
+      "Activity Sheet": "Module 3 Activity Sheet",
       _DESC_1_: "➡ This is the tool for the LA's",
-      "Performance Checklist": "nothing",
+      "Performance Checklist": "Module 3 Performance Checklist",
       _DESC_2_:
         "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
-      "Assessment Form":
+      "Module 3 Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLSexDGWOZ6CLnjh7WbItGeeShHdwzLGgUBa8m0B81_AeNSLOmw/viewform",
     },
   },
@@ -82,11 +82,22 @@ const modalQuestions = {
   ],
   "Learning Materials": [
     {
+      "ICT Data Processing Website":
+        "https://sites.google.com/dualtech.edu.ph/ict/home",
+    },
+    {
       "Google Sheets Get Started":
         "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=506882268#gid=506882268",
     },
+
     "Show me the performance checklist.",
-    "Is there a manual for the workflow procedure?",
+    {
+      "Other files": {
+        "MRP Workbook":
+          "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=601851345#gid=601851345",
+        more: "more",
+      },
+    },
   ],
 }; // =================================================================
 
@@ -321,7 +332,6 @@ document.addEventListener("keydown", (event) => {
 let typingSound = null; // To control the looping typing sound
 let ambientSound = null; // To control the looping ambient sound
 
-
 /**
  * A more robust function to play sound effects with volume control.
  * @param {string} url - The path to the sound file.
@@ -413,31 +423,34 @@ const chatEl = document.querySelector(".chat"); // <-- ADD THIS LINE
 /* Marked + DOMPurify */
 marked.setOptions({
   breaks: true,
-  gfm: true, 
+  gfm: true,
 });
 
 function renderSafeMarkdown(mdText) {
   if (typeof mdText !== "string") mdText = String(mdText || "");
-  const correctedText = mdText.replace(/\\n/g, '\n');
+  const correctedText = mdText.replace(/\\n/g, "\n");
   const rawHtml = marked.parse(correctedText);
-  const tempDiv = document.createElement('div');
+  const tempDiv = document.createElement("div");
   tempDiv.innerHTML = rawHtml;
-  tempDiv.querySelectorAll('pre').forEach(pre => {
-    const code = pre.querySelector('code');
+  tempDiv.querySelectorAll("pre").forEach((pre) => {
+    const code = pre.querySelector("code");
     if (code) {
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'copy-btn';
-      copyBtn.textContent = 'Copy';
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy-btn";
+      copyBtn.textContent = "Copy";
       pre.appendChild(copyBtn);
     }
   });
-  const processedHtml = tempDiv.innerHTML.replace(/<a href="([^"]+)">(.+?)<\/a>/gs, (match, href, text) => {
+  const processedHtml = tempDiv.innerHTML.replace(
+    /<a href="([^"]+)">(.+?)<\/a>/gs,
+    (match, href, text) => {
       const iconSrc = getIconForUrl(href);
       return `<a href="${href}" target="_blank" rel="noopener noreferrer"><img src="${iconSrc}" class="link-icon" alt="">${text}</a>`;
-  });
+    }
+  );
   return DOMPurify.sanitize(processedHtml, {
-      ADD_TAGS: ['img', 'pre', 'code', 'button'],
-      ADD_ATTR: ['target', 'rel', 'style', 'src', 'alt', 'class'],
+    ADD_TAGS: ["img", "pre", "code", "button"],
+    ADD_ATTR: ["target", "rel", "style", "src", "alt", "class"],
   });
 }
 
@@ -948,21 +961,30 @@ async function loadOfflineData() {
 }
 
 /**
- * Initializes the app with a dynamic loading process and robust sound handling.
+ * Initializes the app with a dynamic, multi-stage loading screen.
  */
 async function initializeApp() {
   // --- 1. Define loading content & get elements ---
   const loadingStatuses = [
+    "Starting...",
     "Initializing...",
     "Loading resources...",
-    "Connecting modules...",
+    "Connecting to APIs...",
+    "Connecting to the server...",
+    "Connecting to the server...1",
+    "Connecting to the server...2",
+    "Connecting to the server...3",
     "Finalizing setup...",
   ];
   const loadingTips = [
-    "Ask about specific modules like MRP, BOM, or MPS.",
-    "AILA can understand and display formatted tables.",
-    "Use 'Quick Actions' for common questions.",
-    "You can find learning materials in 'Tools & Resources'.",
+    "Ask about specific topics like MRP, BOM, PO, Inventory, or MPS.",
+    "Ask AILA about pivot table or dashboard.",
+    "AILA was originally a floating embedded chat inside the ICT website.",
+    "AILA can understand and display formatted tables and also codes and formulas.",
+    "Navigate the Tool icon 🔧 to access Modules, Orientation, and Learning Materials.",
+    "You can find learning materials by clicking Tool icon > Materials.",
+    "Aila was envisioned on the 9th of October, later created on 26th of October",
+    "Dyk, AILA main developer was, N. Joshua?",
   ];
   const loadingOverlay = document.getElementById("loading-overlay");
   const logoContainer = document.getElementById("loading-logo-container");
@@ -972,16 +994,13 @@ async function initializeApp() {
   const statusText = document.getElementById("loading-status-text");
   const tipText = document.getElementById("loading-tip");
   const enterBtn = document.getElementById("enter-app-btn");
-  const clickMetext = document.getElementById("click-me-text");
-
+  const clickMeText = document.getElementById("click-me-text");
 
   // --- 2. Set up and attempt to play ambient sound ---
   ambientSound = new Audio(SFX.loadingAmbient);
   ambientSound.loop = true;
   ambientSound.volume = 0.3;
   let ambientNeedsInteraction = false;
-
-  // Try to play. If it fails (due to autoplay policy), flag it.
   ambientSound.play().catch((e) => {
     console.warn(
       "Ambient sound autoplay was blocked. It will start on the first click."
@@ -993,14 +1012,12 @@ async function initializeApp() {
   if (logoContainer && mainLogo) {
     let isShattered = false;
     logoContainer.addEventListener("click", () => {
-      // If the sound was blocked, this first click will start it.
       if (ambientNeedsInteraction) {
         ambientSound.play();
-        ambientNeedsInteraction = false; // Unset the flag so it doesn't try again.
+        ambientNeedsInteraction = false;
       }
-
       if (isShattered) return;
-      if (clickMetext) clickMetext.style.opacity = "0";
+      if (clickMeText) clickMeText.style.opacity = "0";
       playSound(SFX.glassBreak);
       isShattered = true;
       mainLogo.style.opacity = "0";
@@ -1021,10 +1038,18 @@ async function initializeApp() {
           piece.style.opacity = "0";
         }, 10);
       }
+
+      // --- THIS IS THE FIX ---
       setTimeout(() => {
+        // Remove only the shatter pieces, leaving the other elements intact.
+        logoContainer
+          .querySelectorAll(".shatter-piece")
+          .forEach((p) => p.remove());
+
+        // Restore the opacity of the main elements.
         mainLogo.style.opacity = "1";
-        logoContainer.innerHTML = "";
-        logoContainer.appendChild(mainLogo);
+        if (clickMeText) clickMeText.style.opacity = "1";
+
         isShattered = false;
       }, 900);
     });
@@ -1054,40 +1079,38 @@ async function initializeApp() {
   await loadOfflineData();
 
   // --- 6. Handle the completion state ---
-  clearInterval(tipInterval);
-  if (clickMetext) clickMetext.style.opacity = "o";
-  mainLogo.style.animation = "none";
-  statusText.classList.add("hidden");
+  // Keep animations running, but hide the "Click Me" text
+
+  // THIS IS THE FIX: Swap the "in-progress" div for the "complete" div
+  inProgressDiv.classList.add("hidden");
   completeDiv.classList.remove("hidden");
+
+  // Show the enter button
+  enterBtn.classList.remove("hidden");
   playSound(SFX.success, 0.8);
 
   // --- 7. Set up the "Enter" button ---
-  // --- 8. Set up the "Enter" button ---
   enterBtn.addEventListener("click", () => {
-    // Stop the ambient sound if it's playing
+    // Stop all loading screen sounds and animations
     if (ambientSound) {
       ambientSound.pause();
       ambientSound.currentTime = 0;
     }
+    clearInterval(tipInterval);
 
-    // --- THIS IS THE NEW SYNCHRONIZED SEQUENCE ---
-
-    // 1. Play the sound effect instantly.
+    // Play transition sound and start animations
     playSound(SFX.whoosh, 0.8);
-
-    // 2. Start the fade-out of the loading overlay.
     loadingOverlay.classList.remove("visible");
-
-    // 3. Prepare the chat content immediately (but it's still invisible).
-    updateStatus("pending");
-    showWelcomeScreen();
-
-    // 4. Trigger the new "enter" animation on the chat window.
     if (chatEl) {
       chatEl.classList.add("entering");
     }
+
+    // Show the main app content
+    updateStatus("pending");
+    showWelcomeScreen();
   });
 }
+
 const ro = new MutationObserver(
   () => (messagesEl.scrollTop = messagesEl.scrollHeight)
 );
@@ -1098,39 +1121,42 @@ window.addEventListener("load", () => setTimeout(() => input.focus(), 250));
 initializeApp();
 // --- Cleanup sounds on page exit (Reliable Method) ---
 // The 'pagehide' event is the correct and most reliable way to stop audio when a tab is closed.
-window.addEventListener('pagehide', () => {
-    // Stop the ambient sound if it's playing
-    if (ambientSound) {
-        ambientSound.pause();
-        ambientSound.currentTime = 0;
-    }
-    // Also stop the typing sound, just in case
-    if (typingSound) {
-        typingSound.pause();
-        typingSound.currentTime = 0;
-    }
+window.addEventListener("pagehide", () => {
+  // Stop the ambient sound if it's playing
+  if (ambientSound) {
+    ambientSound.pause();
+    ambientSound.currentTime = 0;
+  }
+  // Also stop the typing sound, just in case
+  if (typingSound) {
+    typingSound.pause();
+    typingSound.currentTime = 0;
+  }
 });
 // --- Event Listener for Dynamic Copy Buttons ---
-messagesEl.addEventListener('click', (e) => {
+messagesEl.addEventListener("click", (e) => {
   // Check if the clicked element is a copy button
-  if (e.target.classList.contains('copy-btn')) {
+  if (e.target.classList.contains("copy-btn")) {
     const btn = e.target;
-    const pre = btn.closest('pre'); // Find the parent code block
+    const pre = btn.closest("pre"); // Find the parent code block
     if (pre) {
-      const code = pre.querySelector('code');
+      const code = pre.querySelector("code");
       if (code) {
         // Use the modern Clipboard API to copy the text
-        navigator.clipboard.writeText(code.innerText).then(() => {
-          // Provide visual feedback to the user
-          btn.textContent = 'Copied!';
-          // Reset the button text after 2 seconds
-          setTimeout(() => {
-            btn.textContent = 'Copy';
-          }, 2000);
-        }).catch(err => {
-          console.error('Failed to copy text: ', err);
-          btn.textContent = 'Error'; // Show an error message on the button
-        });
+        navigator.clipboard
+          .writeText(code.innerText)
+          .then(() => {
+            // Provide visual feedback to the user
+            btn.textContent = "Copied!";
+            // Reset the button text after 2 seconds
+            setTimeout(() => {
+              btn.textContent = "Copy";
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("Failed to copy text: ", err);
+            btn.textContent = "Error"; // Show an error message on the button
+          });
       }
     }
   }
