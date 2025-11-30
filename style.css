@@ -829,18 +829,21 @@ textarea#input {
 
 .msg.user {
   align-self: flex-end;
+  display: flex;
   background: var(--user);
-  color: #eafff4;
-  border-radius: 100px; /* A very large value ensures a perfect pill shape */
+  color: #ffffffd8;
+  border-radius: 20px; /* A very large value ensures a perfect pill shape */
   padding-top: 1px;
   margin-top: 1px;
+  max-height: fit-content;
   padding-bottom: 3px;
   margin-bottom:2px;
-  padding-left: 15px;
-  padding-right: 15px; /* More balanced vertical and horizontal padding */
-  max-width: 78%;
+  max-width: 60%;
+  padding-left: 20px;
+  padding-right: 20px; /* More balanced vertical and horizontal padding */
+  box-sizing: border-box;
   overflow-wrap: break-word;
-  line-height: 0.25; /* Reduced line height to make the pill more compact */
+  line-height: 1; /* Reduced line height to make the pill more compact */
 }
 /* This ensures that paragraphs inside a bot message are not faint or transparent */
 .msg.bot p {
@@ -1681,6 +1684,24 @@ textarea#input {
 /* --- Mobile View Enhancements --- */
 /* --- FORCED UNIFIED MOBILE & TABLET VIEW --- */
 @media (max-width: 900px) {
+  .msg.user {
+      align-self: flex-end;
+      background: var(--user);
+      color: #ffffffd8;
+      border-radius: 20px;
+      /* A very large value ensures a perfect pill shape */
+      padding-top: 1px;
+      margin-top: 1px;
+      margin-bottom: 2px;
+      padding-left: 20px;
+      padding-right: 20px;
+      font-size: 12px;
+      /* More balanced vertical and horizontal padding */
+      overflow-wrap: break-word;
+      line-height: 1;
+      height:fit-content;
+      /* Reduced line height to make the pill more compact */
+    }
   /* Make the logo container smaller on mobile */
     .msg pre {
       border-radius: 8px;

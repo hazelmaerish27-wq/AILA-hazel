@@ -43,13 +43,13 @@ const modalQuestions = {
     //  },
     "Spreadsheet Navigation & Data Familiarization": {
       _DESC_3_: "➡ wala muna",
-      "Information Sheet": "Information Sheet",
-      "Activity Sheet": "Activity Sheet",
+      "Information Sheet": "Module 1 Information Sheet",
+      "Activity Sheet": "Module 1 Activity Sheet",
       _DESC_1_: "➡ This is the tool for the LA's",
-      "Performance Checklist": "Performance Checklist",
+      "Performance Checklist": "Module 1 Performance Checklist",
       _DESC_2_:
         "➡ Submit your completed MRP workbook, validate through oral questioning, and accomplish the self-check quiz here.",
-      "Assessment Form":
+      "Module 1 Assessment Form":
         "https://docs.google.com/forms/d/e/1FAIpQLSeIsO_7TlYWT8i6hXBVmTw6-3UFH8kYQ3ipll0lC9KxvOwOFg/viewform",
     },
     "Data Processing Using Spreadsheet Formulas and Tools": {
