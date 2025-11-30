@@ -1444,35 +1444,28 @@ function sendToBackend(text, askSuggestions = false) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   })
-    .then(async (res) => {
+  .then(async (res) => {
       hideTyping();
-      // If the server gives an error (like 500), jump to the .catch block
-      if (!res.ok) {
-        throw new Error(`Network response was not ok: ${res.statusText}`);
-      }
-      
+      if (!res.ok) { throw new Error(`...`); }
       const data = await res.json().catch(() => ({}));
-      
-      // THIS IS THE FIX: We ONLY check for a reply here. No more offline fallback.
       const reply = data.reply;
-
       if (reply) {
-        // If we got a reply from the AI, append it.
         appendMessage(reply, "bot");
       } else {
-        // If the AI is online but has no specific answer, give a clear message.
-        appendMessage("I'm online, but I don't have a specific answer for that. Try asking another way.", "bot");
+        appendMessage("...", "bot");
       }
       pulseLogoOnce();
+      updateStatus(true); // <-- ADD THIS LINE
     })
     .catch((err) => {
-      // THIS is the ONLY place where the full offline mode is triggered.
       hideTyping();
       console.warn("Offline mode triggered:", err);
       const offlineReply = getOfflineAnswer(text);
-      appendMessage(offlineReply, "bot", true); // Pass 'true' to show FAQ buttons
+      appendMessage(offlineReply, "bot", true);
+      updateStatus(false); // <-- ADD THIS LINE
     });
 }
+
 function sendMessage() {
   const t = input.value.trim();
   if (!t) return;
@@ -1652,7 +1645,38 @@ input.addEventListener("keydown", (e) => {
     sendMessage();
   }
 });
-showWelcomeScreen();
+// --- START: Final App Initialization ---
+
+// Get a reference to the status indicator in the header.
+const statusIndicator = document.getElementById("status-indicator");
+
+/**
+ * Updates the status icon's color and sets a data-attribute for the custom tooltip.
+ * @param {string|boolean} status - "pending", true (online), or false (offline).
+ */
+function updateStatus(status) {
+    if (!statusIndicator) return;
+
+    statusIndicator.classList.remove("online", "offline", "pending");
+
+    if (status === "pending") {
+        statusIndicator.classList.add("pending");
+        // We now set a 'data-tooltip' attribute instead of the 'title'
+        statusIndicator.dataset.tooltip = "Status: Pending. Send a message to check connection.";
+    } else if (status === true) {
+        statusIndicator.classList.add("online");
+        statusIndicator.dataset.tooltip = "AILA is Online";
+    } else { // status === false
+        statusIndicator.classList.add("offline");
+        statusIndicator.dataset.tooltip = "AILA is Offline";
+    }
+}
+
+// Start the application immediately.
+updateStatus("pending"); // Start in a neutral, pending state.
+showWelcomeScreen(); // Load the welcome screen right away.
+
+// --- END: Final App Initialization ---
 
 const ro = new MutationObserver(
   () => (messagesEl.scrollTop = messagesEl.scrollHeight)
