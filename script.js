@@ -304,10 +304,22 @@ document.addEventListener("keydown", (event) => {
   }
 });
 // ============== END: MODAL SCRIPT ==============
+// --- Sound Effects ---
+let typingSound = null; // To control the looping typing sound
+
+function playSound(url) {
+  try {
+    // Creates a new audio object and plays it.
+    new Audio(url).play();
+  } catch (error) {
+    console.warn(`Could not play sound effect: ${url}`, error);
+  }
+}
 
 // N8N chat webhook link constant
 const CHAT_WEBHOOK = "https://levercrafter.app.n8n.cloud/webhook/aila-chat";
-const OFFLINE_DATA_URL = "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
+const OFFLINE_DATA_URL =
+  "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".dropdown")) {
     const allDropdowns = document.querySelectorAll(".dropdown");
@@ -387,21 +399,24 @@ function renderSafeMarkdown(mdText) {
   if (typeof mdText !== "string") mdText = String(mdText || "");
 
   // THIS IS THE NEW LINE: It finds all "\\n" text and replaces it with a real newline.
-  const correctedText = mdText.replace(/\\n/g, '\n');
+  const correctedText = mdText.replace(/\\n/g, "\n");
 
   // 1. Let marked.js create the basic HTML from the corrected markdown text.
   const rawHtml = marked.parse(correctedText);
 
   // 2. Use a regular expression to find every link and add the icon.
-  const processedHtml = rawHtml.replace(/<a href="([^"]+)">(.+?)<\/a>/gs, (match, href, text) => {
+  const processedHtml = rawHtml.replace(
+    /<a href="([^"]+)">(.+?)<\/a>/gs,
+    (match, href, text) => {
       const iconSrc = getIconForUrl(href);
       return `<a href="${href}" target="_blank" rel="noopener noreferrer"><img src="${iconSrc}" class="link-icon" alt="">${text}</a>`;
-  });
+    }
+  );
 
   // 3. Sanitize the final HTML to ensure it's safe to display.
   return DOMPurify.sanitize(processedHtml, {
-      ADD_TAGS: ['img'],
-      ADD_ATTR: ['target', 'rel', 'style', 'src', 'alt', 'class'],
+    ADD_TAGS: ["img"],
+    ADD_ATTR: ["target", "rel", "style", "src", "alt", "class"],
   });
 }
 
@@ -587,25 +602,28 @@ function showTyping() {
   messagesEl.appendChild(t);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   logoArea.classList.add("logo-glow");
+
+  // Start the looping typing sound
+  if (!typingSound) {
+    typingSound = new Audio("sfx/typing.mp3");
+    typingSound.loop = true;
+    typingSound
+      .play()
+      .catch((e) => console.warn("Typing sound failed to play:", e));
+  }
 }
 function hideTyping() {
   const t = document.getElementById("typingIndicator");
   if (t) t.remove();
   logoArea.classList.remove("logo-glow");
+
+  // Stop the looping typing sound
+  if (typingSound) {
+    typingSound.pause();
+    typingSound.currentTime = 0;
+    typingSound = null;
+  }
 }
-
-function onFaqClick(btn, question) {
-  btn.classList.add("sending");
-  setTimeout(() => btn.classList.remove("sending"), 600);
-
-  appendMessage(question, "user");
-  const parentFaq = btn.closest(".faq-buttons");
-  if (parentFaq) parentFaq.remove();
-
-  sendToBackend(question, true);
-}
-
-/* send to backend; use offlineResponses if offline or network fails */
 /* send to backend; use offlineResponses if offline or network fails */
 function sendToBackend(text, askSuggestions = false) {
   showTyping();
@@ -638,14 +656,20 @@ function sendToBackend(text, askSuggestions = false) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   })
-  .then(async (res) => {
+    .then(async (res) => {
       hideTyping();
-      if (!res.ok) { throw new Error(`...`); }
+      if (!res.ok) {
+        throw new Error(`...`);
+      }
       const data = await res.json().catch(() => ({}));
       const reply = data.reply;
+      //... inside the .then() block
       if (reply) {
+        playSound("sfx/receive.mp3"); // Play receive sound
         appendMessage(reply, "bot");
-      } else {
+      }
+      //...
+      else {
         appendMessage("...", "bot");
       }
       pulseLogoOnce();
@@ -663,6 +687,7 @@ function sendToBackend(text, askSuggestions = false) {
 function sendMessage() {
   const t = input.value.trim();
   if (!t) return;
+  playSound("sfx/send.mp3"); // Play send sound
   const welcomeScreen = messagesEl.querySelector(".welcome-screen");
   if (welcomeScreen) {
     messagesEl.innerHTML = "";
@@ -721,12 +746,14 @@ if (SpeechRecognition) {
 
   voiceBtn.addEventListener("click", () => {
     if (isListening) {
+      playSound("sfx/mic-off.mp3"); // Sound for stopping
       stopListening();
     } else {
-      // Clear previous state and start recognition
+      playSound("sfx/mic-on.mp3"); // Sound for starting
       input.value = "";
       try {
         recognition.start();
+        // ... rest of the function
 
         // --- NEW: Start the watchdog timer ---
         clearTimeout(watchdogTimer); // Clear any old timers
@@ -849,21 +876,23 @@ const statusIndicator = document.getElementById("status-indicator");
  * @param {string|boolean} status - "pending", true (online), or false (offline).
  */
 function updateStatus(status) {
-    if (!statusIndicator) return;
+  if (!statusIndicator) return;
 
-    statusIndicator.classList.remove("online", "offline", "pending");
+  statusIndicator.classList.remove("online", "offline", "pending");
 
-    if (status === "pending") {
-        statusIndicator.classList.add("pending");
-        // We now set a 'data-tooltip' attribute instead of the 'title'
-        statusIndicator.dataset.tooltip = "Status: Pending. Send a message to check connection.";
-    } else if (status === true) {
-        statusIndicator.classList.add("online");
-        statusIndicator.dataset.tooltip = "AILA is Online";
-    } else { // status === false
-        statusIndicator.classList.add("offline");
-        statusIndicator.dataset.tooltip = "AILA is Offline";
-    }
+  if (status === "pending") {
+    statusIndicator.classList.add("pending");
+    // We now set a 'data-tooltip' attribute instead of the 'title'
+    statusIndicator.dataset.tooltip =
+      "Status: Pending. Send a message to check connection.";
+  } else if (status === true) {
+    statusIndicator.classList.add("online");
+    statusIndicator.dataset.tooltip = "AILA is Online";
+  } else {
+    // status === false
+    statusIndicator.classList.add("offline");
+    statusIndicator.dataset.tooltip = "AILA is Offline";
+  }
 }
 /**
  * Loads the offline responses from our Google Sheet API.
@@ -872,7 +901,7 @@ async function loadOfflineData() {
   try {
     const response = await fetch(OFFLINE_DATA_URL);
     if (!response.ok) {
-      throw new Error('Failed to load offline data');
+      throw new Error("Failed to load offline data");
     }
     const data = await response.json();
     offlineResponses = data; // Populate our variable with the fetched data
@@ -880,86 +909,101 @@ async function loadOfflineData() {
   } catch (error) {
     console.error("Could not load offline data:", error);
     // Optional: You could have a hardcoded fallback here if the sheet fails to load
-    offlineResponses = { "Error": "Offline responses could not be loaded. Please check the connection." };
+    offlineResponses = {
+      Error:
+        "Offline responses could not be loaded. Please check the connection.",
+    };
   }
 }
 
 /**
  * Initializes the app: shows a loading screen with a random tip,
- * loads data, then shows the main UI. Includes an interactive shatter effect.
+ * loads data, then shows the main UI. Includes an interactive shatter effect with SFX.
  */
 async function initializeApp() {
-    const loadingTips = [
-        "Tip: Ask about specific modules like MRP, BOM, or MPS.",
-        "Did you know? AILA can understand and display formatted tables.",
-        "Tip: Use 'Quick Actions' for common questions and modules.",
-        "You can find learning materials in the 'Tools & Resources' menu.",
-        "AILA is designed to work offline with pre-set answers."
-    ];
+  const loadingTips = [
+    "Tip: Ask about specific modules like MRP, BOM, or MPS.",
+    "Did you know? AILA can understand and display formatted tables.",
+    "Tip: Use 'Quick Actions' for common questions and modules.",
+    "You can find learning materials in the 'Tools & Resources' menu.",
+    "AILA is designed to work offline with pre-set answers.",
+  ];
 
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const loadingTipElement = document.getElementById('loading-tip');
-    const logoContainer = document.getElementById('loading-logo-container');
-    const mainLogo = document.getElementById('loading-logo');
+  const loadingOverlay = document.getElementById("loading-overlay");
+  const loadingTipElement = document.getElementById("loading-tip");
+  const logoContainer = document.getElementById("loading-logo-container");
+  const mainLogo = document.getElementById("loading-logo");
 
-    // --- 1. Set the loading tip ---
-    const randomTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
-    if (loadingTipElement) {
-        loadingTipElement.textContent = "Tip: " + randomTip;
-    }
+  // --- 1. Start the looping ambient sound ---
+  const ambientSound = new Audio("sfx/loading-ambient.mp3");
+  ambientSound.loop = true;
+  ambientSound
+    .play()
+    .catch((e) => console.warn("Could not play ambient sound:", e));
 
-    // --- 2. Create the shatter effect on click ---
-    if (logoContainer && mainLogo) {
-        let isShattered = false;
+  // --- 2. Set the loading tip ---
+  const randomTip = loadingTips[Math.floor(Math.random() * loadingTips.length)];
+  if (loadingTipElement) {
+    loadingTipElement.textContent = "Tip: " + randomTip;
+  }
 
-        logoContainer.addEventListener('click', () => {
-            if (isShattered) return;
-            isShattered = true;
-            mainLogo.style.opacity = '0'; // Hide the main logo
+  // --- 3. Create the shatter effect on click with SFX ---
+  if (logoContainer && mainLogo) {
+    let isShattered = false;
+    logoContainer.addEventListener("click", () => {
+      if (isShattered) return;
 
-            // Create and animate the pieces
-            for (let i = 0; i < 16; i++) {
-                const piece = document.createElement('div');
-                piece.className = 'shatter-piece';
-                
-                const row = Math.floor(i / 4);
-                const col = i % 4;
+      // Play the glass breaking sound
+      playSound("sfx/glass-break.mp3");
 
-                piece.style.left = `${col * 25}%`;
-                piece.style.top = `${row * 25}%`;
-                piece.style.backgroundPosition = `-${col * 20}px -${row * 20}px`;
-                
-                logoContainer.appendChild(piece);
+      isShattered = true;
+      mainLogo.style.opacity = "0";
 
-                // Animate outwards
-                setTimeout(() => {
-                    const randomX = (Math.random() - 0.5) * 300;
-                    const randomY = (Math.random() - 0.5) * 300;
-                    const randomRot = (Math.random() - 0.5) * 720;
-                    piece.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`;
-                    piece.style.opacity = '0';
-                }, 10);
-            }
+      for (let i = 0; i < 16; i++) {
+        const piece = document.createElement("div");
+        piece.className = "shatter-piece";
+        const row = Math.floor(i / 4);
+        const col = i % 4;
+        piece.style.left = `${col * 25}%`;
+        piece.style.top = `${row * 25}%`;
+        piece.style.backgroundPosition = `-${col * 20}px -${row * 20}px`;
+        logoContainer.appendChild(piece);
+        setTimeout(() => {
+          const randomX = (Math.random() - 0.5) * 300;
+          const randomY = (Math.random() - 0.5) * 300;
+          const randomRot = (Math.random() - 0.5) * 720;
+          piece.style.transform = `translate(${randomX}px, ${randomY}px) rotate(${randomRot}deg)`;
+          piece.style.opacity = "0";
+        }, 10);
+      }
 
-            // Restore after animation
-            setTimeout(() => {
-                mainLogo.style.opacity = '1';
-                logoContainer.innerHTML = ''; // Remove all pieces
-                logoContainer.appendChild(mainLogo); // Put the main logo back
-                isShattered = false;
-            }, 900); // Must be longer than the CSS transition
-        });
-    }
+      setTimeout(() => {
+        mainLogo.style.opacity = "1";
+        logoContainer.innerHTML = "";
+        logoContainer.appendChild(mainLogo);
+        isShattered = false;
+      }, 900);
+    });
+  }
 
-    // --- 3. Load the offline data and start the app ---
-    await loadOfflineData();
-    
-    setTimeout(() => {
-        if (loadingOverlay) loadingOverlay.classList.remove('visible');
-        updateStatus("pending");
-        showWelcomeScreen();
-    }, 500);
+  // --- 4. Load the offline data ---
+  await loadOfflineData();
+
+  // --- 5. Hide the loader and play the transition sound ---
+  setTimeout(() => {
+    // Stop the ambient sound
+    ambientSound.pause();
+    ambientSound.currentTime = 0;
+
+    // Play the "whoosh" sound for entering the chat
+    playSound("sfx/whoosh.mp3");
+
+    if (loadingOverlay) loadingOverlay.classList.remove("visible");
+    updateStatus("pending");
+    showWelcomeScreen();
+  }, 500);
 }
+
 const ro = new MutationObserver(
   () => (messagesEl.scrollTop = messagesEl.scrollHeight)
 );
