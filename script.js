@@ -11,6 +11,8 @@ const SFX = {
 };
 
 const iconMap = {
+  "edu.gcfglobal.org":"icons/gcfglobal-color.png",
+  "www.w3schools.com":"icons/w3schools-logo-icon.png",
   "docs.google.com/document": "icons/docs.png",
   "docs.google.com/spreadsheets": "icons/sheets.png",
   "drive.google.com": "icons/drive.png",
@@ -18,6 +20,7 @@ const iconMap = {
   "docs.google.com/forms": "icons/forms.png",
   "classroom.google.com": "icons/classroom.png",
   "sites.google.com": "icons/sites.png",
+  "www.excelcampus.com":"icons/excel-campus-logo-optimized.png",
 };
 const defaultIcon = "icons/external.png";
 
@@ -76,23 +79,45 @@ const modalQuestions = {
     },
   },
   Orientation: [
+    "Orientation to Data Proccessing"
   ],
   "Learning Materials": [
     {
-      "ICT Data Processing Website":
+      "ICTD/DP Site":
         "https://sites.google.com/dualtech.edu.ph/ict/home",
     },
     {
       "Google Sheets Get Started":
-        "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=506882268#gid=506882268",
+        "https://www.w3schools.com/googlesheets/google_sheets_get_started.php",
     },
-
-    "Show me the performance checklist.",
     {
-      "Other files": {
-        "MRP Workbook":
-          "https://docs.google.com/spreadsheets/d/1y-9QnNwmhOlyjKYf9uaHA5Q4IAy2ANOs/edit?gid=601851345#gid=601851345",
-        more: "more",
+      "Google Sheets: Modifying Columns, Rows, and Cells":
+      "https://edu.gcfglobal.org/en/googlespreadsheets/modifying-columns-rows-and-cells/1/"
+    },
+    {
+      "Google Sheets: Understanding Number Formats":
+      "https://edu.gcfglobal.org/en/googlespreadsheets/understanding-number-formats/1/"
+    },
+    {
+      "Google Sheets Formulas":
+      "https://www.w3schools.com/googlesheets/google_sheets_formulas.php"
+    },
+    {
+      "Google Sheets IF Function":
+      "https://www.w3schools.com/googlesheets/google_sheets_if.php"
+    },
+    {
+      "The New XLOOKUP Function for Excel + Video Tutorial":
+      "https://www.excelcampus.com/functions/xlookup-explained/"
+    },
+    {
+      "MRP Workbooks": {
+        "Material_Requirement_Planning_20251113_wk02":
+          "https://docs.google.com/spreadsheets/d/12-rQsdn698XDu1Fme0YR-LPHvFMLMcBKH3qtKOAQtEw/edit?usp=sharing",
+        "Material_Requirement_Planning_20251113_wk03":
+          "https://docs.google.com/spreadsheets/d/1ITMJd_yMIDhqNEoRe0umfdOawu2eQsWK/edit?usp=drivesdk&ouid=101212779968196364079&rtpof=true&sd=true",
+        "Material_Requirement_Planning_20251113_wk04":
+          "https://docs.google.com/spreadsheets/d/1UeVuVWZnXAty6ucR5vvUpqPB7f0iIw54J8G30cBGRAI/edit?usp=sharing",
       },
     },
   ],

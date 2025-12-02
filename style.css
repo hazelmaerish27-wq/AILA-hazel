@@ -413,6 +413,44 @@
   transition: all 0.12s ease;
   text-decoration: none;
 }
+/* --- Header Buttons: Tools & Feedback --- */
+.header-feedback-btn,
+.header-home-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 18px;
+  color: var(--muted);
+  margin-right: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  text-decoration: none;
+}
+.header-home-btn:hover {
+  color: #e8fbff;
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 210, 255, 0.1);
+}
+
+.header-home-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 210, 255, 0.1);
+}
+
+/* This targets the SVG icon inside the button */
+.header-feedback-btn svg,
+.header-home-btn svg {
+  width: 20px;
+  height: 20px;
+}
 
 /* This targets the SVG icon inside the button */
 .header-feedback-btn svg {
@@ -1594,6 +1632,19 @@ textarea#input {
 .placeholder-section .question-link:hover {
   background: rgba(255, 255, 255, 0.08);
 }
+.module-dropdown-content .description {
+  padding-top: 20px;
+  z-index: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  margin-top: 0;
+  font-size: 14px;
+  color: white;
+  font-style: bold;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
 
 /* --- Modal Module Dropdown Styles --- */
 .module-dropdown {
@@ -1617,17 +1668,6 @@ textarea#input {
   transition: background 0.2s ease;
 }
 
-/* Style for the descriptive text inside a dropdown */
-.module-dropdown-content .description {
-  padding-top: 10px 12px;
-  font-size: 12.5px;
-  color: white;
-  font-style: bold;
-  line-height: 1.4;
-  border-bottom: 0 solid rgba(255, 255, 255, 0.05);
-  margin-bottom: 5px;
-}
-
 .module-dropdown-btn:hover {
   background: rgba(255, 255, 255, 0.08);
 }
@@ -1649,7 +1689,7 @@ textarea#input {
   scale: 0.97;
   overflow: hidden;
   transition: max-height 0.6s ease-in-out;
-  padding-left: 20px;
+  padding-left: 15px;
   padding-bottom: 0;
   padding-top: 0;
   margin-bottom: 0;
@@ -1661,13 +1701,18 @@ textarea#input {
 }
 
 .module-dropdown-content a {
-  display: block;
-  padding: 10px;
+  display: flex;
+  flex-direction: row;
   color: var(--muted);
+  padding-top: 5px;
+  width: flex;
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.2s ease;
-  font-size: 13px;
+  font-size: 12px;
+  align-items: center;
+  margin-top: 10px;
+  word-wrap: break-word;
 }
 
 .module-dropdown-content a:hover {
@@ -1689,6 +1734,11 @@ textarea#input {
 /* --- Mobile View Enhancements --- */
 /* --- FORCED UNIFIED MOBILE & TABLET VIEW --- */
 @media (max-width: 900px) {
+  .module-dropdown-content a {
+    font-size: 10px;
+    margin-left: 2px;
+    height: auto;
+  }
   .msg.user {
     align-self: flex-end;
     background: var(--user);
@@ -1792,6 +1842,7 @@ textarea#input {
     z-index: hidden;
     display: flex;
     flex-wrap: wrap;
+    font-size: 12px;
     margin-top: 0;
     font-size: 11.5px;
     color: white;
