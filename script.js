@@ -1207,6 +1207,47 @@ const enterAppBtn = document.getElementById("enter-app-btn");
 const welcomeMessageContainer = document.getElementById("welcome-message-container");
 const welcomeMessageText = document.getElementById("welcome-message-text");
 const finalEnterBtn = document.getElementById("final-enter-btn");
+const pinConfirmContainer = document.getElementById('pinConfirmContainer');
+const pinRevealIcon = document.getElementById('pin-reveal-icon');
+const pinConfirmRevealIcon = document.getElementById('pin-confirm-reveal-icon');
+
+// This function filters the input to allow only numbers
+function enforceNumeric(event) {
+    event.target.value = event.target.value.replace(/\D/g, '');
+}
+
+// This function toggles the visibility of a pin input and its icon
+function togglePinVisibility(inputElement, iconElement) {
+    if (inputElement.type === 'password') {
+        inputElement.type = 'text';
+        iconElement.innerHTML = `
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+        `;
+    } else {
+        inputElement.type = 'password';
+        iconElement.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+        `;
+    }
+}
+
+// Add event listeners to the reveal icons
+if (pinRevealIcon) {
+    pinRevealIcon.addEventListener('click', () => togglePinVisibility(pinInput, pinRevealIcon));
+}
+if (pinConfirmRevealIcon) {
+    pinConfirmRevealIcon.addEventListener('click', () => togglePinVisibility(pinConfirmInput, pinConfirmRevealIcon));
+}
+
+// Apply the numeric-only filter to both PIN fields
+if (pinInput) {
+    pinInput.addEventListener('input', enforceNumeric);
+}
+if (pinConfirmInput) {
+    pinConfirmInput.addEventListener('input', enforceNumeric);
+}
 
 let isRegisterMode = false;
 
@@ -1226,16 +1267,31 @@ function setAuthMode(isRegister) {
   if (isRegister) {
     authTitle.textContent = "Create an Account";
     authActionBtn.textContent = "Register";
-    pinConfirmInput.classList.remove("hidden");
-    pinConfirmInput.required = true; // Make it required for form validation
+    pinConfirmContainer.classList.remove("hidden"); // Show the container
+    pinConfirmInput.required = true;
     registerLink.innerHTML = 'Already have an account? Login';
   } else {
     authTitle.textContent = "Login to AILA";
     authActionBtn.textContent = "Login";
-    pinConfirmInput.classList.add("hidden");
+    pinConfirmContainer.classList.add("hidden"); // Hide the container
     pinConfirmInput.required = false;
     registerLink.innerHTML = 'Don\'t have an account? Register';
   }
+}
+// Get the actual PIN input element
+const pinInput = document.getElementById('pin');
+
+// This function filters the input to allow only numbers
+function enforceNumeric(event) {
+    event.target.value = event.target.value.replace(/\D/g, '');
+}
+
+// Apply the filter to both PIN fields as the user types
+if (pinInput) {
+    pinInput.addEventListener('input', enforceNumeric);
+}
+if (pinConfirmInput) {
+    pinConfirmInput.addEventListener('input', enforceNumeric);
 }
 
 // --- Event Listeners ---
@@ -1258,21 +1314,32 @@ authForm.addEventListener("submit", (e) => {
 
   const email = document.getElementById("email").value;
   const pin = document.getElementById("pin").value;
+  const pinConfirm = pinConfirmInput.value;
+
+  // --- START: PIN Validation ---
+  if (pin.length !== 4) {
+      alert("PIN must be exactly 4 digits.");
+      return; // Stop the submission
+  }
+
+  if (isRegisterMode && pin !== pinConfirm) {
+      alert("The PINs you entered do not match. Please try again.");
+      return; // Stop the submission
+  }
+  // --- END: PIN Validation ---
 
   // This is a placeholder for the real Supabase/Google Sheets logic
   console.log("Form submitted!");
   console.log("Mode:", isRegisterMode ? "Register" : "Login");
   console.log("Email:", email);
   console.log("PIN:", pin);
-// --- NEW: Save the user's session to localStorage ---
-  localStorage.setItem('loggedInUser', email);
+
   // --- Simulate a successful login/registration ---
-  // 1. Hide the auth form and initial button
+  localStorage.setItem('loggedInUser', email);
   closeAuthModal();
   enterAppBtn.classList.add("hidden");
 
-  // 2. Prepare and show the welcome message
-  const username = email.split('@')[0]; // Simple way to get a username
+  const username = email.split('@')[0];
   welcomeMessageText.textContent = isRegisterMode 
     ? `Welcome to AILA, ${username}!`
     : `Welcome back, ${username}!`;

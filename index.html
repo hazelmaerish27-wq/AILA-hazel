@@ -100,19 +100,40 @@
                 placeholder="Enter your Gmail"
                 required
               />
-              <input
-                type="password"
-                id="pin"
-                class="auth-input"
-                placeholder="Enter your PIN"
-                required
-              />
-              <input
-                type="password"
-                id="pinConfirm"
-                class="auth-input hidden"
-                placeholder="Confirm your PIN"
-              />
+<!-- START: New pin input -->
+<div class="pin-container">
+    <input
+        type="password"
+        id="pin"
+        class="auth-input pin-input"
+        placeholder=" "
+        required
+        maxlength="4"
+        pattern="\d{4}"
+        title="PIN must be 4 digits."
+    />
+    <svg id="pin-reveal-icon" class="pin-reveal-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+</div>
+<!-- START: New pinConfirm input -->
+<div id="pinConfirmContainer" class="pin-container hidden">
+    <input
+        type="password"
+        id="pinConfirm"
+        class="auth-input pin-input"
+        placeholder=" "
+        maxlength="4"
+        pattern="\d{4}"
+        title="PIN must be 4 digits."
+    />
+    <svg id="pin-confirm-reveal-icon" class="pin-reveal-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+</div>
+<!-- END: New pinConfirm input -->
               <button type="submit" id="authActionBtn" class="auth-action-btn">
                 Login
               </button>

@@ -2635,3 +2635,41 @@ textarea#input {
     background-color: rgba(255, 92, 108, 0.1);
     color: var(--danger);
 }
+/* --- Stylized PIN Input --- */
+.pin-container {
+    position: relative;
+    margin-bottom: 15px; /* Add margin here to space it from the next element */
+}
+
+.pin-input {
+    font-size: 24px;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    letter-spacing: 1.1em; /* This creates the space between digits */
+    text-align: center;
+    padding-left: 25px; /* Adjust padding to re-center the spaced-out text */
+    padding-right: 45px; /* Make space for the icon */
+    background-image: linear-gradient(to left, var(--muted) 70%, transparent 0%);
+    background-position: bottom;
+    background-size: 55px 1px;
+    background-repeat: repeat-x;
+    margin-bottom: 0; /* Remove margin from the input itself */
+}
+
+.pin-input::placeholder {
+    opacity: 0; /* Hide the placeholder to prevent it from messing up the visual */
+}
+
+.pin-reveal-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    stroke: var(--muted);
+    cursor: pointer;
+    transition: stroke 0.2s ease;
+}
+
+.pin-reveal-icon:hover {
+    stroke: var(--accent1);
+}
