@@ -2781,6 +2781,7 @@ input:-webkit-autofill:active {
 }
 
 .spinner {
+    display: none; /* Add this line */
     border: 2px solid rgba(255, 255, 255, 0.4);
     border-top: 2px solid #fff;
     border-radius: 50%;

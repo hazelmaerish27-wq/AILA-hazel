@@ -1,4 +1,10 @@
-// Add this line
+// --- START: Supabase Client Initialization ---
+const SUPABASE_URL = 'https://zpprfjrbtpmfroksoqrj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpwcHJmanJidHBtZnJva3NvcXJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjEzMDQwMjEsImV4cCI6MjA3Njg4MDAyMX0._j9f3lISZ4jZa-A3HnhXZEz1L_t5uZMiF21Cc2veqjw';
+
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// --- END: Supabase Client Initialization ---
 const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 const SFX = {
   loadingAmbient: "sfx/loading-ambient.mp3",
@@ -1361,10 +1367,9 @@ if (registerLink) {
 // Handle the form submission (Login or Register)
 // Replace the entire authForm event listener with this
 if (authForm) {
-    authForm.addEventListener("submit", (e) => {
+    authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        // Show loading spinner
         authActionBtn.classList.add('loading');
         authActionBtn.disabled = true;
 
@@ -1376,53 +1381,82 @@ if (authForm) {
         const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
         if (!emailRegex.test(email)) {
             showCustomAlert("Please enter a valid @gmail.com address.");
-            authActionBtn.classList.remove('loading');
-            authActionBtn.disabled = false;
-            return;
+            authActionBtn.classList.remove('loading'); authActionBtn.disabled = false; return;
         }
         if (pin.length !== 4) {
             showCustomAlert("PIN must be exactly 4 digits.");
-            authActionBtn.classList.remove('loading');
-            authActionBtn.disabled = false;
-            return;
+            authActionBtn.classList.remove('loading'); authActionBtn.disabled = false; return;
         }
         if (isRegisterMode && pin !== pinConfirm) {
-            showCustomAlert("The PINs you entered do not match. Please try again.");
-            authActionBtn.classList.remove('loading');
-            authActionBtn.disabled = false;
-            return;
+            showCustomAlert("The PINs you entered do not match.");
+            authActionBtn.classList.remove('loading'); authActionBtn.disabled = false; return;
         }
 
-        // --- Handle Registration vs. Login ---
-        if (isRegisterMode) {
-            // --- REGISTRATION LOGIC ---
-            // ... (rest of registration logic with fetch) ...
-        } else {
-            // --- LOGIN LOGIC ---
-            setTimeout(() => { // Simulate network delay
-                if (!checkTrialStatus()) {
-                    showCustomAlert("Your 30-day trial has expired.");
-                    authActionBtn.classList.remove('loading');
-                    authActionBtn.disabled = false;
-                    return;
-                }
+        try {
+            if (isRegisterMode) {
+                // --- REAL REGISTRATION WITH SUPABASE ---
+                const { data, error } = await _supabase.auth.signUp({
+                    email: email,
+                    password: pin,
+                });
+                if (error) throw error;
                 
-                // --- Simulate a successful login ---
+                // On success, proceed with UI changes
                 localStorage.setItem('loggedInUser', email);
                 closeAuthModal();
                 enterAppBtn.classList.add("hidden");
+                const username = email.split('@')[0];
+                welcomeMessageText.textContent = `Welcome to AILA, ${username}!`;
+                welcomeMessageContainer.classList.remove("hidden");
+                updateUserInfo();
 
+            } else {
+                // --- REAL LOGIN WITH SUPABASE ---
+                const { data, error } = await _supabase.auth.signInWithPassword({
+                    email: email,
+                    password: pin,
+                });
+                if (error) throw error;
+
+                // --- Trial Check from Supabase profiles table ---
+                const { data: profile, error: profileError } = await _supabase
+                    .from('profiles')
+                    .select('trial_start_date')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (profileError) throw profileError;
+
+                const startDate = new Date(profile.trial_start_date);
+                const today = new Date();
+                const diffTime = today - startDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > 30) {
+                    showCustomAlert("Your 30-day trial has expired.");
+                    _supabase.auth.signOut(); // Log them out immediately
+                    return; // Stop the process
+                }
+                
+                // --- Proceed with successful login ---
+                localStorage.setItem('loggedInUser', email);
+                closeAuthModal();
+                enterAppBtn.classList.add("hidden");
                 const username = email.split('@')[0];
                 welcomeMessageText.textContent = `Welcome back, ${username}!`;
                 welcomeMessageContainer.classList.remove("hidden");
                 updateUserInfo();
-
-                authActionBtn.classList.remove('loading');
-                authActionBtn.disabled = false;
-            }, 1000); // 1-second delay
+            }
+        } catch (error) {
+            showCustomAlert(error.message);
+        } finally {
+            // Always remove loading state
+            authActionBtn.classList.remove('loading');
+            authActionBtn.disabled = false;
         }
     });
 }
+
 
 // Handle the final "Enter AILA" button click
 if (finalEnterBtn) {
