@@ -1744,7 +1744,6 @@ textarea#input {
     max-width: 100%;
     overflow-wrap: break-word;
     line-height: 1;
-
   }
   .msg.user {
     align-self: flex-end;
@@ -2411,7 +2410,11 @@ textarea#input {
 }
 
 .auth-modal-content {
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.02)
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -2516,14 +2519,14 @@ textarea#input {
 
 /* --- Welcome Message After Login --- */
 #welcome-message-container {
-    text-align: center;
+  text-align: center;
 }
 
 #welcome-message-text {
-    color: #e8fbff;
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 15px;
+  color: #e8fbff;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 15px;
 }
 
 #final-enter-btn {
@@ -2539,137 +2542,233 @@ textarea#input {
 }
 
 #final-enter-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 /* --- Navigation Sidebar --- */
 .nav-sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 260px;
-    background-color: #0d1a2e; /* A slightly different shade from the main chat */
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 20px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
-    z-index: 1100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 260px;
+  background-color: #0d1a2e; /* A slightly different shade from the main chat */
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  z-index: 1100;
 }
 
 /* This class will be toggled by JS to show the sidebar */
 .app.nav-open .nav-sidebar {
-    transform: translateX(0);
+  transform: translateX(0);
 }
 
 /* This class pushes the main chat window to the right */
 .app.nav-open .chat {
-    transform: translateX(260px);
-    border-top-left-radius: 14px;
-    border-bottom-left-radius: 14px;
+  transform: translateX(260px);
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
 }
 
 .chat {
-    transition: transform 0.3s ease-in-out, border-radius 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, border-radius 0.3s ease-in-out;
 }
 
 /* Sidebar Content Styling */
 .nav-header {
-    margin-bottom: 20px;
-    flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .new-chat-btn {
-    width: 100%;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #e6fbff;
-    font-size: 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background-color 0.2s ease;
+  width: auto;
+  flex-grow: 1;
+  margin-right: 10px; /* Add space between the two buttons */
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e6fbff;
+  font-size: 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background-color 0.2s ease;
 }
 
 .new-chat-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .chat-history-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    /* You can add custom scrollbar styles here later if you wish */
+  flex-grow: 1;
+  overflow-y: auto;
+  /* You can add custom scrollbar styles here later if you wish */
+}
+.close-nav-btn {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6fbff;
 }
 
 .nav-footer {
-    padding-top: 15px;
-    margin-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    flex-shrink: 0;
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
 }
 
-.logout-btn {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    font-size: 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.2s ease;
+/* --- User Profile Section in Nav Footer --- */
+.user-profile {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
 }
 
-.logout-btn:hover {
-    background-color: rgba(255, 92, 108, 0.1);
-    color: var(--danger);
+.user-profile:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #5e489c; /* Purple accent */
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden; /* Prevents long emails from breaking layout */
+}
+
+.user-email {
+  font-size: 14px;
+  color: #e6fbff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds "..." if the email is too long */
+}
+
+.trial-status {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.logout-icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.user-profile:hover .logout-icon-btn {
+  color: #e6fbff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 /* --- Stylized PIN Input --- */
-.pin-container {
-    position: relative;
-    margin-bottom: 15px; /* Add margin here to space it from the next element */
+/* --- Stylized 4-Digit PIN Input --- */
+.pin-digit-container {
+  display: flex;
+  justify-content: center; /* This centers the boxes */
+  gap: 15px; /* This creates the space between the boxes */
+  margin-bottom: 20px;
 }
 
-.pin-input {
-    font-size: 24px;
-    font-family: 'Courier New', Courier, monospace;
-    font-weight: 700;
-    letter-spacing: 1.1em; /* This creates the space between digits */
-    text-align: center;
-    padding-left: 25px; /* Adjust padding to re-center the spaced-out text */
-    padding-right: 45px; /* Make space for the icon */
-    background-image: linear-gradient(to left, var(--muted) 70%, transparent 0%);
-    background-position: bottom;
-    background-size: 55px 1px;
-    background-repeat: repeat-x;
-    margin-bottom: 0; /* Remove margin from the input itself */
+.pin-digit {
+  width: 50px;
+  height: 55px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e6fbff;
+  font-size: 28px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 700;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
-.pin-input::placeholder {
-    opacity: 0; /* Hide the placeholder to prevent it from messing up the visual */
+.pin-digit:focus {
+  border-color: var(--accent1);
+  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
+}
+/* --- Custom Alert for Auth Modal --- */
+.custom-alert {
+  padding: 12px;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  background-color: rgba(255, 92, 108, 0.2); /* Reddish background */
+  border: 1px solid var(--danger);
+  color: #e6fbff;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.pin-reveal-icon {
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translateY(-50%);
-    stroke: var(--muted);
-    cursor: pointer;
-    transition: stroke 0.2s ease;
+.custom-alert:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* --- Override Browser Autofill Styles --- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #e8fbff !important; /* Force the text color to be light */
+  box-shadow: 0 0 0 30px var(--bg2) inset !important; /* Create a fake background using an inset shadow */
+  -webkit-box-shadow: 0 0 0 30px var(--bg2) inset !important; /* For older WebKit browsers */
+  transition: background-color 5000s ease-in-out 0s; /* A long transition to delay the browser's style from kicking in */
 }
 
-.pin-reveal-icon:hover {
-    stroke: var(--accent1);
+.pin-digit:-webkit-autofill {
+  -webkit-text-fill-color: #e8fbff !important;
+  caret-color: transparent !important; /* Hides the caret which can be misplaced in autofilled PINs */
 }

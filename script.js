@@ -1,3 +1,5 @@
+// Add this line
+const SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 const SFX = {
   loadingAmbient: "sfx/loading-ambient.mp3",
   glassBreak: "sfx/glass-break.mp3",
@@ -11,8 +13,8 @@ const SFX = {
 };
 
 const iconMap = {
-  "edu.gcfglobal.org":"icons/gcfglobal-color.png",
-  "www.w3schools.com":"icons/w3schools-logo-icon.png",
+  "edu.gcfglobal.org": "icons/gcfglobal-color.png",
+  "www.w3schools.com": "icons/w3schools-logo-icon.png",
   "docs.google.com/document": "icons/docs.png",
   "docs.google.com/spreadsheets": "icons/sheets.png",
   "drive.google.com": "icons/drive.png",
@@ -20,8 +22,8 @@ const iconMap = {
   "docs.google.com/forms": "icons/forms.png",
   "classroom.google.com": "icons/classroom.png",
   "sites.google.com": "icons/sites.png",
-  "www.excelcampus.com":"icons/excel-campus-logo-optimized.png",
-  "www.benlcollins.com":"icons/colins.png",
+  "www.excelcampus.com": "icons/excel-campus-logo-optimized.png",
+  "www.benlcollins.com": "icons/colins.png",
 };
 const defaultIcon = "icons/external.png";
 
@@ -79,13 +81,11 @@ const modalQuestions = {
         "https://docs.google.com/forms/d/e/1FAIpQLSexDGWOZ6CLnjh7WbItGeeShHdwzLGgUBa8m0B81_AeNSLOmw/viewform",
     },
   },
-  Orientation: [
-    "Orientation to Data Proccessing"
-  ],
+  Orientation: ["Orientation to Data Proccessing"],
   "Learning Materials": [
     {
       "ICT/Data Proccessing Classroom":
-      "https://classroom.google.com/c/Nzk0ODMxMDI1Mzgx?cjc=xxlb4l3e"
+        "https://classroom.google.com/c/Nzk0ODMxMDI1Mzgx?cjc=xxlb4l3e",
     },
     {
       "Google Sheets Get Started":
@@ -93,31 +93,31 @@ const modalQuestions = {
     },
     {
       "Google Sheets: Modifying Columns, Rows, and Cells":
-      "https://edu.gcfglobal.org/en/googlespreadsheets/modifying-columns-rows-and-cells/1/"
+        "https://edu.gcfglobal.org/en/googlespreadsheets/modifying-columns-rows-and-cells/1/",
     },
     {
       "Google Sheets: Understanding Number Formats":
-      "https://edu.gcfglobal.org/en/googlespreadsheets/understanding-number-formats/1/"
+        "https://edu.gcfglobal.org/en/googlespreadsheets/understanding-number-formats/1/",
     },
     {
       "Google Sheets Formulas":
-      "https://www.w3schools.com/googlesheets/google_sheets_formulas.php"
+        "https://www.w3schools.com/googlesheets/google_sheets_formulas.php",
     },
     {
       "Google Sheets IF Function":
-      "https://www.w3schools.com/googlesheets/google_sheets_if.php"
+        "https://www.w3schools.com/googlesheets/google_sheets_if.php",
     },
     {
       "The New XLOOKUP Function for Excel + Video Tutorial":
-      "https://www.excelcampus.com/functions/xlookup-explained/"
+        "https://www.excelcampus.com/functions/xlookup-explained/",
     },
     {
       "MRP Workbooks": {
-        "Material_Requirement_Planning_20251113_wk02":
+        Material_Requirement_Planning_20251113_wk02:
           "https://docs.google.com/spreadsheets/d/12-rQsdn698XDu1Fme0YR-LPHvFMLMcBKH3qtKOAQtEw/edit?usp=sharing",
-        "Material_Requirement_Planning_20251113_wk03":
+        Material_Requirement_Planning_20251113_wk03:
           "https://docs.google.com/spreadsheets/d/1ITMJd_yMIDhqNEoRe0umfdOawu2eQsWK/edit?usp=drivesdk&ouid=101212779968196364079&rtpof=true&sd=true",
-        "Material_Requirement_Planning_20251113_wk04":
+        Material_Requirement_Planning_20251113_wk04:
           "https://docs.google.com/spreadsheets/d/1UeVuVWZnXAty6ucR5vvUpqPB7f0iIw54J8G30cBGRAI/edit?usp=sharing",
       },
     },
@@ -255,7 +255,8 @@ function getPlaceholderContent(sectionTitle) {
   const sectionData = modalQuestions[sectionTitle] || {};
   const contentHTML = buildContentHTML(sectionData);
   return `<div class="placeholder-section">${
-    contentHTML || `<p>Coming soon...</p>
+    contentHTML ||
+    `<p>Coming soon...</p>
     <i style="opacity: 70%"; "font-size: 9px">This section is not configured yet</i>`
   }</div>`;
 }
@@ -372,7 +373,8 @@ function playSound(url, volume = 1.0) {
 }
 // N8N chat webhook link constant
 const CHAT_WEBHOOK = "https://levercrafter.app.n8n.cloud/webhook/aila-chat";
-const OFFLINE_DATA_URL = "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
+const OFFLINE_DATA_URL =
+  "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".dropdown")) {
     const allDropdowns = document.querySelectorAll(".dropdown");
@@ -701,22 +703,22 @@ function sendToBackend(text, askSuggestions = false) {
   };
 
   // This helper function will now ONLY be used when the connection completely fails.
-function getOfflineAnswer(q) {
+  function getOfflineAnswer(q) {
     // Find all keywords from the offline responses that are present in the user's query as whole words.
-    const matchingKeys = Object.keys(offlineResponses).filter(k => {
-        // We create a regular expression to match the keyword as a whole word, ignoring case.
-        const escapedKey = k.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-        const regex = new RegExp(`\\b${escapedKey}\\b`, 'i');
-        return regex.test(q);
+    const matchingKeys = Object.keys(offlineResponses).filter((k) => {
+      // We create a regular expression to match the keyword as a whole word, ignoring case.
+      const escapedKey = k.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+      const regex = new RegExp(`\\b${escapedKey}\\b`, "i");
+      return regex.test(q);
     });
 
     // If any keywords were found, select the one with the most characters.
     if (matchingKeys.length > 0) {
-        const bestMatch = matchingKeys.reduce((a, b) =>
-            a.length > b.length ? a : b
-        );
-        // Return the response for the best-matching (longest) keyword.
-        return offlineResponses[bestMatch];
+      const bestMatch = matchingKeys.reduce((a, b) =>
+        a.length > b.length ? a : b
+      );
+      // Return the response for the best-matching (longest) keyword.
+      return offlineResponses[bestMatch];
     }
 
     // If no keywords were found, return the default offline message.
@@ -725,7 +727,7 @@ function getOfflineAnswer(q) {
       \n<h5>We're still looking forward to the day that the already-prepared online version (GISING NA SI AILA), gets approved, even if it comes with a small fee, because it will allow us to help more LA and incoming trainees in the future.</h5>
       \n- *AILA can still response in templated answers given below, CLICK THE BUTTON*
       `;
-}
+  }
 
   // N8N fetch url
   fetch("https://levercrafter.app.n8n.cloud/webhook/aila-chat", {
@@ -1007,14 +1009,15 @@ async function loadOfflineData() {
  * Initializes the app with a dynamic, multi-stage loading screen.
  */
 async function initializeApp() {
-    // --- START: Check for an existing session ---
-  const loggedInUserEmail = localStorage.getItem('loggedInUser');
+  // --- START: Check for an existing session ---
+  const loggedInUserEmail = localStorage.getItem("loggedInUser");
   if (loggedInUserEmail) {
     // If a user is already logged in, bypass the loading screen entirely.
     const loadingOverlay = document.getElementById("loading-overlay");
     loadingOverlay.classList.remove("visible"); // Instantly hide the overlay
     showWelcomeScreen(); // Show the main chat interface
     updateStatus("pending"); // Set the initial status
+    updateUserInfo();
     return; // Stop the rest of the initializeApp function from running
   }
   // --- 1. Define loading content & get elements ---
@@ -1196,25 +1199,85 @@ messagesEl.addEventListener("click", (e) => {
 // --- START: Authentication Modal Logic ---
 
 // 1. Get all the elements we need from the DOM first.
+// Add this line with the other constants
+const customAlert = document.getElementById("customAlert");
 const authModal = document.getElementById("authModal");
 const authCloseBtn = document.getElementById("authCloseBtn");
 const authTitle = document.getElementById("authTitle");
 const authActionBtn = document.getElementById("authActionBtn");
-const pinInput = document.getElementById('pin');
-const pinConfirmInput = document.getElementById("pinConfirm");
-const pinConfirmContainer = document.getElementById('pinConfirmContainer');
-const pinRevealIcon = document.getElementById('pin-reveal-icon');
-const pinConfirmRevealIcon = document.getElementById('pin-confirm-reveal-icon');
+const pinContainer = document.getElementById("pinContainer");
+const pinConfirmContainer = document.getElementById("pinConfirmContainer");
 const registerLink = document.getElementById("registerLink");
 const authForm = document.getElementById("authForm");
 const enterAppBtn = document.getElementById("enter-app-btn");
-const welcomeMessageContainer = document.getElementById("welcome-message-container");
+const welcomeMessageContainer = document.getElementById(
+  "welcome-message-container"
+);
 const welcomeMessageText = document.getElementById("welcome-message-text");
 const finalEnterBtn = document.getElementById("final-enter-btn");
 
 let isRegisterMode = false;
 
 // 2. Define all the functions the modal will use.
+let alertTimeout; // This will prevent multiple alert timers from running at once
+// This function checks if the user's trial is still active.
+// Returns true if active, false if expired.
+function checkTrialStatus() {
+    const startDateString = localStorage.getItem('trialStartDate');
+    if (!startDateString) {
+        // If there's no start date, the trial is considered active.
+        return true; 
+    }
+
+    const startDate = new Date(startDateString);
+    const today = new Date();
+    const diffTime = today - startDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays <= 30;
+}
+
+function updateUserInfo() {
+  const userEmail = localStorage.getItem("loggedInUser");
+  if (!userEmail) return;
+
+  // Update UI elements
+  const userInitialEl = document.getElementById("userInitial");
+  const userEmailEl = document.getElementById("userEmail");
+  const trialStatusEl = document.getElementById("trialStatus");
+
+  if (userInitialEl)
+    userInitialEl.textContent = userEmail.charAt(0).toUpperCase();
+  if (userEmailEl) userEmailEl.textContent = userEmail;
+  // Inside the authForm "submit" event listener
+  
+  // Calculate and display trial days
+  if (trialStatusEl) {
+    let startDateString = localStorage.getItem("trialStartDate");
+    if (!startDateString) {
+      // Fallback in case it wasn't set on registration
+      startDateString = new Date().toISOString();
+      localStorage.setItem("trialStartDate", startDateString);
+    }
+    const startDate = new Date(startDateString);
+    const today = new Date();
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const daysRemaining = Math.max(0, 30 - diffDays);
+    trialStatusEl.textContent = `${daysRemaining} days left`;
+  }
+}
+
+function showCustomAlert(message) {
+  clearTimeout(alertTimeout); // Clear any existing timer
+  customAlert.textContent = message;
+  customAlert.classList.remove("hidden");
+
+  // Automatically hide the alert after 3 seconds
+  alertTimeout = setTimeout(() => {
+    customAlert.classList.add("hidden");
+  }, 3000);
+}
 
 // Function to open the modal
 function showAuthModal() {
@@ -1233,163 +1296,223 @@ function setAuthMode(isRegister) {
     authTitle.textContent = "Create an Account";
     authActionBtn.textContent = "Register";
     pinConfirmContainer.classList.remove("hidden");
-    pinConfirmInput.required = true;
-    registerLink.innerHTML = 'Already have an account? Login';
+    registerLink.innerHTML = "Already have an account? Login";
   } else {
     authTitle.textContent = "Login to AILA";
     authActionBtn.textContent = "Login";
     pinConfirmContainer.classList.add("hidden");
-    pinConfirmInput.required = false;
-    registerLink.innerHTML = 'Don\'t have an account? Register';
+    registerLink.innerHTML = "Don't have an account? Register";
   }
 }
 
-// This function filters the input to allow only numbers
-function enforceNumeric(event) {
-    event.target.value = event.target.value.replace(/\D/g, '');
+// Function to handle the auto-focusing logic for the 4-digit PIN inputs
+function setupPinInput(container) {
+  const inputs = [...container.children];
+  inputs.forEach((input, index) => {
+    input.addEventListener("input", () => {
+      // Only allow numbers
+      input.value = input.value.replace(/\D/g, "");
+      // Move to next input if a digit is entered
+      if (input.value && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      // Move to previous input on backspace if current input is empty
+      if (e.key === "Backspace" && !input.value && index > 0) {
+        inputs[index - 1].focus();
+      }
+    });
+  });
 }
 
-// This function toggles the visibility of a pin input and its icon
-function togglePinVisibility(inputElement, iconElement) {
-    if (inputElement.type === 'password') {
-        inputElement.type = 'text';
-        iconElement.innerHTML = `
-            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-            <line x1="1" y1="1" x2="23" y2="23"></line>
-        `;
-    } else {
-        inputElement.type = 'password';
-        iconElement.innerHTML = `
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-            <circle cx="12" cy="12" r="3"></circle>
-        `;
-    }
+// Helper function to get the full PIN value from a container
+function getPinFromContainer(container) {
+  return [...container.children].map((input) => input.value).join("");
 }
 
 // 3. Attach all the event listeners last.
 
+// Setup the logic for both PIN containers
+setupPinInput(pinContainer);
+setupPinInput(pinConfirmContainer);
+
 // Show the modal when the initial "Login / Register" button is clicked
 if (enterAppBtn) {
-    enterAppBtn.addEventListener("click", showAuthModal);
+  enterAppBtn.addEventListener("click", showAuthModal);
 }
 
 // Close the modal with the 'X' button
 if (authCloseBtn) {
-    authCloseBtn.addEventListener("click", closeAuthModal);
+  authCloseBtn.addEventListener("click", closeAuthModal);
 }
 
 // Toggle between Login and Register modes
 if (registerLink) {
-    registerLink.addEventListener("click", (e) => {
-        e.preventDefault();
-        setAuthMode(!isRegisterMode);
-    });
+  registerLink.addEventListener("click", (e) => {
+    e.preventDefault();
+    setAuthMode(!isRegisterMode);
+  });
 }
 
 // Handle the form submission (Login or Register)
+// Replace the entire authForm event listener with this
 if (authForm) {
     authForm.addEventListener("submit", (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent the form from reloading the page
 
         const email = document.getElementById("email").value;
-        const pin = pinInput.value;
-        const pinConfirm = pinConfirmInput.value;
+        const pin = getPinFromContainer(pinContainer);
+        const pinConfirm = getPinFromContainer(pinConfirmContainer);
 
-        // PIN Validation
+        // --- Client-Side Validation ---
+        const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+        if (!emailRegex.test(email)) {
+            showCustomAlert("Please enter a valid @gmail.com address.");
+            return;
+        }
         if (pin.length !== 4) {
-            alert("PIN must be exactly 4 digits.");
+            showCustomAlert("PIN must be exactly 4 digits.");
             return;
         }
         if (isRegisterMode && pin !== pinConfirm) {
-            alert("The PINs you entered do not match. Please try again.");
+            showCustomAlert("The PINs you entered do not match. Please try again.");
             return;
         }
 
-        // --- Simulate a successful login/registration ---
-        localStorage.setItem('loggedInUser', email);
-        closeAuthModal();
-        enterAppBtn.classList.add("hidden");
+        // --- Handle Registration vs. Login ---
+        if (isRegisterMode) {
+            // --- REGISTRATION LOGIC ---
+            const trialStartDate = new Date().toISOString();
+            
+            // For now, we create a placeholder UserId. Supabase will provide a real one later.
+            const placeholderUserId = `user_${Date.now()}`; 
 
-        const username = email.split('@')[0];
-        welcomeMessageText.textContent = isRegisterMode 
-            ? `Welcome to AILA, ${username}!`
-            : `Welcome back, ${username}!`;
-        welcomeMessageContainer.classList.remove("hidden");
+            // Show loading state on the button
+            authActionBtn.disabled = true;
+            authActionBtn.textContent = 'Registering...';
+
+            fetch(SCRIPT_API_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Required for simple Apps Script POST requests
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'REGISTER_USER',
+                    userId: placeholderUserId,
+                    email: email,
+                    trialStartDate: trialStartDate
+                })
+            })
+            .then(res => {
+                // NOTE: With 'no-cors', we don't get a readable response, but the request is sent.
+                // We will assume success and proceed. More robust error handling comes with a proper backend.
+                
+                // Save session and trial info to local storage
+                localStorage.setItem('loggedInUser', email);
+                localStorage.setItem('trialStartDate', trialStartDate);
+
+                // --- Proceed with successful registration UI ---
+                closeAuthModal();
+                enterAppBtn.classList.add("hidden");
+
+                const username = email.split('@')[0];
+                welcomeMessageText.textContent = `Welcome to AILA, ${username}!`;
+                welcomeMessageContainer.classList.remove("hidden");
+                updateUserInfo();
+            })
+            .catch(error => {
+                console.error('Registration Error:', error);
+                showCustomAlert('Registration failed. Please try again.');
+            })
+            .finally(() => {
+                // Re-enable the button whether it succeeded or failed
+                authActionBtn.disabled = false;
+                authActionBtn.textContent = 'Register';
+            });
+
+        } else {
+            // --- LOGIN LOGIC (Still using placeholder) ---
+            if (!checkTrialStatus()) {
+                showCustomAlert("Your 30-day trial has expired.");
+                return;
+            }
+            
+            // --- Simulate a successful login ---
+            localStorage.setItem('loggedInUser', email);
+            closeAuthModal();
+            enterAppBtn.classList.add("hidden");
+
+            const username = email.split('@')[0];
+            welcomeMessageText.textContent = `Welcome back, ${username}!`;
+            welcomeMessageContainer.classList.remove("hidden");
+            updateUserInfo();
+        }
     });
 }
 
 // Handle the final "Enter AILA" button click
 if (finalEnterBtn) {
-    finalEnterBtn.addEventListener("click", () => {
-        const loadingOverlay = document.getElementById("loading-overlay");
-        if (ambientSound) {
-            ambientSound.pause();
-            ambientSound.currentTime = 0;
-        }
-        
-        playSound(SFX.whoosh, 0.8);
-        loadingOverlay.classList.remove("visible");
-        if (chatEl) {
-            chatEl.classList.add("entering");
-        }
+  finalEnterBtn.addEventListener("click", () => {
+    const loadingOverlay = document.getElementById("loading-overlay");
+    if (ambientSound) {
+      ambientSound.pause();
+      ambientSound.currentTime = 0;
+    }
 
-        updateStatus("pending");
-        showWelcomeScreen();
-    });
-}
+    playSound(SFX.whoosh, 0.8);
+    loadingOverlay.classList.remove("visible");
+    if (chatEl) {
+      chatEl.classList.add("entering");
+    }
 
-// Add event listeners to the reveal icons
-if (pinRevealIcon) {
-    pinRevealIcon.addEventListener('click', () => togglePinVisibility(pinInput, pinRevealIcon));
+    updateStatus("pending");
+    showWelcomeScreen();
+  });
 }
-if (pinConfirmRevealIcon) {
-    pinConfirmRevealIcon.addEventListener('click', () => togglePinVisibility(pinConfirmInput, pinConfirmRevealIcon));
-}
-
-// Apply the numeric-only filter to both PIN fields
-if (pinInput) {
-    pinInput.addEventListener('input', enforceNumeric);
-}
-if (pinConfirmInput) {
-    pinConfirmInput.addEventListener('input', enforceNumeric);
-}
-
 // --- END: Authentication Modal Logic ---
 // --- START: Navigation Sidebar Logic ---
 
 // Get elements from the DOM
-const appContainer = document.querySelector('.app');
-const navLogo = document.getElementById('logo');
-const navSidebar = document.getElementById('navSidebar');
-const newChatBtn = document.getElementById('newChatBtn');
-const logoutBtn = document.getElementById('logoutBtn');
+const appContainer = document.querySelector(".app");
+const navLogo = document.getElementById("logo");
+const navSidebar = document.getElementById("navSidebar");
+const newChatBtn = document.getElementById("newChatBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const closeNavBtn = document.getElementById("closeNavBtn");
 
 // Function to toggle the navigation sidebar
 function toggleNav() {
-    appContainer.classList.toggle('nav-open');
+  appContainer.classList.toggle("nav-open");
 }
 
 // Event listener for the AILA header logo
 if (navLogo) {
-    navLogo.addEventListener('click', toggleNav);
+  navLogo.addEventListener("click", toggleNav);
+}
+// Add this event listener for the new close button
+if (closeNavBtn) {
+  closeNavBtn.addEventListener("click", toggleNav);
 }
 
 // Event listener for the "New Chat" button
 if (newChatBtn) {
-    newChatBtn.addEventListener('click', () => {
-        showWelcomeScreen(); // Re-use this function to clear the chat area
-        if (appContainer.classList.contains('nav-open')) {
-            toggleNav(); // Close the nav after starting a new chat
-        }
-    });
+  newChatBtn.addEventListener("click", () => {
+    showWelcomeScreen(); // Re-use this function to clear the chat area
+    if (appContainer.classList.contains("nav-open")) {
+      toggleNav(); // Close the nav after starting a new chat
+    }
+  });
 }
 
 // Event listener for the "Log Out" button
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('loggedInUser'); // Clear the session
-        window.location.reload(); // Reload the page to go back to login
-    });
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("loggedInUser"); // Clear the session
+    window.location.reload(); // Reload the page to go back to login
+  });
 }
 
 // --- END: Navigation Sidebar Logic ---
