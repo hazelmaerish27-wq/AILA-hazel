@@ -6,6 +6,16 @@ const SUPABASE_ANON_KEY =
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // --- END: Supabase Client Initialization ---
+// --- START: Supabase Auth State Listener ---
+_supabase.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session) {
+    // This is a successful login (e.g., after Google redirect)
+    const user = session.user;
+    handleSuccessfulLogin(user.email);
+  }
+});
+// --- END: Supabase Auth State Listener ---
+
 const SCRIPT_API_URL =
   "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 const SFX = {
@@ -1233,6 +1243,17 @@ let isRegisterMode = false;
 let alertTimeout; // This will prevent multiple alert timers from running at once
 // This function checks if the user's trial is still active.
 // Returns true if active, false if expired.
+function handleSuccessfulLogin(email) {
+  localStorage.setItem("loggedInUser", email);
+  closeAuthModal();
+  enterAppBtn.classList.add("hidden");
+
+  const username = email.split("@")[0];
+  welcomeMessageText.textContent = `Welcome back, ${username}!`;
+  welcomeMessageContainer.classList.remove("hidden");
+  updateUserInfo();
+}
+
 function checkTrialStatus() {
   const startDateString = localStorage.getItem("trialStartDate");
   if (!startDateString) {
@@ -1461,14 +1482,7 @@ if (authForm) {
         }
 
         // --- Proceed with successful login ---
-        localStorage.setItem("loggedInUser", email);
-        closeAuthModal();
-        enterAppBtn.classList.add("hidden");
-        welcomeMessageText.textContent = `Welcome back, ${
-          email.split("@")[0]
-        }!`;
-        welcomeMessageContainer.classList.remove("hidden");
-        updateUserInfo();
+handleSuccessfulLogin(email);
       }
     } catch (error) {
       // --- CUSTOM ERROR HANDLING ---
