@@ -1268,15 +1268,24 @@ let isRegisterMode = false;
 let alertTimeout; // This will prevent multiple alert timers from running at once
 // This function checks if the user's trial is still active.
 // Returns true if active, false if expired.
-function handleSuccessfulLogin(email) {
-  localStorage.setItem("loggedInUser", email);
-  closeAuthModal();
-  enterAppBtn.classList.add("hidden");
 
-  const username = email.split("@")[0];
-  welcomeMessageText.textContent = `Welcome back, ${username}!`;
-  welcomeMessageContainer.classList.remove("hidden");
-  updateUserInfo();
+function handleSuccessfulLogin(email, isNewUser = false) {
+    localStorage.setItem('loggedInUser', email);
+    if (isNewUser) {
+        localStorage.setItem('trialStartDate', new Date().toISOString());
+    }
+
+    const loadingOverlay = document.getElementById("loading-overlay");
+
+    // --- THIS IS THE FIX ---
+    // Hide all overlays to reveal the main app
+    if (loadingOverlay) loadingOverlay.classList.remove("visible");
+    closeAuthModal(); 
+
+    // Now, show the main application screen and update user info
+    showWelcomeScreen();
+    updateUserInfo();
+    updateStatus("pending");
 }
 
 function checkTrialStatus() {
@@ -1431,7 +1440,7 @@ if (authForm) {
 
         const email = document.getElementById("email").value;
         const pin = getPinFromContainer(pinContainer);
-        const pinConfirm = getPinFromContainer(document.getElementById('pinConfirmContainer'));
+        const pinConfirm = getPinFromContainer(pinConfirmGroup);
 
         try {
             // --- Client-Side Validation ---
@@ -1445,16 +1454,35 @@ if (authForm) {
                 const { data, error } = await _supabase.auth.signUp({ email, password: pin });
                 if (error) throw error;
                 
-                // Manually call the success handler for registration
-                handleSuccessfulLogin(data.user.email, true);
+                showCustomAlert("Registered successfully! Please verify your email to log in.", 'success');
+                // After successful registration, send them back to the login view
+                setTimeout(() => {
+                    setAuthState('login');
+                }, 3000);
 
             } else {
                 // --- REAL LOGIN ---
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pin });
                 if (error) throw error;
 
-                // Manually call the success handler for login
-                handleSuccessfulLogin(data.user.email, false);
+                // Trial Check from Supabase
+                const { data: profile, error: profileError } = await _supabase.from('profiles').select('trial_start_date').eq('id', data.user.id).single();
+                if (profileError) throw profileError;
+
+                const startDate = new Date(profile.trial_start_date);
+                const diffDays = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > 30) {
+                    _supabase.auth.signOut();
+                    throw new Error("Your 30-day trial has expired.");
+                }
+                
+                // --- On successful login, hide overlays and show the app ---
+                localStorage.setItem('loggedInUser', email);
+                document.getElementById('loading-overlay').classList.remove('visible');
+                closeAuthModal();
+                showWelcomeScreen();
+                updateUserInfo();
             }
         } catch (error) {
             // --- CUSTOM ERROR HANDLING ---
@@ -1462,7 +1490,10 @@ if (authForm) {
                 showCustomAlert("User already registered. Please log in.");
             } else if (error.message.includes("Invalid login credentials")) {
                 showCustomAlert("Email not registered or incorrect PIN.");
-            } else {
+            } else if (error.message.includes("Email not confirmed")) {
+                showCustomAlert("Please check your inbox to confirm your email address first.");
+            }
+            else {
                 showCustomAlert(error.message);
             }
         } finally {
@@ -1472,6 +1503,7 @@ if (authForm) {
         }
     });
 }
+
 // Handle the final "Enter AILA" button click
 if (finalEnterBtn) {
   finalEnterBtn.addEventListener("click", () => {
@@ -1558,25 +1590,28 @@ if (authForm) {
                 showCustomAlert("Registered successfully! Please check your email to verify.", 'success');
                 setTimeout(() => setAuthState('login'), 3000);
             } else {
-                // REAL LOGIN
-                const { data, error } = await _supabase.auth.signInWithPassword({ email: email, password: pin });
-                if (error) throw error;
+    // --- REAL LOGIN ---
+    const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pin });
+    if (error) throw error;
 
-                // Trial Check
-                const { data: profile, error: profileError } = await _supabase.from('profiles').select('trial_start_date').eq('id', data.user.id).single();
-                if (profileError) throw profileError;
+    // Trial Check from Supabase
+    const { data: profile, error: profileError } = await _supabase.from('profiles').select('trial_start_date').eq('id', data.user.id).single();
+    if (profileError) throw profileError;
 
-                const startDate = new Date(profile.trial_start_date);
-                const diffDays = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
-                
-                if (diffDays > 30) {
-                    showCustomAlert("Your 30-day trial has expired.");
-                    _supabase.auth.signOut();
-                    return;
-                }
-                
-                handleSuccessfulLogin(email);
-            }
+    const startDate = new Date(profile.trial_start_date);
+    const diffDays = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays > 30) {
+        showCustomAlert("Your 30-day trial has expired.");
+        _supabase.auth.signOut();
+        return;
+    }
+    
+    // --- ADD THIS LINE ---
+    // On successful login and trial check, call the success handler
+    handleSuccessfulLogin(email);
+}
+
         } catch (error) {
             if (error.message.includes("User already registered")) {
                 showCustomAlert("User already registered. Please log in.");
