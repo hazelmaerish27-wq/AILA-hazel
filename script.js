@@ -1366,8 +1366,16 @@ function handleSuccessfulLogin(email, isNewUser = false) {
     if (googleLoginBtn) {
         googleLoginBtn.addEventListener('click', async (e) => {
             e.preventDefault();
-            const { error } = await _supabase.auth.signInWithOAuth({ provider: 'google' });
-            if (error) showCustomAlert(error.message);
+            const { error } = await _supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    // This is the fix: It tells Supabase where to return after a successful login.
+                    redirectTo: window.location.href
+                }
+            });
+            if (error) {
+                showCustomAlert(error.message);
+            }
         });
     }
 
