@@ -34,6 +34,7 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
         }
 
         // --- Proceed with successful login UI ---
+        handleSuccessfulLogin(email);
         localStorage.setItem('loggedInUser', user.email);
         document.getElementById('loading-overlay').classList.remove('visible');
         showWelcomeScreen();
@@ -1270,6 +1271,7 @@ let alertTimeout; // This will prevent multiple alert timers from running at onc
 // Returns true if active, false if expired.
 
 function handleSuccessfulLogin(email, isNewUser = false) {
+
     localStorage.setItem('loggedInUser', email);
     if (isNewUser) {
         localStorage.setItem('trialStartDate', new Date().toISOString());
@@ -1430,80 +1432,6 @@ if (registerLink) {
   });
 }
 
-// Handle the form submission (Login or Register)
-// Replace the entire authForm event listener with this
-if (authForm) {
-    authForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        authActionBtn.classList.add('loading');
-        authActionBtn.disabled = true;
-
-        const email = document.getElementById("email").value;
-        const pin = getPinFromContainer(pinContainer);
-        const pinConfirm = getPinFromContainer(pinConfirmGroup);
-
-        try {
-            // --- Client-Side Validation ---
-            const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
-            if (!emailRegex.test(email)) throw new Error("Please enter a valid @gmail.com address.");
-            if (pin.length !== 6) throw new Error("PIN must be exactly 6 digits.");
-            if (isRegisterMode && pin !== pinConfirm) throw new Error("The PINs you entered do not match.");
-
-            if (isRegisterMode) {
-                // --- REAL REGISTRATION ---
-                const { data, error } = await _supabase.auth.signUp({ email, password: pin });
-                if (error) throw error;
-                
-                showCustomAlert("Registered successfully! Please verify your email to log in.", 'success');
-                // After successful registration, send them back to the login view
-                setTimeout(() => {
-                    setAuthState('login');
-                }, 3000);
-
-            } else {
-                // --- REAL LOGIN ---
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pin });
-                if (error) throw error;
-
-                // Trial Check from Supabase
-                const { data: profile, error: profileError } = await _supabase.from('profiles').select('trial_start_date').eq('id', data.user.id).single();
-                if (profileError) throw profileError;
-
-                const startDate = new Date(profile.trial_start_date);
-                const diffDays = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
-                
-                if (diffDays > 30) {
-                    _supabase.auth.signOut();
-                    throw new Error("Your 30-day trial has expired.");
-                }
-                
-                // --- On successful login, hide overlays and show the app ---
-                localStorage.setItem('loggedInUser', email);
-                document.getElementById('loading-overlay').classList.remove('visible');
-                closeAuthModal();
-                showWelcomeScreen();
-                updateUserInfo();
-            }
-        } catch (error) {
-            // --- CUSTOM ERROR HANDLING ---
-            if (error.message.includes("User already registered")) {
-                showCustomAlert("User already registered. Please log in.");
-            } else if (error.message.includes("Invalid login credentials")) {
-                showCustomAlert("Email not registered or incorrect PIN.");
-            } else if (error.message.includes("Email not confirmed")) {
-                showCustomAlert("Please check your inbox to confirm your email address first.");
-            }
-            else {
-                showCustomAlert(error.message);
-            }
-        } finally {
-            // This FINALLY block will ALWAYS run, ensuring the spinner is always hidden.
-            authActionBtn.classList.remove('loading');
-            authActionBtn.disabled = false;
-        }
-    });
-}
-
 // Handle the final "Enter AILA" button click
 if (finalEnterBtn) {
   finalEnterBtn.addEventListener("click", () => {
@@ -1556,7 +1484,6 @@ if (forgotPasswordLink) {
       }
     });
   }
-  // Handle the form submission (Login or Register)
 if (authForm) {
     authForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -1567,67 +1494,52 @@ if (authForm) {
         const pin = getPinFromContainer(pinContainer);
         const pinConfirm = getPinFromContainer(pinConfirmGroup);
 
-        // Client-Side Validation
-        const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
-        if (!emailRegex.test(email)) {
-            showCustomAlert("Please enter a valid @gmail.com address.");
-            authActionBtn.classList.remove('loading'); authActionBtn.disabled = false; return;
-        }
-        if (pin.length !== 6) {
-            showCustomAlert("PIN must be exactly 6 digits.");
-            authActionBtn.classList.remove('loading'); authActionBtn.disabled = false; return;
-        }
-        if (isRegisterMode && pin !== pinConfirm) {
-            showCustomAlert("The PINs you entered do not match.");
-            authActionBtn.classList.remove('loading'); authActionBtn.disabled = false; return;
-        }
-
         try {
+            // --- Client-Side Validation ---
+            const emailRegex = /^[a-zA-Z0-9._-]+@gmail\.com$/;
+            if (!emailRegex.test(email)) throw new Error("Please enter a valid @gmail.com address.");
+            if (pin.length !== 6) throw new Error("PIN must be exactly 6 digits.");
+            if (isRegisterMode && pin !== pinConfirm) throw new Error("The PINs you entered do not match.");
+
             if (isRegisterMode) {
-                // REAL REGISTRATION
-                const { error } = await _supabase.auth.signUp({ email: email, password: pin });
+                // --- REAL REGISTRATION ---
+                const { data, error } = await _supabase.auth.signUp({ email, password: pin });
                 if (error) throw error;
-                showCustomAlert("Registered successfully! Please check your email to verify.", 'success');
-                setTimeout(() => setAuthState('login'), 3000);
+                
+                showCustomAlert("Registered successfully! You can now log in.", 'success');
+                // After successful registration, send them back to the login view
+                setTimeout(() => {
+                    setAuthMode(false); // Switch to login view
+                }, 3000);
+
             } else {
-    // --- REAL LOGIN ---
-    const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pin });
-    if (error) throw error;
+                // --- REAL LOGIN ---
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pin });
+                if (error) throw error;
 
-    // Trial Check from Supabase
-    const { data: profile, error: profileError } = await _supabase.from('profiles').select('trial_start_date').eq('id', data.user.id).single();
-    if (profileError) throw profileError;
-
-    const startDate = new Date(profile.trial_start_date);
-    const diffDays = Math.floor((new Date() - startDate) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays > 30) {
-        showCustomAlert("Your 30-day trial has expired.");
-        _supabase.auth.signOut();
-        return;
-    }
-    
-    // --- ADD THIS LINE ---
-    // On successful login and trial check, call the success handler
-    handleSuccessfulLogin(email);
-}
-
+                // --- On successful login, save session and RELOAD ---
+                // This is the most reliable way to let initializeApp handle the correct view.
+                localStorage.setItem('loggedInUser', data.user.email);
+                window.location.reload();
+            }
         } catch (error) {
+            // --- CUSTOM ERROR HANDLING ---
             if (error.message.includes("User already registered")) {
                 showCustomAlert("User already registered. Please log in.");
             } else if (error.message.includes("Invalid login credentials")) {
                 showCustomAlert("Email not registered or incorrect PIN.");
+            } else if (error.message.includes("Email not confirmed")) {
+                showCustomAlert("Please check your inbox to confirm your email address first.");
             } else {
                 showCustomAlert(error.message);
             }
         } finally {
+            // This FINALLY block will ALWAYS run, ensuring the spinner is always hidden.
             authActionBtn.classList.remove('loading');
             authActionBtn.disabled = false;
         }
     });
-}
-
-}
+}}
 
 // --- END: Authentication Modal Logic ---
 
@@ -1665,11 +1577,11 @@ if (newChatBtn) {
   });
 }
 
-// Event listener for the "Log Out" button
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("loggedInUser"); // Clear the session
-    window.location.reload(); // Reload the page to go back to login
+    _supabase.auth.signOut(); // <-- ADD THIS LINE
+    localStorage.removeItem("loggedInUser");
+    window.location.reload();
   });
 }
 
