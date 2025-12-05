@@ -10,18 +10,22 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // --- START: Supabase Auth State Listener ---
 _supabase.auth.onAuthStateChange(async (event, session) => {
     // This listener now handles all SIGNED_IN events, including Google redirects
-    if (event === "SIGNED_IN" && session) {
-        
-        // --- THIS IS THE FIX ---
-        // Instead of reloading, we now directly call the success handler.
-        // This will hide the loading overlay and show the main chat.
-        handleSuccessfulLogin(session.user.email);
+if (event === "SIGNED_IN" && session) {
+    // This is a successful login (e.g., after Google redirect)
+    
+    // Save the user's session to local storage
+    localStorage.setItem('loggedInUser', session.user.email);
 
-        // We also clean the URL to prevent issues on the next refresh.
-        if (window.location.hash.includes('access_token')) {
-            window.history.replaceState(null, '', window.location.pathname);
-        }
+    // --- THIS IS THE FIX ---
+    // Check if the URL has the access token from the redirect.
+    // If it does, we need to clean the URL and reload the page.
+    if (window.location.hash.includes('access_token')) {
+        // Use replaceState to clean the URL without adding to browser history
+        window.history.replaceState(null, '', window.location.pathname);
+        // Now, reload the page. It will load with a clean URL.
+        window.location.reload();
     }
+}
 });
 
 const SCRIPT_API_URL ="https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
