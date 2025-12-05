@@ -10,10 +10,14 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // --- START: Supabase Auth State Listener ---
 _supabase.auth.onAuthStateChange(async (event, session) => {
     // This listener now handles all SIGNED_IN events, including Google redirects
-if (event === "SIGNED_IN" && session) {
-    // This is a successful login (e.g., after Google redirect)
-    
-    // Save the user's session to local storage
+    if (event === "SIGNED_IN" && session) {
+        
+        // --- THIS IS THE FIX ---
+        // Instead of reloading, we now directly call the success handler.
+        // This will hide the loading overlay and show the main chat.
+        handleSuccessfulLogin(session.user.email);
+
+        // Save the user's session to local storage
     localStorage.setItem('loggedInUser', session.user.email);
 
     // --- THIS IS THE FIX ---
