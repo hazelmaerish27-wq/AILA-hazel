@@ -1729,45 +1729,191 @@ textarea#input {
   height: fit-content;
   font-size: 12px;
 }
+/* --- New Responsive Navigation Sidebar --- */
+.app {
+  position: relative;
+  width: 100%;
+  transition: padding-left 0.3s ease-in-out;
+}
+
+.nav-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--bg1); /* Using your theme's background color */
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  z-index: 1100;
+  transition: width 0.3s ease-in-out;
+  width: 80px; /* Collapsed width */
+}
+
+.nav-sidebar.expanded {
+  width: 260px; /* Expanded width */
+}
+
+/* Header of the sidebar */
+.nav-header {
+  display: flex;
+  flex-direction: column; /* Stack buttons vertically */
+  align-items: center;
+  gap: 10px; /* Space between buttons */
+  padding: 15px;
+  flex-shrink: 0;
+}
+
+.new-chat-btn,
+.search-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--muted);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Align icon to the left */
+  gap: 12px;
+  padding: 12px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.new-chat-btn:hover,
+.search-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.nav-text {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out 0.1s; /* Added delay */
+}
+
+.nav-sidebar.expanded .nav-text {
+  opacity: 1;
+}
+
+.chat-history-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 0 15px;
+}
+
+/* Footer of the sidebar */
+.nav-footer {
+  padding: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  overflow: hidden;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #fff;
+}
+
+.user-profile:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0; /* Prevent avatar from shrinking */
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+/* Main Chat Window styles */
+.chat {
+  transition: margin-left 0.3s ease-in-out;
+  margin-left: 80px; /* Default margin for collapsed sidebar */
+  width: calc(100% - 80px);
+}
+
+.nav-sidebar.expanded + .chat {
+  margin-left: 260px; /* Margin when sidebar is expanded */
+  width: calc(100% - 260px);
+}
+
+/* Hide old buttons */
+.open-nav-btn,
+.close-nav-btn {
+  display: none !important;
+}
+
+/* --- User Profile Pop-up Menu --- */
+.user-menu {
+  position: fixed;
+  bottom: 80px; /* Position above the footer */
+  left: 15px;
+  width: 230px;
+  background: #2a2a2e; /* A slightly lighter dark color */
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1200;
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+
+.user-menu:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.user-menu-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
 
 /* --- Mobile View Enhancements --- */
 @media (max-width: 900px) {
-  .nav-sidebar {
-    transform: translateX(-100%);
-    width: 260px;
-    /* Always full width on mobile */
-  }
-
-  .nav-sidebar.expanded {
-    transform: translateX(0);
-    /* Slide in when expanded */
-  }
-
-  .chat {
-    margin-left: 0;
-    /* No margin on mobile */
-    width: 100%;
-  }
-
-  .nav-sidebar.expanded + .chat {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .open-nav-btn {
-    display: block;
-    /* Show the hamburger menu button on mobile */
-  }
-
-  .close-nav-btn {
-    display: flex;
-    /* Always show the close button on mobile sidebar */
-  }
-
-  .nav-text {
-    opacity: 1;
-    /* Always show text on mobile sidebar */
-  }
   /* --- Auth Modal adjustments for mobile --- */
   .auth-modal-content {
     padding: 20px;
@@ -2614,135 +2760,6 @@ textarea#input {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
-/* --- New Responsive Navigation Sidebar --- */
-.app {
-  position: relative;
-  width: 100%;
-}
-
-.nav-sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background-color: #202123; /* Dark background like ChatGPT */
-  display: flex;
-  flex-direction: column;
-  z-index: 1100;
-  transition: width 0.3s ease-in-out;
-  width: 80px; /* Collapsed width */
-}
-
-.nav-sidebar.expanded {
-  width: 260px; /* Expanded width */
-}
-
-/* Header of the sidebar */
-.nav-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px;
-  flex-shrink: 0;
-}
-
-.new-chat-btn {
-  flex-grow: 1; /* Allows it to take up space */
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  transition: background-color 0.2s ease;
-  overflow: hidden; /* Hide text when collapsed */
-  white-space: nowrap;
-}
-.new-chat-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-text {
-  opacity: 0;
-  transition: opacity 0.2s ease-in-out;
-}
-.nav-sidebar.expanded .nav-text {
-  opacity: 1;
-}
-
-.close-nav-btn {
-  display: none; /* Hidden by default, only shown when expanded */
-  /* ... other styles for the button (already correct) ... */
-}
-.nav-sidebar.expanded .close-nav-btn {
-  display: flex;
-}
-
-.chat-history-list {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 0 20px;
-}
-
-/* Footer of the sidebar */
-.nav-footer {
-  padding: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  overflow: hidden; /* Hide text when collapsed */
-}
-.user-profile:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  /* ... rest of avatar styles are correct ... */
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-/* Main Chat Window styles */
-.chat {
-  transition: margin-left 0.3s ease-in-out;
-  margin-left: 80px; /* Default margin to make space for collapsed sidebar */
-  width: calc(100% - 80px);
-}
-
-.nav-sidebar.expanded + .chat {
-  margin-left: 260px; /* Margin when sidebar is expanded */
-  width: calc(100% - 260px);
-}
-
-.open-nav-btn {
-  display: none; /* Hidden by default on desktop */
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 8px;
-  margin-right: 10px;
-}
-
 /* --- Stylized PIN Input --- */
 /* --- Stylized 4-Digit PIN Input --- */
 .pin-digit-container {

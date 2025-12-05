@@ -1474,50 +1474,76 @@ window.addEventListener('load', () => {
 });
 
 // --- END: Authentication Modal Logic ---
+// --- START: User Info Update ---
+function updateUserInfo() {
+    const userEmailEl = document.getElementById('userEmail');
+    const userInitialEl = document.getElementById('userInitial');
+    const loggedInUserEmail = localStorage.getItem("loggedInUser");
+
+    if (loggedInUserEmail && userEmailEl && userInitialEl) {
+        userEmailEl.textContent = loggedInUserEmail;
+        userInitialEl.textContent = loggedInUserEmail.charAt(0).toUpperCase();
+    }
+}
+// --- END: User Info Update ---
+
 // --- START: Navigation Sidebar Logic ---
-function setupNavigation(){
-// Get elements from the DOM
-const appContainer = document.querySelector(".app");
-const navLogo = document.getElementById("logo");
-const navSidebar = document.getElementById("navSidebar");
-const newChatBtn = document.getElementById("newChatBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const closeNavBtn = document.getElementById("closeNavBtn");
+function setupNavigation() {
+    // Get elements from the DOM
+    const navSidebar = document.getElementById("navSidebar");
+    const navLogo = document.getElementById("logo");
+    const newChatBtn = document.getElementById("newChatBtn");
+    const userProfileBtn = document.getElementById("userProfile");
+    const userMenu = document.getElementById("userMenu");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-// Function to toggle the navigation sidebar
-function toggleNav() {
-  appContainer.classList.toggle("nav-open");
-}
-
-// Event listener for the AILA header logo
-if (navLogo) {
-  navLogo.addEventListener("click", toggleNav);
-}
-// Add this event listener for the new close button
-if (closeNavBtn) {
-  closeNavBtn.addEventListener("click", toggleNav);
-}
-
-// Event listener for the "New Chat" button
-if (newChatBtn) {
-  newChatBtn.addEventListener("click", () => {
-    showWelcomeScreen(); // Re-use this function to clear the chat area
-    if (appContainer.classList.contains("nav-open")) {
-      toggleNav(); // Close the nav after starting a new chat
+    // Function to toggle the navigation sidebar
+    function toggleNav() {
+        navSidebar.classList.toggle("expanded");
     }
-  });
-}
 
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    const isConfirmed = await showConfirm("Confirm Logout", "Are you sure you want to log out?");
-    if (isConfirmed) {
-        await _supabase.auth.signOut();
-        localStorage.removeItem("loggedInUser");
-        window.location.reload();
+    // Event listener for the AILA header logo to expand/collapse
+    if (navLogo) {
+        navLogo.addEventListener("click", toggleNav);
     }
-  });
-}
+
+    // Event listener for the "New Chat" button
+    if (newChatBtn) {
+        newChatBtn.addEventListener("click", () => {
+            showWelcomeScreen(); // Re-use this function to clear the chat area
+            if (navSidebar.classList.contains("expanded")) {
+                toggleNav(); // Close the nav after starting a new chat
+            }
+        });
+    }
+
+    // --- NEW: User Profile Menu Logic ---
+    if (userProfileBtn && userMenu) {
+        userProfileBtn.addEventListener("click", (e) => {
+            e.stopPropagation(); // Prevents the window click listener from firing immediately
+            userMenu.classList.toggle("hidden");
+        });
+    }
+    
+    // Close the user menu if clicked outside
+    window.addEventListener('click', (e) => {
+        if (userMenu && !userMenu.classList.contains('hidden') && !userMenu.contains(e.target) && !userProfileBtn.contains(e.target)) {
+            userMenu.classList.add('hidden');
+        }
+    });
+
+
+    // Event listener for the "Logout" button
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", async () => {
+            const isConfirmed = await showConfirm("Confirm Logout", "Are you sure you want to log out?");
+            if (isConfirmed) {
+                await _supabase.auth.signOut();
+                localStorage.removeItem("loggedInUser");
+                window.location.reload();
+            }
+        });
+    }
 }
 // --- END: Navigation Sidebar Logic ---
 // --- START: Password Reset Page Logic ---
