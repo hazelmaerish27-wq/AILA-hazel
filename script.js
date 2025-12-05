@@ -1041,16 +1041,20 @@ async function loadOfflineData() {
  */
 async function initializeApp() {
   // --- START: Check for an existing session ---
-  const loggedInUserEmail = localStorage.getItem("loggedInUser");
-  if (loggedInUserEmail) {
-    // If a user is already logged in, bypass the loading screen entirely.
-    const loadingOverlay = document.getElementById("loading-overlay");
-    loadingOverlay.classList.remove("visible"); // Instantly hide the overlay
-    showWelcomeScreen(); // Show the main chat interface
-    updateStatus("pending"); // Set the initial status
-    updateUserInfo();
-    return; // Stop the rest of the initializeApp function from running
-  }
+      const loggedInUserEmail = localStorage.getItem("loggedInUser");
+      if (loggedInUserEmail) {
+        // --- THIS IS THE FIX ---
+        // Load offline data even when the user is already logged in.
+        await loadOfflineData(); 
+        
+        // If a user is already logged in, bypass the loading screen entirely.
+        const loadingOverlay = document.getElementById("loading-overlay");
+        loadingOverlay.classList.add("hidden");
+        showWelcomeScreen(); // Show the main chat interface
+        updateStatus("pending"); // Set the initial status
+        updateUserInfo();
+        return; // Stop the rest of the initializeApp function from running
+      }
   // --- 1. Define loading content & get elements ---
   const loadingStatuses = [
     "Starting...",
@@ -1231,6 +1235,28 @@ messagesEl.addEventListener("click", (e) => {
 
 // This function will set up everything related to the auth modal.
 // We run it after the window loads to ensure all HTML elements are ready.
+function showConfirm(title, message) {
+    return new Promise((resolve) => {
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmTitle = document.getElementById('confirmTitle');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmYesBtn = document.getElementById('confirmYesBtn');
+        const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+        confirmTitle.textContent = title;
+        confirmMessage.textContent = message;
+        confirmModal.classList.remove('hidden');
+
+        const resolveAndClose = (value) => {
+            confirmModal.classList.add('hidden');
+            resolve(value);
+        };
+
+        confirmYesBtn.onclick = () => resolveAndClose(true);
+        confirmNoBtn.onclick = () => resolveAndClose(false);
+    });
+}
+
 function setupAuthModal() {
     // 1. Get all elements from the DOM.
     const authModal = document.getElementById("authModal");
@@ -1265,7 +1291,7 @@ function handleSuccessfulLogin(email, isNewUser = false) {
     const loadingOverlay = document.getElementById("loading-overlay");
 
     // Hide all overlays and modals
-    if (loadingOverlay) loadingOverlay.classList.remove("visible");
+    if (loadingOverlay) loadingOverlay.classList.add("hidden");
     closeAuthModal(); 
 
     // Now, show the main application screen and update user info
@@ -1275,6 +1301,7 @@ function handleSuccessfulLogin(email, isNewUser = false) {
 }
 
     // 2. Define all functions.
+// A reusable function to show a confirmation modal
 
     function showCustomAlert(message, type = 'error') {
         clearTimeout(alertTimeout);
@@ -1441,11 +1468,14 @@ function setAuthState(newState) {
 }
 
 // Run the setup function after the page has fully loaded
-window.addEventListener('load', setupAuthModal);
+window.addEventListener('load', () => {
+    setupAuthModal();
+    setupNavigation();
+});
 
 // --- END: Authentication Modal Logic ---
 // --- START: Navigation Sidebar Logic ---
-
+function setupNavigation(){
 // Get elements from the DOM
 const appContainer = document.querySelector(".app");
 const navLogo = document.getElementById("logo");
@@ -1479,13 +1509,16 @@ if (newChatBtn) {
 }
 
 if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    _supabase.auth.signOut(); // <-- ADD THIS LINE
-    localStorage.removeItem("loggedInUser");
-    window.location.reload();
+  logoutBtn.addEventListener("click", async () => {
+    const isConfirmed = await showConfirm("Confirm Logout", "Are you sure you want to log out?");
+    if (isConfirmed) {
+        await _supabase.auth.signOut();
+        localStorage.removeItem("loggedInUser");
+        window.location.reload();
+    }
   });
 }
-
+}
 // --- END: Navigation Sidebar Logic ---
 // --- START: Password Reset Page Logic ---
 

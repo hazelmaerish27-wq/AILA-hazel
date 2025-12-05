@@ -433,6 +433,23 @@
         </div>
       </div>
     </div>
+    <!-- START: Custom Confirmation Modal -->
+    <div id="confirmModal" class="auth-modal-backdrop hidden">
+      <div class="auth-modal-content" style="max-width: 400px;">
+        <div class="auth-modal-header">
+          <h2 id="confirmTitle">Confirm Action</h2>
+        </div>
+        <div class="auth-modal-body" style="text-align: center;">
+          <p id="confirmMessage" style="margin-bottom: 20px;">Are you sure?</p>
+          <div style="display: flex; gap: 10px;">
+            <button id="confirmYesBtn" class="auth-action-btn" style="flex: 1;">Yes</button>
+            <button id="confirmNoBtn" class="auth-action-btn" style="flex: 1; background: #555;">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END: Custom Confirmation Modal -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
   </body>
