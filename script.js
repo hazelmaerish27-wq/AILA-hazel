@@ -648,32 +648,35 @@ async function loadChatHistoryList() {
 }
 
 // Loads the messages for a specific conversation into the chat window
-async function loadConversation(conversationId) {
-    if (!conversationId) return;
+    async function loadConversation(conversationId) {
+        if (!conversationId) return;
 
-    const { data, error } = await _supabase
-        .from('messages')
-        .select('role, content')
-        .eq('conversation_id', conversationId)
-        .order('created_at', { ascending: true });
+        const { data, error } = await _supabase
+            .from('messages')
+            .select('role, content')
+            .eq('conversation_id', conversationId)
+            .order('created_at', { ascending: true });
 
-    if (error) {
-        console.error("Error fetching messages:", error);
-        return;
+        if (error) {
+            console.error("Error fetching messages:", error);
+            return;
+        }
+
+        messagesEl.innerHTML = ''; // Clear the chat window
+        data.forEach(message => {
+            appendMessage(message.content, message.role);
+        });
+
+        currentConversationId = conversationId;
+
+        // Highlight the active conversation in the sidebar
+        document.querySelectorAll('.history-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.id === conversationId);
+        });
+
+        await loadChatHistoryList(); // Refresh the sidebar to show the new chat
+
     }
-
-    messagesEl.innerHTML = ''; // Clear the chat window
-    data.forEach(message => {
-        appendMessage(message.content, message.role);
-    });
-
-    currentConversationId = conversationId;
-
-    // Highlight the active conversation in the sidebar
-    document.querySelectorAll('.history-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.id === conversationId);
-    });
-}
 
  // Saves a message and handles creating a new conversation if needed
     // Saves a message and handles creating a new conversation if needed
@@ -1727,7 +1730,7 @@ async function updateUserInfo() {
 
 // --- START: Navigation Sidebar Logic ---
 function setupNavigation() {
-    // Get ALL elements from the DOM
+    // Get all elements from the DOM
     const navSidebar = document.getElementById("navSidebar");
     const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
     const mobileNavToggle = document.getElementById("mobileNavToggle");
@@ -1735,8 +1738,10 @@ function setupNavigation() {
     const userProfileBtn = document.getElementById("userProfile");
     const userMenu = document.getElementById("userMenu");
     const logoutBtn = document.getElementById("logoutBtn");
-    const yourChatsBtn = document.getElementById("yourChatsBtn"); // Get the Your Chats Button
-    const chatHistoryListEl = document.getElementById("chatHistoryList"); //And also get the Chat list
+    const yourChatsBtn = document.getElementById("yourChatsBtn"); //  "Your Chats" button
+    const chatHistoryListEl = document.getElementById("chatHistoryList"); // The list of chat history items
+    const searchBtn = document.getElementById('searchBtn');
+
     // --- Desktop Toggle Logic ---
     if (sidebarToggleBtn) {
         sidebarToggleBtn.addEventListener("click", () => {
@@ -1756,10 +1761,8 @@ function setupNavigation() {
     // --- Common Button Logic ---
     if (newChatBtn) {
         newChatBtn.addEventListener("click", () => {
-            currentConversationId = null; // START A NEW CHAT
             showWelcomeScreen();
-            // Deselect any active chat in the history list
-            document.querySelectorAll('.history-item.active').forEach(item => item.classList.remove('active'));
+            // If on mobile and sidebar is open, close it
             if (window.innerWidth <= 900 && navSidebar.classList.contains('expanded')) {
                 toggleMobileNav();
             }
@@ -1784,6 +1787,13 @@ function setupNavigation() {
             }
         });
     }
+    // --- Your Chats Dropdown Toggle ---
+    if (yourChatsBtn && chatHistoryListEl) {
+        yourChatsBtn.addEventListener("click", (e) => {
+            e.stopPropagation(); // Stop the click from reaching the document
+            toggleChatHistoryDropdown();
+        });
+    }
     
     // --- CONSOLIDATED "CLICK OUTSIDE" HANDLER ---
     window.addEventListener('click', (e) => {
@@ -1805,17 +1815,23 @@ function setupNavigation() {
             }
         }
     });
-// --- Your Chats Dropdown Toggle ---
-if (yourChatsBtn && chatHistoryListEl) {
-    yourChatsBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        chatHistoryListEl.classList.toggle("active");
-        yourChatsBtn.classList.toggle("active"); //For animated svg
-    });
-}
-
 }
 // --- END: Navigation Sidebar Logic ---
+
+// --- START: Dropdown Toggle function ---
+    // --- START: Dropdown Toggle function ---
+    // --- START: Dropdown Toggle function ---
+    function toggleChatHistoryDropdown() {
+      const chatHistoryListEl = document.getElementById("chatHistoryList"); // Get the chat history list
+      const yourChatsBtn = document.getElementById("yourChatsBtn"); // Get the your chats button
+
+      if (chatHistoryListEl && yourChatsBtn) {
+        chatHistoryListEl.classList.toggle("active"); // Toggle the 'active' class
+        yourChatsBtn.classList.toggle("active");
+      }
+    }
+    // --- END: Dropdown Toggle Function ---
+// --- END: Dropdown Toggle Function ---
 // --- START: Password Reset Page Logic ---
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -1866,5 +1882,3 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
-// --- END: Password Reset Page Logic ---

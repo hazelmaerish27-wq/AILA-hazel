@@ -3293,7 +3293,7 @@ input:-webkit-autofill:active {
 
 /* --- Chat History Visibility --- */
 .chat-history-list {
-  display: flex;
+  display: none;
   /* Hidden by default */
   position: absolute;
   top: 100%;
