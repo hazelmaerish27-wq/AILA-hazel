@@ -1780,14 +1780,6 @@ textarea#input {
 
 /* --- Mobile View Enhancements --- */
 @media (max-width: 640px) {
-  /* Header of the sidebar */
-  .your-chats-dropdown {
-    position: absolute;
-    /* For dropdown positioning */
-    width: 100%;
-    top: 10% !important;
-  }
-
   /* --- Auth Modal adjustments for mobile --- */
   .auth-modal-content {
     padding: 20px;
@@ -3079,12 +3071,6 @@ input:-webkit-autofill:active {
   width: auto;
 }
 
-.chat-history-list {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 0 10px;
-}
-
 /* Footer of the sidebar */
 .nav-footer {
   padding: 10px;
@@ -3257,108 +3243,9 @@ input:-webkit-autofill:active {
   }
 }
 
-/* --- Chat History Dropdown Styles --- */
-.your-chats-dropdown {
-  position: absolute;
-  /* For dropdown positioning */
-  width: 100%;
-  top: 20%;
-}
-
-.your-chats-btn {
-  width: 100%;
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  /* Space out the text and arrow */
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-}
-
-.your-chats-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
-}
-
-.your-chats-btn.active .dropdown-arrow {
-  transform: rotate(180deg);
-}
-
-/* --- Chat History Visibility --- */
-.chat-history-list {
-  display: none;
-  /* Hidden by default */
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  border-radius: 8px;
-  z-index: 1;
-  overflow: hidden;
-}
-
-.your-chats-dropdown.active .chat-history-list {
-  display: block;
-  /* Show when dropdown is active */
-}
-
-.chat-history-list.active {
-  display: block;
-}
-
-.history-item {
-  background: transparent;
-  border: none;
-  color: var(--muted);
-  padding: 10px 18px;
-  /* Consistent padding for icon alignment */
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* Adds "..." if the title is too long */
-  text-align: left;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.history-item:hover {
-  color: #fff;
-}
-
-.history-item.active {
-  color: #fff;
-  font-weight: 600;
-}
-
 /* --- Force User Profile to Bottom --- */
 .nav-sidebar {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-/* --- Chat History Visibility --- */
-.your-chats-dropdown .chat-history-list {
-  display: none;
-  /* Hide by default */
-}
-
-.nav-sidebar.expanded .your-chats-dropdown .chat-history-list {
-  display: block;
-  /* Show when sidebar is expanded */
-}
-
-/* --- Hide Your Chats button when sidebar is collapsed --- */
-.nav-sidebar:not(.expanded) .your-chats-btn {
-  display: none;
 }

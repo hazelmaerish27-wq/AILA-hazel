@@ -520,7 +520,7 @@ function showWelcomeScreen() {
            style="width:100%; height:100%; object-fit:cover; border-radius:14px;">
     </div>
     <h1 class="welcome-title" style="margin-bottom: 5px">Welcome to AILA</h1>
-<p class="welcome-subtitle">Hi ${localStorage.getItem('loggedInUser')?.split('@')[0] || 'kuys'}! I'm AILA, your learning assistant.</p>
+<p class="welcome-subtitle">Hi ${localStorage.getItem('userProfile')?.split('@')[0] || 'kuys'}! I'm AILA, your learning assistant.</p>
     <div class="welcome-actions">
       <button class="welcome-btn" onclick="useSuggestion('Overview')">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -574,8 +574,6 @@ function useSuggestion(text) {
 function appendMessage(
   text,
   who = "bot",
-  attachFAQs = false,
-  suggestions = []
 ) {
   const wrap = document.createElement("div");
   wrap.className = "msg " + who;
@@ -611,117 +609,6 @@ function appendMessage(
   messagesEl.scrollTop = messagesEl.scrollHeight;
   return wrap;
 }
-// --- START: Chat History Functions ---
-
-// Loads the list of past conversations into the sidebar
-async function loadChatHistoryList() {
-    const historyListEl = document.getElementById('chatHistoryList');
-    if (!historyListEl) return;
-
-    const { data: { user } } = await _supabase.auth.getUser();
-    if (!user) {
-        historyListEl.innerHTML = '';
-        return;
-    }
-
-    const { data, error } = await _supabase
-        .from('conversations')
-        .select('id, title')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error("Error fetching chat history:", error);
-        historyListEl.innerHTML = '<p class="history-item">Error loading history</p>';
-        return;
-    }
-
-    historyListEl.innerHTML = ''; // Clear existing list
-    data.forEach(conversation => {
-        const item = document.createElement('button');
-        item.className = 'history-item';
-        item.textContent = conversation.title;
-        item.dataset.id = conversation.id;
-        item.onclick = () => loadConversation(conversation.id);
-        historyListEl.appendChild(item);
-    });
-}
-
-// Loads the messages for a specific conversation into the chat window
-    async function loadConversation(conversationId) {
-        if (!conversationId) return;
-
-        const { data, error } = await _supabase
-            .from('messages')
-            .select('role, content')
-            .eq('conversation_id', conversationId)
-            .order('created_at', { ascending: true });
-
-        if (error) {
-            console.error("Error fetching messages:", error);
-            return;
-        }
-
-        messagesEl.innerHTML = ''; // Clear the chat window
-        data.forEach(message => {
-            appendMessage(message.content, message.role);
-        });
-
-        currentConversationId = conversationId;
-
-        // Highlight the active conversation in the sidebar
-        document.querySelectorAll('.history-item').forEach(item => {
-            item.classList.toggle('active', item.dataset.id === conversationId);
-        });
-
-        await loadChatHistoryList(); // Refresh the sidebar to show the new chat
-
-    }
-
- // Saves a message and handles creating a new conversation if needed
-    // Saves a message and handles creating a new conversation if needed
-    async function saveMessage(role, content, firstMessage = '') { // Added default value
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) return; // Can't save if not logged in
-
-        let conversationIdToUse = currentConversationId;
-
-        // If this is the first message of a new chat, create a conversation first
-        if (!conversationIdToUse && role === 'user') {
-            const title = firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : '');
-            const { data, error } = await _supabase
-                .from('conversations')
-                .insert({ user_id: user.id, title: title })
-                .select('id')
-                .single();
-
-            if (error) {
-                console.error("Error creating conversation:", error);
-                return;
-            }
-            conversationIdToUse = data.id;
-            currentConversationId = data.id; // Set the new ID as active
-            await loadChatHistoryList(); // Refresh the sidebar to show the new chat
-            loadConversation(conversationIdToUse); // Load the new conversation
-
-        }
-
-        // Now save the message to the database
-        if (conversationIdToUse) {
-            const { error } = await _supabase
-                .from('messages')
-                .insert({
-                    conversation_id: conversationIdToUse,
-                    user_id: user.id,
-                    role: role,
-                    content: content
-                });
-
-            if (error) {
-                console.error("Error saving message:", error);
-            }
-        }
-    }
 
 const safe = (fn) => {
   try {
@@ -877,26 +764,27 @@ function sendToBackend(text, askSuggestions = false, firstMessage = '') {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
     })
-        .then(async (res) => {
-            hideTyping();
-            if (!res.ok) {
-                throw new Error(`...`);
-            }
-            const data = await res.json().catch(() => ({}));
-            const reply = data.reply;
-            //... inside the .then() block
-            if (reply) {
-                playSound(SFX.receive, 0.7); // 70% volume, slightly quieter
-                appendMessage(reply, "bot");
-                saveMessage('bot', reply); // SAVE THE BOT RESPONSE
-            }
-            //...
-            else {
-                appendMessage("...", "bot");
-            }
-            pulseLogoOnce();
-            updateStatus(true); // <-- ADD THIS LINE
-        })
+                    .then(async (res) => {
+                hideTyping();
+                if (!res.ok) {
+                    throw new Error(`...`);
+                }
+                const data = await res.json().catch(() => ({}));
+                const reply = data.reply;
+                //... inside the .then() block
+                if (reply) {
+                    playSound(SFX.receive, 0.7); // 70% volume, slightly quieter
+                    appendMessage(reply, "bot");
+                    saveMessage('bot', reply, ''); // SAVE THE BOT RESPONSE
+                }
+                //...
+                else {
+                    appendMessage("...", "bot");
+                }
+                pulseLogoOnce();
+                updateStatus(true); // <-- ADD THIS LINE
+            })
+
         .catch((err) => {
             hideTyping();
             console.warn("Offline mode triggered:", err);
@@ -1163,7 +1051,6 @@ async function initializeApp() {
         loadingOverlay.classList.add("hidden");
         showWelcomeScreen(); // Show the main chat interface
         updateStatus("pending"); // Set the initial status
-        loadChatHistoryList();
         updateUserInfo();
         return; // Stop the rest of the initializeApp function from running
       }
@@ -1415,7 +1302,6 @@ async function handleSuccessfulLogin(email, isNewUser = false) { // Make the fun
  
     // Now, show the main application screen and update user info
     showWelcomeScreen();
-    loadChatHistoryList();
     updateUserInfo();
     updateStatus("pending");
 }
@@ -1699,35 +1585,6 @@ async function updateUserInfo() {
 }
 // --- END: User Info Update ---
 // Loads the messages for a specific conversation into the chat window
-    async function loadConversation(conversationId) {
-        if (!conversationId) return;
-
-        const { data, error } = await _supabase
-            .from('messages')
-            .select('role, content')
-            .eq('conversation_id', conversationId)
-            .order('created_at', { ascending: true });
-
-        if (error) {
-            console.error("Error fetching messages:", error);
-            return;
-        }
-
-        messagesEl.innerHTML = ''; // Clear the chat window
-        data.forEach(message => {
-            appendMessage(message.content, message.role);
-             saveMessage(message.role, message.content); // SAVE EACH MESSAGE
-        });
-
-        currentConversationId = conversationId;
-        loadChatHistoryList()
-
-        // Highlight the active conversation in the sidebar
-        document.querySelectorAll('.history-item').forEach(item => {
-            item.classList.toggle('active', item.dataset.id === conversationId);
-        });
-    }
-
 // --- START: Navigation Sidebar Logic ---
 function setupNavigation() {
     // Get all elements from the DOM
