@@ -4,6 +4,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentConversationId = null;
 // --- END: Supabase Client Initialization ---
 // --- START: Supabase Auth State Listener ---
 // --- START: Supabase Auth State Listener ---
@@ -609,6 +610,112 @@ function appendMessage(
   messagesEl.scrollTop = messagesEl.scrollHeight;
   return wrap;
 }
+// --- START: Chat History Functions ---
+
+// Loads the list of past conversations into the sidebar
+async function loadChatHistoryList() {
+    const historyListEl = document.getElementById('chatHistoryList');
+    if (!historyListEl) return;
+
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) {
+        historyListEl.innerHTML = '';
+        return;
+    }
+
+    const { data, error } = await _supabase
+        .from('conversations')
+        .select('id, title')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Error fetching chat history:", error);
+        historyListEl.innerHTML = '<p class="history-item">Error loading history</p>';
+        return;
+    }
+
+    historyListEl.innerHTML = ''; // Clear existing list
+    data.forEach(conversation => {
+        const item = document.createElement('button');
+        item.className = 'history-item';
+        item.textContent = conversation.title;
+        item.dataset.id = conversation.id;
+        item.onclick = () => loadConversation(conversation.id);
+        historyListEl.appendChild(item);
+    });
+}
+
+// Loads the messages for a specific conversation into the chat window
+async function loadConversation(conversationId) {
+    if (!conversationId) return;
+
+    const { data, error } = await _supabase
+        .from('messages')
+        .select('role, content')
+        .eq('conversation_id', conversationId)
+        .order('created_at', { ascending: true });
+
+    if (error) {
+        console.error("Error fetching messages:", error);
+        return;
+    }
+
+    messagesEl.innerHTML = ''; // Clear the chat window
+    data.forEach(message => {
+        appendMessage(message.content, message.role);
+    });
+
+    currentConversationId = conversationId;
+
+    // Highlight the active conversation in the sidebar
+    document.querySelectorAll('.history-item').forEach(item => {
+        item.classList.toggle('active', item.dataset.id === conversationId);
+    });
+}
+
+    // Saves a message and handles creating a new conversation if needed
+ // Saves a message and handles creating a new conversation if needed
+async function saveMessage(role, content, firstMessage) {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) return; // Can't save if not logged in
+
+        let conversationIdToUse = currentConversationId;
+
+        // If this is the first message of a new chat, create a conversation first
+        if (!conversationIdToUse && role === 'user') {
+            const title = firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : '');
+            const { data, error } = await _supabase
+                .from('conversations')
+                .insert({ user_id: user.id, title: title })
+                .select('id')
+                .single();
+
+            if (error) {
+                console.error("Error creating conversation:", error);
+                return;
+            }
+            conversationIdToUse = data.id;
+            currentConversationId = data.id; // Set the new ID as active
+            await loadChatHistoryList(); // Refresh the sidebar to show the new chat
+        }
+
+        // Now save the message to the database
+        if (conversationIdToUse) {
+            const { error } = await _supabase
+                .from('messages')
+                .insert({
+                    conversation_id: conversationIdToUse,
+                    user_id: user.id,
+                    role: role,
+                    content: content
+                });
+
+            if (error) {
+                console.error("Error saving message:", error);
+            }
+        }
+}
 
 const safe = (fn) => {
   try {
@@ -721,7 +828,7 @@ function hideTyping() {
   }
 }
 /* send to backend; use offlineResponses if offline or network fails */
-function sendToBackend(text, askSuggestions = false) {
+function sendToBackend(text, askSuggestions = false, firstMessage = '') {
   showTyping();
   const payload = {
     message: text,
@@ -772,6 +879,7 @@ function sendToBackend(text, askSuggestions = false) {
       const data = await res.json().catch(() => ({}));
       const reply = data.reply;
       //... inside the .then() block
+      saveMessage('bot', reply);
       if (reply) {
         playSound(SFX.receive, 0.7); // 70% volume, slightly quieter
         appendMessage(reply, "bot");
@@ -815,8 +923,8 @@ function sendMessage() {
     // Manually trigger the input event to swap the send button back to the voice button
     input.dispatchEvent(new Event("input", { bubbles: true }));
   }, 50); // A 50ms delay is imperceptible to the user but fixes the bug.
-
-  sendToBackend(t, true);
+  saveMessage('user', t);
+  sendToBackend(t, true, t);
 }
 function pulseLogoOnce() {
   logoArea.classList.add("logo-glow");
@@ -1050,6 +1158,7 @@ async function initializeApp() {
         loadingOverlay.classList.add("hidden");
         showWelcomeScreen(); // Show the main chat interface
         updateStatus("pending"); // Set the initial status
+        loadChatHistoryList();
         updateUserInfo();
         return; // Stop the rest of the initializeApp function from running
       }
@@ -1254,21 +1363,54 @@ function showConfirm(title, message) {
         confirmNoBtn.onclick = () => resolveAndClose(false);
     });
 }
+// --- NEW: Function to send user data to Google Sheets ---
+async function sendUserInfoToSheet(user) {
+    if (!user) return;
 
-function handleSuccessfulLogin(email, isNewUser = false) {
+    const payload = {
+        email: user.email,
+        fullName: (user.app_metadata.provider === 'google' && user.user_metadata) ? user.user_metadata.full_name : user.email.split('@')[0],
+        provider: user.app_metadata.provider || 'email',
+        createdAt: user.created_at
+    };
+
+    try {
+        await fetch(SCRIPT_API_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Important for sending to Google Scripts from a browser
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        });
+        console.log("User info sent to sheet successfully.");
+    } catch (error) {
+        console.error("Error sending user info to sheet:", error);
+    }
+}
+
+async function handleSuccessfulLogin(email, isNewUser = false) { // Make the function async
     localStorage.setItem('loggedInUser', email);
     if (isNewUser) {
         localStorage.setItem('trialStartDate', new Date().toISOString());
     }
 
+    // --- NEW: Fetch session and send user info ---
+    const { data: { session } } = await _supabase.auth.getSession();
+    if(session) {
+      sendUserInfoToSheet(session.user);
+    }
+    // --- END of new code ---
+
     const loadingOverlay = document.getElementById("loading-overlay");
 
     // Hide all overlays and modals
     if (loadingOverlay) loadingOverlay.classList.add("hidden");
-    closeModal(); 
-
+    closeModal();
+ 
     // Now, show the main application screen and update user info
     showWelcomeScreen();
+    loadChatHistoryList();
     updateUserInfo();
     updateStatus("pending");
 }
@@ -1562,7 +1704,8 @@ function setupNavigation() {
     const userProfileBtn = document.getElementById("userProfile");
     const userMenu = document.getElementById("userMenu");
     const logoutBtn = document.getElementById("logoutBtn");
-
+    const yourChatsBtn = document.getElementById("yourChatsBtn"); // Get the Your Chats Button
+    const chatHistoryListEl = document.getElementById("chatHistoryList"); //And also get the Chat list
     // --- Desktop Toggle Logic ---
     if (sidebarToggleBtn) {
         sidebarToggleBtn.addEventListener("click", () => {
@@ -1582,8 +1725,10 @@ function setupNavigation() {
     // --- Common Button Logic ---
     if (newChatBtn) {
         newChatBtn.addEventListener("click", () => {
+            currentConversationId = null; // START A NEW CHAT
             showWelcomeScreen();
-            // If on mobile and sidebar is open, close it
+            // Deselect any active chat in the history list
+            document.querySelectorAll('.history-item.active').forEach(item => item.classList.remove('active'));
             if (window.innerWidth <= 900 && navSidebar.classList.contains('expanded')) {
                 toggleMobileNav();
             }
@@ -1608,7 +1753,7 @@ function setupNavigation() {
             }
         });
     }
-
+    
     // --- CONSOLIDATED "CLICK OUTSIDE" HANDLER ---
     window.addEventListener('click', (e) => {
         // 1. Close user menu if it's open and the click is outside
@@ -1629,6 +1774,15 @@ function setupNavigation() {
             }
         }
     });
+    //Add Chat List Dropdown function
+    if (yourChatsBtn && chatHistoryListEl) {
+        yourChatsBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            chatHistoryListEl.classList.toggle("active");
+            yourChatsBtn.classList.toggle("active"); //For animated svg
+        });
+    }
+
 }
 // --- END: Navigation Sidebar Logic ---
 // --- START: Password Reset Page Logic ---

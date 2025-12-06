@@ -3041,40 +3041,38 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 900px) {
-      .header {
-        display: flex; /* Ensure it's a flex container */
-        align-items: center; /* Vertically align all items */
-        justify-content: flex-start; /* Align all items to the left by default */
-      }
-      
-      .header .brand {
-        margin-left: 12px; /* Creates the small space next to the nav button */
-        gap: 0; /* Removes any internal gap */
-      }
+  /* Make the header a simple row */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px; /*  Space between the toggle and the AILA title */
+  }
 
-      /* This is the KEY: It targets the container of the right-side buttons */
-      .header > div:last-child {
-        margin-left: auto; /* Pushes this element all the way to the right */
-      }
+  /* Ensure the brand is displayed and aligned */
+  .header .brand {
+    margin-left: 12px; /* Creates the small space next to the nav button */
+    gap: 0; /* Removes any internal gap */
+  }
 
-      /* Hide the large logo and the long subtitle on mobile */
-      .header .brand .logo-area,
-      .header .brand .subtitle {
-        display: none;
-      }
-    
-      /* Style the mobile toggle button */
-      .mobile-nav-toggle {
-        padding: 0;
-        margin: 0;
-      }
-  /* --- Previous Mobile Rules --- */
-  .sidebar-toggle-btn {
+  /* This is the KEY: It targets the container of the right-side buttons */
+  .header > div:last-child {
+    margin-left: auto; /* Pushes this element all the way to the right */
+  }
+
+  /* Hide the large logo and the long subtitle on mobile */
+  .header .brand .logo-area,
+  .header .brand .subtitle {
     display: none;
   }
+
+  /* Style the mobile toggle button */
   .mobile-nav-toggle {
-    display: flex;
+    padding: 0;
+    margin: 0;
   }
+
+  /* --- Previous Mobile Rules --- */
   .nav-sidebar {
     transform: translateX(-100%);
     width: 260px !important;
@@ -3082,9 +3080,11 @@ input:-webkit-autofill:active {
     transition: transform 0.3s ease-in-out;
     z-index: 1200;
   }
+
   .nav-sidebar.expanded {
     transform: translateX(0);
   }
+
   .chat {
     margin-left: 0 !important;
     width: 100% !important;
