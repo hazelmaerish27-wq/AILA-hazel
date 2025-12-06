@@ -1732,6 +1732,16 @@ textarea#input {
 
 /* --- Mobile View Enhancements --- */
 @media (max-width: 900px) {
+/* Header of the sidebar */
+  .nav-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    /* MODIFIED: Adjusted padding */
+    flex-shrink: 0;
+  }
   /* --- Auth Modal adjustments for mobile --- */
   .auth-modal-content {
     padding: 20px;
@@ -2811,11 +2821,6 @@ input:-webkit-autofill:active {
   transition: all 0.2s ease;
 }
 
-.user-menu-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
 .nav-sidebar {
   position: fixed;
   top: 0;
@@ -2863,7 +2868,7 @@ input:-webkit-autofill:active {
 }
 
 .nav-sidebar.expanded .sidebar-toggle-btn {
-    justify-content: flex-start; /* Align left when expanded */
+  justify-content: flex-start; /* Align left when expanded */
 }
 
 .sidebar-toggle-btn:hover {
@@ -2877,11 +2882,11 @@ input:-webkit-autofill:active {
 }
 
 /* Rotate the icon when the sidebar is expanded */
+/* Flip the icon horizontally when the sidebar is expanded */
 .nav-sidebar.expanded .sidebar-toggle-btn svg {
-  transform: rotate(180deg);
+  transform: scaleX(-1);
 }
 /* --- END: Toggle Button Style --- */
-
 
 .new-chat-btn,
 .search-btn {
@@ -2904,13 +2909,14 @@ input:-webkit-autofill:active {
 
 .nav-sidebar.expanded .new-chat-btn,
 .nav-sidebar.expanded .search-btn {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    justify-content: flex-start; /* Align left when expanded */
-    gap: 12px; /* ADDED: Add gap back when expanded */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  justify-content: flex-start; /* Align left when expanded */
+  gap: 12px; /* ADDED: Add gap back when expanded */
 }
 
-.new-chat-btn svg, .search-btn svg {
-    flex-shrink: 0; /* ADDED: Prevents icon from squishing */
+.new-chat-btn svg,
+.search-btn svg {
+  flex-shrink: 0; /* ADDED: Prevents icon from squishing */
 }
 
 .new-chat-btn:hover,
@@ -2960,8 +2966,8 @@ input:-webkit-autofill:active {
 }
 
 .nav-sidebar.expanded .user-profile {
-    justify-content: flex-start; /* Align left when expanded */
-    gap: 10px; /* ADDED: Add gap back when expanded */
+  justify-content: flex-start; /* Align left when expanded */
+  gap: 10px; /* ADDED: Add gap back when expanded */
 }
 
 .user-profile:hover {
@@ -3010,7 +3016,6 @@ input:-webkit-autofill:active {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-
 .user-menu-footer {
   padding: 12px;
   font-size: 12px;
@@ -3024,4 +3029,64 @@ input:-webkit-autofill:active {
   font-weight: 600;
   color: var(--accent1);
   font-family: "Courier New", Courier, monospace;
+}
+/* --- Mobile Navigation Overrides --- */
+.mobile-nav-toggle {
+  display: none; /* Hidden on desktop */
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 8px;
+}
+
+@media (max-width: 900px) {
+      .header {
+        display: flex; /* Ensure it's a flex container */
+        align-items: center; /* Vertically align all items */
+        justify-content: flex-start; /* Align all items to the left by default */
+      }
+      
+      .header .brand {
+        margin-left: 12px; /* Creates the small space next to the nav button */
+        gap: 0; /* Removes any internal gap */
+      }
+
+      /* This is the KEY: It targets the container of the right-side buttons */
+      .header > div:last-child {
+        margin-left: auto; /* Pushes this element all the way to the right */
+      }
+
+      /* Hide the large logo and the long subtitle on mobile */
+      .header .brand .logo-area,
+      .header .brand .subtitle {
+        display: none;
+      }
+    
+      /* Style the mobile toggle button */
+      .mobile-nav-toggle {
+        padding: 0;
+        margin: 0;
+      }
+  /* --- Previous Mobile Rules --- */
+  .sidebar-toggle-btn {
+    display: none;
+  }
+  .mobile-nav-toggle {
+    display: flex;
+  }
+  .nav-sidebar {
+    transform: translateX(-100%);
+    width: 260px !important;
+    height: 100%;
+    transition: transform 0.3s ease-in-out;
+    z-index: 1200;
+  }
+  .nav-sidebar.expanded {
+    transform: translateX(0);
+  }
+  .chat {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
 }

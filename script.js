@@ -67,7 +67,6 @@ function getIconForUrl(url) {
   return defaultIcon;
 }
 // =================================================================
-
 // =================================================================
 // ============== CENTRALIZED MODAL QUESTIONS ======================
 // == To edit questions/links, just edit them here. ==============
@@ -1554,51 +1553,51 @@ async function updateUserInfo() {
 // --- END: User Info Update ---
 
 // --- START: Navigation Sidebar Logic ---
-// --- START: Navigation Sidebar Logic ---
 function setupNavigation() {
-    // Get elements from the DOM
+    // Get ALL elements from the DOM
     const navSidebar = document.getElementById("navSidebar");
-    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn"); // Corrected trigger
+    const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
+    const mobileNavToggle = document.getElementById("mobileNavToggle");
     const newChatBtn = document.getElementById("newChatBtn");
     const userProfileBtn = document.getElementById("userProfile");
     const userMenu = document.getElementById("userMenu");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // Function to toggle the navigation sidebar
-    function toggleNav() {
+    // --- Desktop Toggle Logic ---
+    if (sidebarToggleBtn) {
+        sidebarToggleBtn.addEventListener("click", () => {
+            navSidebar.classList.toggle("expanded");
+        });
+    }
+
+    // --- Mobile Toggle Logic ---
+    function toggleMobileNav() {
         navSidebar.classList.toggle("expanded");
     }
 
-    // Event listener for the new sidebar toggle button
-    if (sidebarToggleBtn) {
-        sidebarToggleBtn.addEventListener("click", toggleNav);
+    if (mobileNavToggle) {
+        mobileNavToggle.addEventListener("click", toggleMobileNav);
     }
 
-    // Event listener for the "New Chat" button
+    // --- Common Button Logic ---
     if (newChatBtn) {
         newChatBtn.addEventListener("click", () => {
-            showWelcomeScreen(); // Re-use this function to clear the chat area
-            // We don't need to auto-close the nav anymore
+            showWelcomeScreen();
+            // If on mobile and sidebar is open, close it
+            if (window.innerWidth <= 900 && navSidebar.classList.contains('expanded')) {
+                toggleMobileNav();
+            }
         });
     }
 
     // --- User Profile Menu Logic ---
     if (userProfileBtn && userMenu) {
         userProfileBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // Prevents the window click listener from firing immediately
+            e.stopPropagation();
             userMenu.classList.toggle("hidden");
         });
     }
-    
-    // Close the user menu if clicked outside
-    window.addEventListener('click', (e) => {
-        if (userMenu && !userMenu.classList.contains('hidden') && !userMenu.contains(e.target) && !userProfileBtn.contains(e.target)) {
-            userMenu.classList.add('hidden');
-        }
-    });
 
-
-    // Event listener for the "Logout" button
     if (logoutBtn) {
         logoutBtn.addEventListener("click", async () => {
             const isConfirmed = await showConfirm("Confirm Logout", "Are you sure you want to log out?");
@@ -1609,8 +1608,28 @@ function setupNavigation() {
             }
         });
     }
+
+    // --- CONSOLIDATED "CLICK OUTSIDE" HANDLER ---
+    window.addEventListener('click', (e) => {
+        // 1. Close user menu if it's open and the click is outside
+        if (userMenu && !userMenu.classList.contains('hidden') && !userMenu.contains(e.target) && !userProfileBtn.contains(e.target)) {
+            userMenu.classList.add('hidden');
+        }
+
+        // 2. Close sidebar if it's open and the click is outside
+        if (navSidebar.classList.contains('expanded') && !navSidebar.contains(e.target)) {
+            const isMobile = window.innerWidth <= 900;
+            // Check if the click was on the mobile toggle button
+            const isMobileToggle = mobileNavToggle ? mobileNavToggle.contains(e.target) : false;
+            
+            if (isMobile && !isMobileToggle) {
+                toggleMobileNav(); // Close on mobile
+            } else if (!isMobile) {
+                navSidebar.classList.remove('expanded'); // Close on desktop
+            }
+        }
+    });
 }
-// --- END: Navigation Sidebar Logic ---
 // --- END: Navigation Sidebar Logic ---
 // --- START: Password Reset Page Logic ---
 
