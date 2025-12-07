@@ -51,8 +51,7 @@
   width: 130px;
   height: 130px;
   /* A powerful glow that respects the logo's transparent areas */
-  filter: drop-shadow(0 0 10px var(--accent1))
-    drop-shadow(0 0 25px var(--accent1));
+  filter: drop-shadow(0 0 10px var(--accent1)) drop-shadow(0 0 25px var(--accent1));
   /* A new, smoother up-and-down floating animation */
   animation: smoothFloat 4s ease-in-out infinite;
   transition: opacity 0.2s ease;
@@ -499,6 +498,19 @@
   box-shadow: 0 2px 6px rgba(0, 210, 255, 0.1);
 }
 
+.mobile-nav-toggle:hover {
+  color: #e8fbff;
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 210, 255, 0.1);
+}
+
+.mobile-nav-toggle:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 210, 255, 0.1);
+}
+
 :root {
   --bg1: #041428;
   --bg2: #07263a;
@@ -556,11 +568,9 @@ body {
   max-width: 95vw;
   height: 100vh;
   max-height: 92vh;
-  background: linear-gradient(
-    180deg,
-    var(--glass-2),
-    rgba(255, 255, 255, 0.006)
-  );
+  background: linear-gradient(180deg,
+      var(--glass-2),
+      rgba(255, 255, 255, 0.006));
   border-radius: 14px;
   box-shadow: 0 20px 60px rgba(2, 8, 20, 0.75);
   display: flex;
@@ -893,25 +903,25 @@ textarea#input {
 
 .msg.user {
   align-self: flex-end;
-  display: flex;
-  background: var(--user);
-  color: #ffffffd8;
-  border-radius: 20px;
-  /* A very large value ensures a perfect pill shape */
-  padding-top: 1px;
-  margin-top: 1px;
-  max-height: fit-content;
-  padding-bottom: 3px;
-  margin-bottom: 2px;
-  max-width: 60%;
-  padding-left: 20px;
-  padding-right: 20px;
-  /* More balanced vertical and horizontal padding */
-  box-sizing: border-box;
+  background: rgba(3, 169, 244, 0.1);
+  color: #e8fbff;
+  border-radius: 15px;
+  margin-top: 3px;
+  font-size: 14px;
+  margin-bottom: 5px;
+  /* FIT TEXT WIDTH */
+  width: fit-content;
+  max-width: 85%;
+
+  /* FIT TEXT HEIGHT */
+  height: auto;
+  padding-left: 10px;
+  padding-right: 10px;
   overflow-wrap: break-word;
-  line-height: 1;
-  /* Reduced line height to make the pill more compact */
+  line-height: 1.25;
+  border: 1px solid rgba(3, 169, 244, 0.2);
 }
+
 
 /* This ensures that paragraphs inside a bot message are not faint or transparent */
 .msg.bot p {
@@ -955,11 +965,9 @@ textarea#input {
 }
 
 .faq-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.015),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.015),
+      rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   padding: 8px 12px;
@@ -1000,11 +1008,9 @@ textarea#input {
 }
 
 .sugg-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(44, 33, 33, 0.01)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.02),
+      rgba(44, 33, 33, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   padding: 8px 12px;
@@ -1021,11 +1027,9 @@ textarea#input {
 }
 
 .orient-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.025),
-    rgba(255, 255, 255, 0.015)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0.015));
   border: 1px solid rgba(255, 255, 255, 0.05);
   color: #e6fbff;
   padding: 8px 12px;
@@ -1174,6 +1178,7 @@ textarea#input.expanded {
 }
 
 @keyframes wave {
+
   0%,
   100% {
     transform: scaleY(0.2);
@@ -1375,11 +1380,9 @@ textarea#input {
 }
 
 .welcome-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.015),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.015),
+      rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   border-radius: 10px;
@@ -1547,11 +1550,9 @@ textarea#input {
 }
 
 .modal-content {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(160deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -1741,7 +1742,7 @@ textarea#input {
 }
 
 /* When the button is active, expand the content next to it */
-.module-dropdown-btn.active + .module-dropdown-content {
+.module-dropdown-btn.active+.module-dropdown-content {
   max-height: 500px;
   /* A height large enough for your content */
 }
@@ -1780,7 +1781,20 @@ textarea#input {
 
 /* --- Mobile View Enhancements --- */
 @media (max-width: 640px) {
+
   /* --- Auth Modal adjustments for mobile --- */
+  .msg.bot {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    /* CORRECTED: Use 100% to respect the parent's padding */
+    width: 97%;
+    padding-bottom: 10px;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    color: #dff8ff;
+  }
+
   .auth-modal-content {
     padding: 20px;
     max-width: 90vw;
@@ -1826,25 +1840,6 @@ textarea#input {
     max-width: 100%;
     overflow-wrap: break-word;
     line-height: 1;
-  }
-
-  .msg.user {
-    align-self: flex-end;
-    background: var(--user);
-    color: #ffffffd8;
-    border-radius: 20px;
-    /* A very large value ensures a perfect pill shape */
-    padding-top: 1px;
-    margin-top: 1px;
-    margin-bottom: 2px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-size: 12px;
-    /* More balanced vertical and horizontal padding */
-    overflow-wrap: break-word;
-    line-height: 1;
-    height: fit-content;
-    /* Reduced line height to make the pill more compact */
   }
 
   /* Make the logo container smaller on mobile */
@@ -2092,11 +2087,9 @@ textarea#input {
   }
 
   .welcome-btn {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.015),
-      rgba(255, 255, 255, 0.01)
-    );
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.015),
+        rgba(255, 255, 255, 0.01));
     border: 1px solid rgba(255, 255, 255, 0.03);
     color: #e6fbff;
     padding: 5px 15px;
@@ -2215,6 +2208,7 @@ textarea#input {
 }
 
 @keyframes scale {
+
   0%,
   100% {
     transform: none;
@@ -2367,6 +2361,7 @@ textarea#input {
 }
 
 @keyframes scale {
+
   0%,
   100% {
     transform: none;
@@ -2461,6 +2456,7 @@ textarea#input {
 }
 
 @keyframes float-up-down {
+
   0%,
   100% {
     transform: translateY(0);
@@ -2539,11 +2535,9 @@ textarea#input {
 }
 
 .auth-modal-content {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0.02)
-  );
+  background: linear-gradient(160deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.02));
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -2892,7 +2886,7 @@ input:-webkit-autofill:active {
 }
 
 /* New position for the EXPANDED sidebar */
-.nav-sidebar.expanded ~ .user-menu {
+.nav-sidebar.expanded~.user-menu {
   left: 15px;
   /* Move it back to the left edge inside the wide sidebar */
 }
@@ -3181,6 +3175,7 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 640px) {
+
   /* Make the header a simple row */
   .header {
     display: flex;

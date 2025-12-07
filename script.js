@@ -1513,7 +1513,10 @@ async function updateUserInfo() {
 
         // --- Real-time Trial Countdown Logic ---
         const createdAt = new Date(user.created_at);
-        const trialEndDate = new Date(createdAt.setDate(createdAt.getDate() + 30));
+        let trialEndDate = new Date(createdAt.setDate(createdAt.getDate() + 30));
+
+        // TEMPORARY: For testing trial expiration - REMOVE THIS LINE AFTER TESTING
+        trialEndDate = new Date('2023-01-01T00:00:00Z'); // Set to a past date
 
         trialInterval = setInterval(() => {
             const now = new Date();
@@ -1550,6 +1553,7 @@ async function updateUserInfo() {
         if (trialTimerEl) trialTimerEl.textContent = '--:--:--:--';
     }
 }
+// --- END: User Info Update ---
 // --- END: User Info Update ---
 
 // --- START: Navigation Sidebar Logic ---
