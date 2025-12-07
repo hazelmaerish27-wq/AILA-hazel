@@ -448,23 +448,6 @@ if (feedbackBtn) {
     }, 300);
   });
 }
-/*  show up button (pwede mo itong dagdagan or kukuhaan or e change)*/
-const faqs = [
-  "Overview",
-  "Origin",
-  "What's in ICT?",
-  "What is MRP?",
-  "What is MPS?",
-  "What is BOM?",
-  "What is Inventory?",
-  "What is PO?",
-  "How to do dashboard?",
-  "Data connection between sheets",
-  "How can I prepare for oral validation",
-  "Three types of data ",
-  "References",
-  "Main developer of AILA?",
-];
 /* response area */
 /* dito mo e ccustomize if may babagohin or e dadagdag na template questions */
 let offlineResponses = {}; // This will be filled with data from our Google Sheet.
@@ -1044,14 +1027,13 @@ async function initializeApp() {
       if (loggedInUserEmail) {
         // --- THIS IS THE FIX ---
         // Load offline data even when the user is already logged in.
-        await loadOfflineData(); 
-        
+       
         // If a user is already logged in, bypass the loading screen entirely.
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.classList.add("hidden");
         showWelcomeScreen(); // Show the main chat interface
-        updateStatus("pending"); // Set the initial status
         updateUserInfo();
+        //loadChatHistoryList() // load chat history
         return; // Stop the rest of the initializeApp function from running
       }
   // --- 1. Define loading content & get elements ---
@@ -1166,7 +1148,7 @@ async function initializeApp() {
   cycleStatus();
 
   // --- 5. Start the actual data loading ---
-  await loadOfflineData();
+  //await loadOfflineData();
 
   // --- 6. Handle the completion state ---
   // Keep animations running, but hide the "Click Me" text
