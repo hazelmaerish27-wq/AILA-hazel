@@ -4,7 +4,6 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-let currentConversationId = null;
 // --- END: Supabase Client Initialization ---
 // --- START: Supabase Auth State Listener ---
 // --- START: Supabase Auth State Listener ---
@@ -22,7 +21,7 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
             // Use replaceState to clean the URL without adding to browser history
             window.history.replaceState(null, '', window.location.pathname);
             // Now, reload the page. It will load with a clean URL.
-            window.location.reload(true);
+            window.location.reload();
         }
         // If the URL is already clean, initializeApp will handle showing the chat.
     }
@@ -448,6 +447,23 @@ if (feedbackBtn) {
     }, 300);
   });
 }
+/*  show up button (pwede mo itong dagdagan or kukuhaan or e change)*/
+const faqs = [
+  "Overview",
+  "Origin",
+  "What's in ICT?",
+  "What is MRP?",
+  "What is MPS?",
+  "What is BOM?",
+  "What is Inventory?",
+  "What is PO?",
+  "How to do dashboard?",
+  "Data connection between sheets",
+  "How can I prepare for oral validation",
+  "Three types of data ",
+  "References",
+  "Main developer of AILA?",
+];
 /* response area */
 /* dito mo e ccustomize if may babagohin or e dadagdag na template questions */
 let offlineResponses = {}; // This will be filled with data from our Google Sheet.
@@ -503,7 +519,7 @@ function showWelcomeScreen() {
            style="width:100%; height:100%; object-fit:cover; border-radius:14px;">
     </div>
     <h1 class="welcome-title" style="margin-bottom: 5px">Welcome to AILA</h1>
-<p class="welcome-subtitle">Hi ${localStorage.getItem('userProfile')?.split('@')[0] || 'kuys'}! I'm AILA, your learning assistant.</p>
+<p class="welcome-subtitle">Hi ${localStorage.getItem('loggedInUser')?.split('@')[0] || 'kuys'}! I'm AILA, your learning assistant.</p>
     <div class="welcome-actions">
       <button class="welcome-btn" onclick="useSuggestion('Overview')">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
@@ -551,12 +567,13 @@ function useSuggestion(text) {
 
   // The rest of the function remains the same: append the new message and send it.
   appendMessage(text, "user");
-  saveMessage('user', text, text); //Save the user messages
-  sendToBackend(text, true, text);
+  sendToBackend(text, true);
 }
 function appendMessage(
   text,
   who = "bot",
+  attachFAQs = false,
+  suggestions = []
 ) {
   const wrap = document.createElement("div");
   wrap.className = "msg " + who;
@@ -704,80 +721,79 @@ function hideTyping() {
   }
 }
 /* send to backend; use offlineResponses if offline or network fails */
-function sendToBackend(text, askSuggestions = false, firstMessage = '') {
-    showTyping();
-    const payload = {
-        message: text,
-        sessionId: "guest_" + Date.now(),
-        name: "Guest",
-        email: null,
-        askForSuggestions: !!askSuggestions,
-    };
+function sendToBackend(text, askSuggestions = false) {
+  showTyping();
+  const payload = {
+    message: text,
+    sessionId: "guest_" + Date.now(),
+    name: "Guest",
+    email: null,
+    askForSuggestions: !!askSuggestions,
+  };
 
-    // This helper function will now ONLY be used when the connection completely fails.
-    function getOfflineAnswer(q) {
-        // Find all keywords from the offline responses that are present in the user's query as whole words.
-        const matchingKeys = Object.keys(offlineResponses).filter((k) => {
-            // We create a regular expression to match the keyword as a whole word, ignoring case.
-            const escapedKey = k.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
-            const regex = new RegExp(`\\b${escapedKey}\\b`, "i");
-            return regex.test(q);
-        });
+  // This helper function will now ONLY be used when the connection completely fails.
+  function getOfflineAnswer(q) {
+    // Find all keywords from the offline responses that are present in the user's query as whole words.
+    const matchingKeys = Object.keys(offlineResponses).filter((k) => {
+      // We create a regular expression to match the keyword as a whole word, ignoring case.
+      const escapedKey = k.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+      const regex = new RegExp(`\\b${escapedKey}\\b`, "i");
+      return regex.test(q);
+    });
 
-        // If any keywords were found, select the one with the most characters.
-        if (matchingKeys.length > 0) {
-            const bestMatch = matchingKeys.reduce((a, b) =>
-                a.length > b.length ? a : b
-            );
-            // Return the response for the best-matching (longest) keyword.
-            return offlineResponses[bestMatch];
-        }
-
-        // If no keywords were found, return the default offline message.
-        return `🔴OFFLINE: 
-          Kuys! tulog pa si AILA, click mo nalang yung button for more common questions.
-          \n<h5>We're still looking forward to the day that the already-prepared online version (GISING NA SI AILA), gets approved, even if it comes with a small fee, because it will allow us to help more LA and incoming trainees in the future.</h5>
-          \n- *AILA can still response in templated answers given below, CLICK THE BUTTON*
-          `;
+    // If any keywords were found, select the one with the most characters.
+    if (matchingKeys.length > 0) {
+      const bestMatch = matchingKeys.reduce((a, b) =>
+        a.length > b.length ? a : b
+      );
+      // Return the response for the best-matching (longest) keyword.
+      return offlineResponses[bestMatch];
     }
 
-    // N8N fetch url
-    fetch("https://levercrafter.app.n8n.cloud/webhook/aila-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+    // If no keywords were found, return the default offline message.
+    return `🔴OFFLINE: 
+      Kuys! tulog pa si AILA, click mo nalang yung button for more common questions.
+      \n<h5>We're still looking forward to the day that the already-prepared online version (GISING NA SI AILA), gets approved, even if it comes with a small fee, because it will allow us to help more LA and incoming trainees in the future.</h5>
+      \n- *AILA can still response in templated answers given below, CLICK THE BUTTON*
+      `;
+  }
+
+  // N8N fetch url
+  fetch("https://levercrafter.app.n8n.cloud/webhook/aila-chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  })
+    .then(async (res) => {
+      hideTyping();
+      if (!res.ok) {
+        throw new Error(`...`);
+      }
+      const data = await res.json().catch(() => ({}));
+      const reply = data.reply;
+      //... inside the .then() block
+      if (reply) {
+        playSound(SFX.receive, 0.7); // 70% volume, slightly quieter
+        appendMessage(reply, "bot");
+      }
+      //...
+      else {
+        appendMessage("...", "bot");
+      }
+      pulseLogoOnce();
+      updateStatus(true); // <-- ADD THIS LINE
     })
-                    .then(async (res) => {
-                hideTyping();
-                if (!res.ok) {
-                    throw new Error(`...`);
-                }
-                const data = await res.json().catch(() => ({}));
-                const reply = data.reply;
-                //... inside the .then() block
-                if (reply) {
-                    playSound(SFX.receive, 0.7); // 70% volume, slightly quieter
-                    appendMessage(reply, "bot");
-                    saveMessage('bot', reply, ''); // SAVE THE BOT RESPONSE
-                }
-                //...
-                else {
-                    appendMessage("...", "bot");
-                }
-                pulseLogoOnce();
-                updateStatus(true); // <-- ADD THIS LINE
-            })
+    .catch((err) => {
+      hideTyping();
+      console.warn("Offline mode triggered:", err);
+      const offlineReply = getOfflineAnswer(text);
 
-        .catch((err) => {
-            hideTyping();
-            console.warn("Offline mode triggered:", err);
-            const offlineReply = getOfflineAnswer(text);
+      // THIS IS THE FIX: Play the receive sound for offline messages too.
+      playSound(SFX.receive, 0.7);
 
-            // THIS IS THE FIX: Play the receive sound for offline messages too.
-            playSound(SFX.receive, 0.7);
-            appendMessage(offlineReply, "bot", true);
-            updateStatus(false); // <-- ADD THIS LINE
-        });
+      appendMessage(offlineReply, "bot", true);
+      updateStatus(false); // <-- ADD THIS LINE
+    });
 }
 
 function sendMessage() {
@@ -799,8 +815,8 @@ function sendMessage() {
     // Manually trigger the input event to swap the send button back to the voice button
     input.dispatchEvent(new Event("input", { bubbles: true }));
   }, 50); // A 50ms delay is imperceptible to the user but fixes the bug.
-  saveMessage('user', t);
-sendToBackend(t, true, t);
+
+  sendToBackend(t, true);
 }
 function pulseLogoOnce() {
   logoArea.classList.add("logo-glow");
@@ -1027,13 +1043,14 @@ async function initializeApp() {
       if (loggedInUserEmail) {
         // --- THIS IS THE FIX ---
         // Load offline data even when the user is already logged in.
-       
+        await loadOfflineData(); 
+        
         // If a user is already logged in, bypass the loading screen entirely.
         const loadingOverlay = document.getElementById("loading-overlay");
         loadingOverlay.classList.add("hidden");
         showWelcomeScreen(); // Show the main chat interface
+        updateStatus("pending"); // Set the initial status
         updateUserInfo();
-        //loadChatHistoryList() // load chat history
         return; // Stop the rest of the initializeApp function from running
       }
   // --- 1. Define loading content & get elements ---
@@ -1148,7 +1165,7 @@ async function initializeApp() {
   cycleStatus();
 
   // --- 5. Start the actual data loading ---
-  //await loadOfflineData();
+  await loadOfflineData();
 
   // --- 6. Handle the completion state ---
   // Keep animations running, but hide the "Click Me" text
@@ -1237,51 +1254,19 @@ function showConfirm(title, message) {
         confirmNoBtn.onclick = () => resolveAndClose(false);
     });
 }
-// --- NEW: Function to send user data to Google Sheets ---
-async function sendUserInfoToSheet(user) {
-    if (!user) return;
 
-    const payload = {
-        email: user.email,
-        fullName: (user.app_metadata.provider === 'google' && user.user_metadata) ? user.user_metadata.full_name : user.email.split('@')[0],
-        provider: user.app_metadata.provider || 'email',
-        createdAt: user.created_at
-    };
-
-    try {
-        await fetch(SCRIPT_API_URL, {
-            method: 'POST',
-            mode: 'no-cors', // Important for sending to Google Scripts from a browser
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
-        console.log("User info sent to sheet successfully.");
-    } catch (error) {
-        console.error("Error sending user info to sheet:", error);
-    }
-}
-
-async function handleSuccessfulLogin(email, isNewUser = false) { // Make the function async
+function handleSuccessfulLogin(email, isNewUser = false) {
     localStorage.setItem('loggedInUser', email);
     if (isNewUser) {
         localStorage.setItem('trialStartDate', new Date().toISOString());
     }
 
-    // --- NEW: Fetch session and send user info ---
-    const { data: { session } } = await _supabase.auth.getSession();
-    if(session) {
-      sendUserInfoToSheet(session.user);
-    }
-    // --- END of new code ---
-
     const loadingOverlay = document.getElementById("loading-overlay");
 
     // Hide all overlays and modals
     if (loadingOverlay) loadingOverlay.classList.add("hidden");
-    closeModal();
- 
+    closeModal(); 
+
     // Now, show the main application screen and update user info
     showWelcomeScreen();
     updateUserInfo();
@@ -1566,10 +1551,10 @@ async function updateUserInfo() {
     }
 }
 // --- END: User Info Update ---
-// Loads the messages for a specific conversation into the chat window
+
 // --- START: Navigation Sidebar Logic ---
 function setupNavigation() {
-    // Get all elements from the DOM
+    // Get ALL elements from the DOM
     const navSidebar = document.getElementById("navSidebar");
     const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
     const mobileNavToggle = document.getElementById("mobileNavToggle");
@@ -1577,9 +1562,6 @@ function setupNavigation() {
     const userProfileBtn = document.getElementById("userProfile");
     const userMenu = document.getElementById("userMenu");
     const logoutBtn = document.getElementById("logoutBtn");
-    const yourChatsBtn = document.getElementById("yourChatsBtn"); //  "Your Chats" button
-    const chatHistoryListEl = document.getElementById("chatHistoryList"); // The list of chat history items
-    const searchBtn = document.getElementById('searchBtn');
 
     // --- Desktop Toggle Logic ---
     if (sidebarToggleBtn) {
@@ -1626,14 +1608,7 @@ function setupNavigation() {
             }
         });
     }
-    // --- Your Chats Dropdown Toggle ---
-    if (yourChatsBtn && chatHistoryListEl) {
-        yourChatsBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // Stop the click from reaching the document
-            toggleChatHistoryDropdown();
-        });
-    }
-    
+
     // --- CONSOLIDATED "CLICK OUTSIDE" HANDLER ---
     window.addEventListener('click', (e) => {
         // 1. Close user menu if it's open and the click is outside
@@ -1656,21 +1631,6 @@ function setupNavigation() {
     });
 }
 // --- END: Navigation Sidebar Logic ---
-
-// --- START: Dropdown Toggle function ---
-    // --- START: Dropdown Toggle function ---
-    // --- START: Dropdown Toggle function ---
-    function toggleChatHistoryDropdown() {
-      const chatHistoryListEl = document.getElementById("chatHistoryList"); // Get the chat history list
-      const yourChatsBtn = document.getElementById("yourChatsBtn"); // Get the your chats button
-
-      if (chatHistoryListEl && yourChatsBtn) {
-        chatHistoryListEl.classList.toggle("active"); // Toggle the 'active' class
-        yourChatsBtn.classList.toggle("active");
-      }
-    }
-    // --- END: Dropdown Toggle Function ---
-// --- END: Dropdown Toggle Function ---
 // --- START: Password Reset Page Logic ---
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -1721,3 +1681,5 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// --- END: Password Reset Page Logic ---
