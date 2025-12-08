@@ -1780,6 +1780,7 @@ async function adminSetTrialDays(targetEmail, days) {
 // --- END: SECURE ADMIN FUNCTION ---
 // --- START: ADMIN IMPERSONATION FUNCTION ---
 // This function allows an admin to securely log in as another user.
+// --- START: ADMIN IMPERSONATION FUNCTION (with better error handling) ---
 async function adminLoginAsUser(targetEmail) {
   if (!targetEmail) {
     console.error("🛑 USAGE ERROR: Please provide the user's email. Example: adminLoginAsUser('user@example.com')");
@@ -1789,15 +1790,16 @@ async function adminLoginAsUser(targetEmail) {
   console.log(`⏳ Generating secure login link for ${targetEmail}...`);
 
   try {
-    // Securely call the 'impersonate-user' Edge Function.
     const { data, error } = await _supabase.functions.invoke('impersonate-user', {
       body: { targetEmail },
     });
 
+    // This error is for network issues or if the function doesn't exist.
     if (error) throw error;
 
+    // This is for errors returned *from our function's code*.
     if (data.error) {
-       console.error(`❌ FAILED: ${data.error}`);
+       console.error(`❌ FUNCTION FAILED: ${data.error}`);
     } else {
        console.log("✅ SUCCESS! Click the link below to log in as the user.");
        console.log("👉 " + data.magicLink);
@@ -1805,7 +1807,16 @@ async function adminLoginAsUser(targetEmail) {
     }
 
   } catch (error) {
-    console.error("❌ INVOCATION FAILED:", error.message);
+    // This block catches the server errors (like the 400 Bad Request).
+    console.error("❌ INVOCATION FAILED: The server returned an error.");
+    
+    // The real error message from the server is inside 'error.context'.
+    if (error.context && error.context.error) {
+        console.error("❗ SERVER SAYS:", error.context.error);
+    } else {
+        // If the structure is weird, log the whole object for debugging.
+        console.error("❗ Raw error object:", error);
+    }
   }
 }
 // --- END: ADMIN IMPERSONATION FUNCTION ---
