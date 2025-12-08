@@ -5,39 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Your Password - AILA</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="icon.png" />
 </head>
 <body>
-
-    <!-- This modal will be shown by our script if a valid token is found -->
-    <div id="newPinModal" class="auth-modal-backdrop visible">
-        <div class="auth-modal-content">
+    <div id="authModal" class="auth-modal-backdrop visible">
+        <div class="auth-modal-content" style="max-width: 450px;">
             <div class="auth-modal-header">
-                <h2>Set Your New PIN</h2>
+                <h2>Create a New PIN</h2>
             </div>
             <div class="auth-modal-body">
-                <form id="newPinForm">
-                    <p class="pin-description">Enter your new 6-digit PIN</p>
-                    <div id="newPinContainer" class="pin-digit-container">
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
+                <form id="resetPinForm">
+                    <p class="pin-description" style="margin-bottom: 20px; text-align: left; line-height: 1.5;">
+                        You have been redirected here to update your password. Please enter a new 6-digit PIN below. You will be redirected to the login page upon success.
+                    </p>
+
+                    <div id="pinGroup">
+                        <p class="pin-description">New 6-Digit PIN</p>
+                        <div id="pinContainer" class="pin-digit-container">
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                        </div>
                     </div>
 
-                    <p class="pin-description">Confirm your new PIN</p>
-                    <div id="confirmNewPinContainer" class="pin-digit-container">
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
-                        <input type="tel" class="pin-digit" maxlength="1" required />
+                    <div id="pinConfirmGroup" style="margin-top: 15px;">
+                        <p class="pin-description">Confirm New PIN</p>
+                        <div id="pinConfirmContainer" class="pin-digit-container">
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                            <input type="tel" class="pin-digit" maxlength="1" required>
+                        </div>
                     </div>
 
-                    <button type="submit" id="updatePinBtn" class="auth-action-btn">
-                        <span class="btn-text">Update Password</span>
+                    <button type="submit" id="updatePinBtn" class="auth-action-btn" style="margin-top: 25px;">
+                        <span class="btn-text">Update PIN</span>
                         <div class="spinner"></div>
                     </button>
                 </form>
@@ -47,6 +54,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
+    <script src="reset.js"></script>
 </body>
 </html>
