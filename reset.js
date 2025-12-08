@@ -1,9 +1,8 @@
 // --- Supabase Client Initialization ---
 const SUPABASE_URL = 'https://woqlvcgryahmcejdlcqz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTU2NTE1ODUsImV4cCI6MjAxMTIyNzU4NX0.s17pBCeS3Qca9C4l1mCV2O91Z2-q6a-KSM_p3B3d5lI';
-const {
-    createClient
-} = supabase;
+// THIS IS THE CORRECTED API KEY
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA';
+const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
@@ -102,7 +101,7 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
         const urlParams = new URLSearchParams(window.location.hash.substring(1));
         if (urlParams.has('error')) {
             setButtonLoading(true, "Error");
-            showAlert(`Error: ${urlParams.get('error_description').replace(/\\+/g, ' ')}`);
+            showAlert(`Error: ${urlParams.get('error_description').replace(/\+/g, ' ')}`);
         }
     }
 });
