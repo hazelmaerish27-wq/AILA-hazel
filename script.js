@@ -1585,6 +1585,25 @@ function setupAuthModal() {
       }
     });
   }
+    // (This block should be added right after the googleLoginBtn listener)
+
+  const facebookLoginBtn = document.getElementById("facebookLoginBtn");
+
+  if (facebookLoginBtn) {
+    facebookLoginBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const { error } = await _supabase.auth.signInWithOAuth({
+        provider: "facebook",
+        options: {
+          // This tells Supabase where to return after a successful login.
+          redirectTo: AILA_URL,
+        },
+      });
+      if (error) {
+        showCustomAlert(error.message);
+      }
+    });
+  }
 
   if (authForm) {
     authForm.addEventListener("submit", async (e) => {

@@ -2687,6 +2687,36 @@ input:-webkit-autofill:active {
   width: 18px;
   height: 18px;
 }
+/* Add this CSS rule to your style.css file */
+
+.facebook-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  margin-top: 12px; /* Adds space above the button */
+  background-color: transparent;
+    color: #e6fbff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+  color: white;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  gap: 10px;
+}
+
+.facebook-login-btn:hover {
+  background-color: #166FE5; /* A slightly darker blue for hover */
+}
+
+/* This makes sure the "OR" separator has space around it */
+.separator {
+    margin: 18px 0;
+}
 
 /* --- Auth Modal Success Screen --- */
 #successScreen {
