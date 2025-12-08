@@ -8,32 +8,37 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // --- END: Supabase Client Initialization ---
 // (This entire function replaces the old one at the top of your script.js file)
 _supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' && session && window.location.hash.includes('access_token')) {
-        
-        const isNewUser = (new Date() - new Date(session.user.created_at)) < 60000;
-        const eventType = isNewUser ? 'Google Registration' : 'Google Login';
+  if (
+    event === "SIGNED_IN" &&
+    session &&
+    window.location.hash.includes("access_token")
+  ) {
+    const isNewUser = new Date() - new Date(session.user.created_at) < 60000;
+    const eventType = isNewUser ? "Google Registration" : "Google Login";
 
-        const displayName = (session.user.user_metadata && session.user.user_metadata.full_name) 
-            ? session.user.user_metadata.full_name
-            : session.user.email.split('@')[0];
-        
-        localStorage.setItem('loggedInUserName', displayName);
-        
-        // --- THIS IS THE FIX ---
-        // Call the new logger with all required info before redirecting.
-        await logUserEventToSheet(session.user.email, displayName, eventType);
+    const displayName =
+      session.user.user_metadata && session.user.user_metadata.full_name
+        ? session.user.user_metadata.full_name
+        : session.user.email.split("@")[0];
 
-        window.location.assign('https://ailearningassistant.edgeone.app/');
-        return; 
-    }
+    localStorage.setItem("loggedInUserName", displayName);
 
-    if (session) {
-        localStorage.setItem('loggedInUser', session.user.email);
-        const displayName = (session.user.user_metadata && session.user.user_metadata.full_name) 
-            ? session.user.user_metadata.full_name
-            : session.user.email.split('@')[0];
-        localStorage.setItem('loggedInUserName', displayName);
-    }
+    // --- THIS IS THE FIX ---
+    // Call the new logger with all required info before redirecting.
+    await logUserEventToSheet(session.user.email, displayName, eventType);
+
+    window.location.assign("https://ailearningassistant.edgeone.app/");
+    return;
+  }
+
+  if (session) {
+    localStorage.setItem("loggedInUser", session.user.email);
+    const displayName =
+      session.user.user_metadata && session.user.user_metadata.full_name
+        ? session.user.user_metadata.full_name
+        : session.user.email.split("@")[0];
+    localStorage.setItem("loggedInUserName", displayName);
+  }
 });
 
 const SCRIPT_API_URL =
@@ -1081,15 +1086,15 @@ function updateStatus(status) {
  * @param {string} eventType - The type of event, e.g., 'PIN Registration', 'Google Login'.
  */
 async function logUserEventToSheet(email, username, eventType) {
-  let ipAddress = 'not available';
+  let ipAddress = "not available";
   try {
     // Fetches the public IP address of the user.
-    const response = await fetch('https://api.ipify.org?format=json');
-    if (!response.ok) throw new Error('Response not OK');
+    const response = await fetch("https://api.ipify.org?format=json");
+    if (!response.ok) throw new Error("Response not OK");
     const data = await response.json();
     ipAddress = data.ip;
   } catch (error) {
-    console.warn('Could not fetch IP address:', error);
+    console.warn("Could not fetch IP address:", error);
   }
 
   // This payload is clear and contains all the info your script needs.
@@ -1104,16 +1109,16 @@ async function logUserEventToSheet(email, username, eventType) {
   try {
     // Send the data to your Google Apps Script.
     await fetch(SCRIPT_API_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Best for 'fire and forget' logging
+      method: "POST",
+      mode: "no-cors", // Best for 'fire and forget' logging
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
     console.log(`Successfully logged '${eventType}' for ${username} to sheet.`);
   } catch (error) {
-    console.error('Error logging user event to Google Sheet:', error);
+    console.error("Error logging user event to Google Sheet:", error);
   }
 }
 /**
@@ -1384,32 +1389,32 @@ function showConfirm(title, message) {
 
 // (This entire function replaces the old handleSuccessfulLogin function)
 function handleSuccessfulLogin(email, isNewUser = false) {
-    localStorage.setItem('loggedInUser', email);
-    if (isNewUser) {
-        localStorage.setItem('trialStartDate', new Date().toISOString());
-    }
+  localStorage.setItem("loggedInUser", email);
+  if (isNewUser) {
+    localStorage.setItem("trialStartDate", new Date().toISOString());
+  }
 
-    // --- START: FIX FOR LOGIN SOUNDS ---
-    // Stop the loading screen's ambient sound if it is running.
-    if (ambientSound) {
-        ambientSound.pause();
-        ambientSound.currentTime = 0;
-        ambientSound = null; // Dereference to allow garbage collection
-    }
-    // Play the "whoosh" sound effect to signal entering the app.
-    playSound(SFX.whoosh, 0.7);
-    // --- END: FIX FOR LOGIN SOUNDS ---
+  // --- START: FIX FOR LOGIN SOUNDS ---
+  // Stop the loading screen's ambient sound if it is running.
+  if (ambientSound) {
+    ambientSound.pause();
+    ambientSound.currentTime = 0;
+    ambientSound = null; // Dereference to allow garbage collection
+  }
+  // Play the "whoosh" sound effect to signal entering the app.
+  playSound(SFX.whoosh, 0.7);
+  // --- END: FIX FOR LOGIN SOUNDS ---
 
-    const loadingOverlay = document.getElementById("loading-overlay");
+  const loadingOverlay = document.getElementById("loading-overlay");
 
-    // Hide all overlays and modals
-    if (loadingOverlay) loadingOverlay.classList.add("hidden");
-    closeModal(); 
+  // Hide all overlays and modals
+  if (loadingOverlay) loadingOverlay.classList.add("hidden");
+  closeModal();
 
-    // Now, show the main application screen and update user info
-    showWelcomeScreen();
-    updateUserInfo();
-    updateStatus("pending");
+  // Now, show the main application screen and update user info
+  showWelcomeScreen();
+  updateUserInfo();
+  updateStatus("pending");
 }
 
 function setupAuthModal() {
@@ -1585,7 +1590,7 @@ function setupAuthModal() {
       }
     });
   }
-    // (This block should be added right after the googleLoginBtn listener)
+  // (This block should be added right after the googleLoginBtn listener)
 
   const facebookLoginBtn = document.getElementById("facebookLoginBtn");
 
@@ -1613,47 +1618,63 @@ function setupAuthModal() {
 
       const email = document.getElementById("email").value;
 
-     try {
-                if (authState === 'reset') {
-                    // ... (reset password logic remains the same)
-                    const { error } = await _supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://ailearningassistant.edgeone.app/reset' });
-                    if (error) throw error;
-                    showCustomAlert("Password reset instructions sent to your email.", 'success');
-                    setTimeout(() => setAuthState('login'), 3000);
+      try {
+        if (authState === "reset") {
+          // ... (reset password logic remains the same)
+          const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: "https://ailearningassistant.edgeone.app/reset",
+          });
+          if (error) throw error;
+          showCustomAlert(
+            "Password reset instructions sent to your email.",
+            "success"
+          );
+          setTimeout(() => setAuthState("login"), 3000);
+        } else {
+          const pin = getPinFromContainer(pinContainer);
+          const pinConfirm = getPinFromContainer(pinConfirmContainer);
 
-                } else {
-                    const pin = getPinFromContainer(pinContainer);
-                    const pinConfirm = getPinFromContainer(pinConfirmContainer);
-                    
-                    if (pin.length !== 6) throw new Error("PIN must be exactly 6 digits.");
+          if (pin.length !== 6)
+            throw new Error("PIN must be exactly 6 digits.");
 
-                    if (authState === 'register') {
-                        const username = document.getElementById("username").value;
-                        if (!username.trim()) throw new Error("Username cannot be empty.");
-                        if (pin !== pinConfirm) throw new Error("The PINs you entered do not match.");
+          if (authState === "register") {
+            const username = document.getElementById("username").value;
+            if (!username.trim()) throw new Error("Username cannot be empty.");
+            if (pin !== pinConfirm)
+              throw new Error("The PINs you entered do not match.");
 
-                        const { error } = await _supabase.auth.signUp({ email, password: pin, options: { data: { full_name: username } } });
-                        if (error) throw error;
-                        
-                        // --- THIS IS THE FIX ---
-                        await logUserEventToSheet(email, username, 'PIN Registration');
-                        
-                        showCustomAlert("Registered successfully!", 'success');
-                        localStorage.setItem('loggedInUserName', username);
-                        setTimeout(() => showWelcomeAndEnter(email, true), 1500);
+            const { error } = await _supabase.auth.signUp({
+              email,
+              password: pin,
+              options: { data: { full_name: username } },
+            });
+            if (error) throw error;
 
-                    } else { // Login
-                        const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pin });
-                        if (error) throw error;
-                        
-                        // --- THIS IS THE FIX ---
-                        const user = data.user;
-                        const displayName = (user.user_metadata && user.user_metadata.full_name) ? user.user_metadata.full_name : user.email.split('@')[0];
-                        await logUserEventToSheet(email, displayName, 'PIN Login');
-                        
-                        handleSuccessfulLogin(email);
-                    }
-                }
+            // --- THIS IS THE FIX ---
+            await logUserEventToSheet(email, username, "PIN Registration");
+
+            showCustomAlert("Registered successfully!", "success");
+            localStorage.setItem("loggedInUserName", username);
+            setTimeout(() => showWelcomeAndEnter(email, true), 1500);
+          } else {
+            // Login
+            const { data, error } = await _supabase.auth.signInWithPassword({
+              email,
+              password: pin,
+            });
+            if (error) throw error;
+
+            // --- THIS IS THE FIX ---
+            const user = data.user;
+            const displayName =
+              user.user_metadata && user.user_metadata.full_name
+                ? user.user_metadata.full_name
+                : user.email.split("@")[0];
+            await logUserEventToSheet(email, displayName, "PIN Login");
+
+            handleSuccessfulLogin(email);
+          }
+        }
       } catch (error) {
         if (error.message.includes("User already registered")) {
           showCustomAlert("User already registered. Please log in.");

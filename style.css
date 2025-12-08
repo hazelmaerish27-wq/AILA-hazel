@@ -51,7 +51,8 @@
   width: 130px;
   height: 130px;
   /* A powerful glow that respects the logo's transparent areas */
-  filter: drop-shadow(0 0 10px var(--accent1)) drop-shadow(0 0 25px var(--accent1));
+  filter: drop-shadow(0 0 10px var(--accent1))
+    drop-shadow(0 0 25px var(--accent1));
   /* A new, smoother up-and-down floating animation */
   animation: smoothFloat 4s ease-in-out infinite;
   transition: opacity 0.2s ease;
@@ -572,9 +573,11 @@ body {
   max-width: 95vw;
   height: 100vh;
   max-height: 92vh;
-  background: linear-gradient(180deg,
-      var(--glass-2),
-      rgba(255, 255, 255, 0.006));
+  background: linear-gradient(
+    180deg,
+    var(--glass-2),
+    rgba(255, 255, 255, 0.006)
+  );
   border-radius: 14px;
   box-shadow: 0 20px 60px rgba(2, 8, 20, 0.75);
   display: flex;
@@ -873,7 +876,6 @@ body {
   border: 1px solid rgba(3, 169, 244, 0.2);
 }
 
-
 /* This ensures that paragraphs inside a bot message are not faint or transparent */
 .msg.bot p {
   color: #e8fbff;
@@ -916,9 +918,11 @@ body {
 }
 
 .faq-btn {
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.015),
-      rgba(255, 255, 255, 0.01));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.015),
+    rgba(255, 255, 255, 0.01)
+  );
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   padding: 8px 12px;
@@ -959,9 +963,11 @@ body {
 }
 
 .sugg-btn {
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.02),
-      rgba(44, 33, 33, 0.01));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(44, 33, 33, 0.01)
+  );
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   padding: 8px 12px;
@@ -978,9 +984,11 @@ body {
 }
 
 .orient-btn {
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.025),
-      rgba(255, 255, 255, 0.015));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.025),
+    rgba(255, 255, 255, 0.015)
+  );
   border: 1px solid rgba(255, 255, 255, 0.05);
   color: #e6fbff;
   padding: 8px 12px;
@@ -1084,7 +1092,6 @@ body {
 }
 
 @keyframes wave {
-
   0%,
   100% {
     transform: scaleY(0.2);
@@ -1119,7 +1126,6 @@ textarea#input.voice-active {
 }
 
 /* --- End of New Styles --- */
-
 
 .composer-actions {
   position: absolute;
@@ -1254,9 +1260,11 @@ textarea#input.voice-active {
 }
 
 .welcome-btn {
-  background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.015),
-      rgba(255, 255, 255, 0.01));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.015),
+    rgba(255, 255, 255, 0.01)
+  );
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   border-radius: 10px;
@@ -1406,9 +1414,11 @@ textarea#input.voice-active {
 
 .modal-content {
   scale: 0.95;
-  background: linear-gradient(160deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.01));
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.01)
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -1598,7 +1608,7 @@ textarea#input.voice-active {
 }
 
 /* When the button is active, expand the content next to it */
-.module-dropdown-btn.active+.module-dropdown-content {
+.module-dropdown-btn.active + .module-dropdown-content {
   max-height: 500px;
   /* A height large enough for your content */
 }
@@ -1638,15 +1648,15 @@ textarea#input.voice-active {
 /* --- Mobile View Enhancements --- */
 @media (max-width: 640px) {
   /* 1. Reset the page to prevent any scrolling or extra space. */
-    html,
-    body {
-      width: 100% !important;
-      height: 100% !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      overflow-y: scroll;
-      overflow-x: hidden;
-    }
+  html,
+  body {
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
   /* --- Auth Modal adjustments for mobile --- */
   .msg.bot {
     background: transparent;
@@ -1930,9 +1940,11 @@ textarea#input.voice-active {
   }
 
   .welcome-btn {
-    background: linear-gradient(180deg,
-        rgba(255, 255, 255, 0.015),
-        rgba(255, 255, 255, 0.01));
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.015),
+      rgba(255, 255, 255, 0.01)
+    );
     border: 1px solid rgba(255, 255, 255, 0.03);
     color: #e6fbff;
     padding: 5px 15px;
@@ -2051,7 +2063,6 @@ textarea#input.voice-active {
 }
 
 @keyframes scale {
-
   0%,
   100% {
     transform: none;
@@ -2204,7 +2215,6 @@ textarea#input.voice-active {
 }
 
 @keyframes scale {
-
   0%,
   100% {
     transform: none;
@@ -2299,7 +2309,6 @@ textarea#input.voice-active {
 }
 
 @keyframes float-up-down {
-
   0%,
   100% {
     transform: translateY(0);
@@ -2378,9 +2387,11 @@ textarea#input.voice-active {
 }
 
 .auth-modal-content {
-  background: linear-gradient(160deg,
-      rgba(255, 255, 255, 0.05),
-      rgba(255, 255, 255, 0.02));
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.02)
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -2697,9 +2708,9 @@ input:-webkit-autofill:active {
   padding: 10px;
   margin-top: 12px; /* Adds space above the button */
   background-color: transparent;
-    color: #e6fbff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
+  color: #e6fbff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
   color: white;
   border-radius: 6px;
   font-size: 15px;
@@ -2710,12 +2721,12 @@ input:-webkit-autofill:active {
 }
 
 .facebook-login-btn:hover {
-  background-color: #166FE5; /* A slightly darker blue for hover */
+  background-color: #166fe5; /* A slightly darker blue for hover */
 }
 
 /* This makes sure the "OR" separator has space around it */
 .separator {
-    margin: 18px 0;
+  margin: 18px 0;
 }
 
 /* --- Auth Modal Success Screen --- */
@@ -2759,7 +2770,7 @@ input:-webkit-autofill:active {
 }
 
 /* New position for the EXPANDED sidebar */
-.nav-sidebar.expanded~.user-menu {
+.nav-sidebar.expanded ~ .user-menu {
   left: 15px;
   /* Move it back to the left edge inside the wide sidebar */
 }
@@ -3048,7 +3059,6 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 640px) {
-
   /* Make the header a simple row */
   .header {
     display: flex;
@@ -3135,8 +3145,6 @@ input:-webkit-autofill:active {
   box-sizing: border-box;
   transition: all 0.2s ease;
 }
-
-
 
 textarea#input {
   /* Behavior & Sizing */
