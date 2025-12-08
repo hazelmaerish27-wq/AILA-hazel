@@ -46,65 +46,73 @@ function setButtonLoading(isLoading, text = "Update PIN") {
 
 // --- Main Authentication Logic ---
 
-// 1. Initially disable the form and show a "verifying" state
-setButtonLoading(true, "Verifying...");
-showAlert("Verifying your request...", "success");
+// THIS IS THE NEW SECURITY CHECK
+// If the URL doesn't have the access token, the user didn't come from the email link.
+if (!window.location.hash.includes('access_token')) {
+    // Hide the form and show a clear error message.
+    resetPinForm.style.display = 'none';
+    setButtonLoading(true, "Invalid Link"); // Disable the button
+    showAlert('This link is invalid or has expired. Please request a new password reset from the login page.', false);
 
-_supabase.auth.onAuthStateChange(async (event, session) => {
-    // 2. This event fires when the session is confirmed
-    if (event === "PASSWORD_RECOVERY") {
-        // 3. Green light! Enable the form and set the button to its normal state.
-        setButtonLoading(false, "Update PIN");
-        alertBox.classList.add('hidden'); // Hide the "Verifying..." message
+    // Optional: Redirect the user back to the main page after a delay.
+    setTimeout(() => {
+        window.location.href = window.location.origin;
+    }, 5000);
+} else {
+    // If the token EXISTS, proceed with verification.
+    setButtonLoading(true, "Verifying...");
+    showAlert("Verifying your request...", "success");
 
-        // 4. NOW it's safe to attach the submit listener
-        resetPinForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            setButtonLoading(true, "Updating...");
-            alertBox.classList.add('hidden');
+    _supabase.auth.onAuthStateChange(async (event, session) => {
+        if (event === "PASSWORD_RECOVERY") {
+            setButtonLoading(false, "Update PIN");
+            alertBox.classList.add('hidden'); 
 
-            const newPin = Array.from(pinContainer.querySelectorAll('.pin-digit')).map(input => input.value).join('');
-            const confirmPin = Array.from(pinConfirmContainer.querySelectorAll('.pin-digit')).map(input => input.value).join('');
+            resetPinForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                setButtonLoading(true, "Updating...");
+                alertBox.classList.add('hidden');
 
-            if (newPin.length !== 6 || confirmPin.length !== 6) {
-                showAlert('Please enter a complete 6-digit PIN and confirmation.');
-                setButtonLoading(false, "Update PIN");
-                return;
-            }
+                const newPin = Array.from(pinContainer.querySelectorAll('.pin-digit')).map(input => input.value).join('');
+                const confirmPin = Array.from(pinConfirmContainer.querySelectorAll('.pin-digit')).map(input => input.value).join('');
 
-            if (newPin !== confirmPin) {
-                showAlert('The PINs do not match. Please try again.');
-                setButtonLoading(false, "Update PIN");
-                return;
-            }
+                if (newPin.length !== 6 || confirmPin.length !== 6) {
+                    showAlert('Please enter a complete 6-digit PIN and confirmation.');
+                    setButtonLoading(false, "Update PIN");
+                    return;
+                }
 
-            const {
-                data,
-                error
-            } = await _supabase.auth.updateUser({
-                password: newPin
+                if (newPin !== confirmPin) {
+                    showAlert('The PINs do not match. Please try again.');
+                    setButtonLoading(false, "Update PIN");
+                    return;
+                }
+
+                const { data, error } = await _supabase.auth.updateUser({
+                    password: newPin
+                });
+
+                if (error) {
+                    showAlert(`Error: ${error.message || 'An unknown error occurred.'}`);
+                    setButtonLoading(false, "Update PIN");
+                } else {
+                    showAlert('Your PIN has been successfully updated! Redirecting to login...', true);
+                    setButtonLoading(true, "Success!");
+                    resetPinForm.style.display = 'none';
+                    setTimeout(() => {
+                        window.location.href = window.location.origin;
+                    }, 3000);
+                }
             });
-
-            if (error) {
-                showAlert(`Error: ${error.message || 'An unknown error occurred.'}`);
-                setButtonLoading(false, "Update PIN");
-            } else {
-                showAlert('Your PIN has been successfully updated! Redirecting to login...', true);
-                setButtonLoading(true, "Success!");
-                resetPinForm.style.display = 'none';
-                setTimeout(() => {
-                    window.location.href = window.location.origin;
-                }, 3000);
+        } else {
+            const urlParams = new URLSearchParams(window.location.hash.substring(1));
+            if (urlParams.has('error')) {
+                setButtonLoading(true, "Error");
+                showAlert(`Error: ${urlParams.get('error_description').replace(/\+/g, ' ')}`);
             }
-        });
-    } else {
-        const urlParams = new URLSearchParams(window.location.hash.substring(1));
-        if (urlParams.has('error')) {
-            setButtonLoading(true, "Error");
-            showAlert(`Error: ${urlParams.get('error_description').replace(/\+/g, ' ')}`);
         }
-    }
-});
+    });
+}
 
 
 // --- Initial Page Setup ---
