@@ -631,21 +631,71 @@ safe(() => {
   });
 });
 
-(function setupAutoResize() {
-  const ta =
-    document.querySelector("textarea#input") ||
-    document.getElementById("input");
-  if (!ta) return;
-  const resize = () => {
-    ta.style.height = "auto";
-    const max = Math.min(window.innerHeight * 0.35, 220);
-    ta.style.height = Math.min(ta.scrollHeight, max) + "px";
-    setTimeout(() => (messagesEl.scrollTop = messagesEl.scrollHeight), 50);
+function setupFloatingExpander() {
+  const chat = document.querySelector('.chat');
+  const ta = document.getElementById('input');
+  const expander = document.getElementById('floating-expander');
+  
+  if (!chat || !ta || !expander) {
+    console.error("Floating Expander setup failed: One or more required elements are missing.");
+    return;
+  }
+
+  // A single helper div for measuring text width is created once.
+  let measurer = document.getElementById('text-measurer');
+  if (!measurer) {
+    measurer = document.createElement('div');
+    measurer.id = 'text-measurer';
+    document.body.appendChild(measurer);
+  }
+  
+  // *** THIS IS THE DEFINITIVE FIX ***
+  // By setting position to 'fixed' and moving it far off-screen,
+  // it is completely removed from the document's layout flow.
+  // It can now become infinitely wide for measurement purposes
+  // without ever stretching the body or causing a zoom-out.
+  Object.assign(measurer.style, {
+    position: 'fixed',
+    top: '-9999px',
+    left: '-9999px',
+    // It's still invisible, but the positioning is the key.
+    visibility: 'hidden',
+    height: 'auto',
+    width: 'auto',
+    whiteSpace: 'nowrap',
+  });
+
+  const handleInput = () => {
+    const text = ta.value;
+
+    // Apply the textarea's font styles to the measurer for an accurate width calculation.
+    measurer.style.fontSize = getComputedStyle(ta).fontSize;
+    measurer.style.fontFamily = getComputedStyle(ta).fontFamily;
+    measurer.textContent = text;
+    
+    // The overflow logic remains the same.
+    const hasOverflow = measurer.clientWidth > ta.clientWidth;
+    const hasNewline = text.includes('\n');
+
+    if ((hasOverflow || hasNewline) && text.trim() !== '') {
+      expander.textContent = text;
+      expander.classList.add('visible');
+      chat.classList.add('expander-visible');
+      expander.scrollTop = expander.scrollHeight;
+    } else {
+      expander.classList.remove('visible');
+      chat.classList.remove('expander-visible');
+    }
   };
-  ta.addEventListener("input", resize, { passive: true });
-  window.addEventListener("resize", resize);
-  resize();
-})();
+
+  ta.addEventListener('input', handleInput);
+  window.addEventListener('resize', handleInput);
+  handleInput(); // Run once on startup to set the initial state.
+}
+
+// Make sure you call this function once after the page loads.
+setupFloatingExpander();
+
 
 // google form feedback area
 // make sure header feedback opens new tab and doesn't break on mobile
@@ -1514,10 +1564,7 @@ async function updateUserInfo() {
         // --- Real-time Trial Countdown Logic ---
         const createdAt = new Date(user.created_at);
         let trialEndDate = new Date(createdAt.setDate(createdAt.getDate() + 30));
-
-        // TEMPORARY: For testing trial expiration - REMOVE THIS LINE AFTER TESTING
-        trialEndDate = new Date('2023-01-01T00:00:00Z'); // Set to a past date
-
+     
         trialInterval = setInterval(() => {
             const now = new Date();
             const diffTime = trialEndDate - now;

@@ -530,16 +530,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  background: linear-gradient(120deg, var(--bg1), var(--bg2), var(--bg3));
-  background-size: 300% 300%;
-  animation: grad 14s ease infinite;
-  color: #e8fbff;
-}
-
 @keyframes grad {
   0% {
     background-position: 0% 50%;
@@ -563,6 +553,20 @@ body {
   box-sizing: border-box;
 }
 
+/* --- ADD THIS CORRECTED BLOCK --- */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(120deg, var(--bg1), var(--bg2), var(--bg3));
+  background-size: 300% 300%;
+  animation: grad 14s ease infinite;
+  color: #e8fbff;
+  overflow: hidden;
+  /* This is the fix to prevent page scrolling */
+}
+
+/* --- AND ADD THIS CORRECTED BLOCK --- */
 .chat {
   width: 1200px;
   max-width: 95vw;
@@ -575,23 +579,11 @@ body {
   box-shadow: 0 20px 60px rgba(2, 8, 20, 0.75);
   display: flex;
   flex-direction: column;
-  overflow: flex;
+  overflow: hidden;
+  /* This is the fix to contain all child elements */
   border: 1px solid rgba(255, 255, 255, 0.03);
   position: relative;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.chat.faq-hidden {
-  height: 820px;
-  max-height: 95vh;
-}
-
-.chat.faq-hidden .main {
-  flex: 1 1 auto;
-}
-
-.chat.faq-hidden .messages {
-  max-height: 600px;
 }
 
 .main {
@@ -676,42 +668,6 @@ body {
   z-index: 10;
 }
 
-#input {
-  flex: 1;
-  min-height: 32px;
-  max-height: 70px;
-  height: 36px;
-  width: 100%;
-  resize: none;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #e6fbff;
-  font-size: 10px;
-  font-family: inherit;
-  line-height: 1.4;
-  outline: none;
-  box-sizing: border-box;
-  transition: all 0.2s ease;
-  overflow-y: hidden;
-}
-
-#input:focus {
-  border-color: var(--accent1);
-  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-#input::placeholder {
-  color: rgba(159, 182, 198, 0.6);
-}
-
-#input.auto-resize {
-  height: auto !important;
-  overflow-y: hidden;
-}
-
 .faq-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -789,11 +745,6 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-textarea#input {
-  transition: height 160ms ease;
-  -webkit-text-size-adjust: 100%;
 }
 
 .header {
@@ -1093,51 +1044,6 @@ textarea#input {
   }
 }
 
-textarea#input {
-  /* --- Core Sizing & Layout --- */
-  flex: 1;
-  /* Allow it to grow and shrink */
-  box-sizing: border-box;
-  /* Ensures padding is included in the size */
-  resize: none !important;
-  /* Disable manual resizing */
-
-  /* --- Dynamic Height --- */
-  min-height: 55px !important;
-  /* The starting height */
-  max-height: 150px !important;
-  /* The maximum height it can grow to */
-  height: auto;
-  /* Let JavaScript control the height */
-  overflow-y: auto !important;
-  /* Show a scrollbar ONLY when max-height is reached */
-
-  /* --- Visual Styling (from your original design) --- */
-  border-radius: 24px !important;
-  padding: 18px 48px 18px 20px !important;
-  /* Adjusted padding for better text alignment */
-  line-height: 1.4;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  background: #1c2532ee !important;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.445) !important;
-  transition: height 0.2s ease;
-  /* Add a smooth transition for the height change */
-}
-
-textarea#input:focus {
-  border-color: var(--accent1);
-  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-textarea#input::placeholder {
-  color: rgba(159, 182, 198, 0.6);
-}
-
-textarea#input.expanded {
-  min-height: 60px;
-}
-
 /* --- Composer Styles --- */
 /* --- New Styles for Voice Mode --- */
 
@@ -1214,35 +1120,6 @@ textarea#input.voice-active {
 
 /* --- End of New Styles --- */
 
-textarea#input {
-  width: 100%;
-  min-height: 52px;
-  max-height: 120px;
-  height: 52px;
-  resize: none;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 15px 85px 15px 20px;
-  /* Top, Right, Bottom, Left */
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #e6fbff;
-  font-size: 16px;
-  font-family: inherit;
-  line-height: 1.4;
-  outline: none;
-  box-sizing: border-box;
-  transition: all 0.2s ease;
-}
-
-textarea#input:focus {
-  border-color: var(--accent1);
-  box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-textarea#input::placeholder {
-  color: rgba(159, 182, 198, 0.6);
-}
 
 .composer-actions {
   position: absolute;
@@ -1274,6 +1151,7 @@ textarea#input::placeholder {
 .send:hover {
   background-color: rgba(255, 255, 255, 0.08);
   color: #e6fbff;
+  scale: 1.1;
 }
 
 #sendBtn {
@@ -1303,10 +1181,6 @@ textarea#input::placeholder {
   width: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
-}
-
-textarea#input {
-  transition: height 0.2s ease;
 }
 
 .welcome-screen {
@@ -1492,25 +1366,6 @@ textarea#input {
   padding-bottom: 120px !important;
 }
 
-textarea#input {
-  border-radius: 24px !important;
-  padding: 13px 48px 13px 20px !important;
-  overflow-y: hidden !important;
-  /* Permanently removes scrollbar */
-  resize: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  min-height: 48px !important;
-  background: #1c2532ee !important;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.445) !important;
-  overflow-y: hidden !important;
-  resize: none !important;
-  min-height: 24px !important;
-  /* Adjust height to match line-height */
-  height: 55px !important;
-  line-height: 25px;
-  /* Helps with vertical text alignment */
-}
-
 #voiceBtn {
   background-color: rgba(255, 255, 255, 0.1) !important;
   position: sticky;
@@ -1550,6 +1405,7 @@ textarea#input {
 }
 
 .modal-content {
+  scale: 0.95;
   background: linear-gradient(160deg,
       rgba(255, 255, 255, 0.05),
       rgba(255, 255, 255, 0.01));
@@ -1781,7 +1637,16 @@ textarea#input {
 
 /* --- Mobile View Enhancements --- */
 @media (max-width: 640px) {
-
+  /* 1. Reset the page to prevent any scrolling or extra space. */
+    html,
+    body {
+      width: 100% !important;
+      height: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
   /* --- Auth Modal adjustments for mobile --- */
   .msg.bot {
     background: transparent;
@@ -1789,7 +1654,7 @@ textarea#input {
     box-shadow: none;
     /* CORRECTED: Use 100% to respect the parent's padding */
     width: 97%;
-    padding-bottom: 10px;
+    padding-bottom: 5px !important;
     box-sizing: border-box;
     overflow-wrap: break-word;
     color: #dff8ff;
@@ -2001,17 +1866,6 @@ textarea#input {
     /* Enables momentum-based scrolling on iOS */
   }
 
-  /* 1. Reset the page to prevent any scrolling or extra space. */
-  html,
-  body {
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
-  }
-
   /* 2. Force the .app container to cover the entire screen. */
   .app {
     position: fixed !important;
@@ -2038,17 +1892,6 @@ textarea#input {
   .messages {
     -ms-overflow-style: none;
     scrollbar-width: none;
-  }
-
-  .composer {
-    padding-left: 15px;
-    padding-bottom: 12.5px;
-    gap: 8px;
-  }
-
-  textarea#input {
-    min-height: 48px;
-    font-size: 16px;
   }
 
   .footer-disclaimer {
@@ -3243,4 +3086,157 @@ input:-webkit-autofill:active {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+/* --- Definitive Expanding Text Area Style --- */
+
+#input {
+  width: 100%;
+  resize: none;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #e6fbff;
+  font-size: 10px;
+  font-family: inherit;
+  line-height: 1.4;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+
+
+textarea#input {
+  /* Behavior & Sizing */
+  box-sizing: border-box;
+  flex: 1;
+  /* Allow the input to grow and fill the composer area */
+  width: 100%;
+  resize: none !important;
+  /* Prevents manual resizing by the user */
+  overflow-y: auto;
+  /* Shows a scrollbar ONLY when max-height is reached */
+
+  /* Dynamic Height Control */
+  min-height: 55px;
+  /* The initial and minimum height */
+  max-height: 220px;
+  /* The maximum height before scrolling starts */
+  height: 55px;
+  /* Explicitly set initial height */
+  color: white;
+  /* Visuals & Spacing */
+  font-size: 16px;
+  line-height: 26px;
+  border-radius: 24px !important;
+  padding: 13px 48px 13px 20px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: #1c2532ee !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.445) !important;
+
+  /* Smooth Animation */
+  transition: height 0.15s ease-out;
+}
+
+/* --- Focus State --- */
+textarea#input:focus {
+  border-color: var(--accent1) !important;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.445), 0 0 0 3px rgba(0, 210, 255, 0.1) !important;
+}
+
+/* --- Placeholder Text --- */
+textarea#input::placeholder {
+  color: rgba(159, 182, 198, 0.6);
+}
+
+/* --- Custom Scrollbar --- */
+textarea#input::-webkit-scrollbar {
+  width: 8px;
+}
+
+textarea#input::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+textarea#input::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+textarea#input::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ========================================= */
+/* == DEFINITIVE FLOATING EXPANDER STYLES == */
+/* ========================================= */
+
+/* --- 1. The Main Content Area --- */
+/* Adds space at the bottom for the composer. */
+.main {
+  padding-bottom: 30px !important;
+  transition: padding-bottom 0.2s ease-out;
+}
+
+/* --- 2. The Floating Expander Box (Hidden by Default) --- */
+#floating-expander {
+  position: absolute;
+  bottom: 80px;
+  /* Sits right above the composer */
+  left: 10px;
+  right: 10px;
+  max-height: 180px;
+  max-width: 100%;
+  /* Max height before it scrolls */
+  z-index: 199;
+  background: #082233f7;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+  padding: 12px 15px;
+  box-sizing: border-box;
+  color: #e6fbff;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 10px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+#floating-expander.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* --- 3. The Permanent Pill-Shaped Composer --- */
+.composer {
+  transition: transform 0.2s ease-out;
+}
+
+/* --- 5. Scrollbar Styles for the Expander --- */
+#floating-expander::-webkit-scrollbar {
+  width: 8px;
+}
+
+#floating-expander::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+#floating-expander::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+#floating-expander::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
 }
