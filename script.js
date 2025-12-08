@@ -1778,3 +1778,34 @@ async function adminSetTrialDays(targetEmail, days) {
   }
 }
 // --- END: SECURE ADMIN FUNCTION ---
+// --- START: ADMIN IMPERSONATION FUNCTION ---
+// This function allows an admin to securely log in as another user.
+async function adminLoginAsUser(targetEmail) {
+  if (!targetEmail) {
+    console.error("🛑 USAGE ERROR: Please provide the user's email. Example: adminLoginAsUser('user@example.com')");
+    return;
+  }
+
+  console.log(`⏳ Generating secure login link for ${targetEmail}...`);
+
+  try {
+    // Securely call the 'impersonate-user' Edge Function.
+    const { data, error } = await _supabase.functions.invoke('impersonate-user', {
+      body: { targetEmail },
+    });
+
+    if (error) throw error;
+
+    if (data.error) {
+       console.error(`❌ FAILED: ${data.error}`);
+    } else {
+       console.log("✅ SUCCESS! Click the link below to log in as the user.");
+       console.log("👉 " + data.magicLink);
+       console.log("To return to your admin account, simply log out from the user's session.");
+    }
+
+  } catch (error) {
+    console.error("❌ INVOCATION FAILED:", error.message);
+  }
+}
+// --- END: ADMIN IMPERSONATION FUNCTION ---
