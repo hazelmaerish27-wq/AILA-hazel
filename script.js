@@ -5,6 +5,8 @@ const SUPABASE_ANON_KEY =
 const AILA_URL = "https://ailearningassistant.edgone.app";
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let isTrialExpired = false;
+
 // --- END: Supabase Client Initialization ---
 // (This entire function replaces the old one at the top of your script.js file)
 _supabase.auth.onAuthStateChange(async (event, session) => {
@@ -572,11 +574,20 @@ function showWelcomeScreen() {
 }
 
 function useSuggestion(text) {
+  // --- THIS IS THE FIX ---
+  // If the trial is expired, clear the screen, show the expiry message,
+  // and stop the function from doing anything else.
+  if (isTrialExpired) {
+    messagesEl.innerHTML = ""; // Clear the welcome screen or any other content
+    appendMessage("Your trial is over. Please contact the developer to renew your trial.", "bot");
+    return; // <-- This is the crucial part that stops the query.
+  }
+  // --- END OF FIX ---
+
   // Check if the welcome screen is currently being displayed.
   const welcomeScreen = messagesEl.querySelector(".welcome-screen");
 
-  // THIS IS THE FIX: Only clear the chat if the welcome screen is active.
-  // This prevents the chat history from being deleted during a conversation.
+  // If the welcome screen is active, clear it before showing the new message.
   if (welcomeScreen) {
     messagesEl.innerHTML = "";
   }
@@ -584,6 +595,7 @@ function useSuggestion(text) {
   // The rest of the function remains the same: append the new message and send it.
   appendMessage(text, "user");
   sendToBackend(text, true);
+
 }
 function appendMessage(
   text,
@@ -1726,6 +1738,12 @@ async function updateUserInfo() {
   // Clear any existing timer before starting a new one
   if (trialInterval) clearInterval(trialInterval);
 
+  // --- THIS IS THE FIX (PART 1) ---
+  // Reset the global trial status every time a user's info is updated.
+  // This ensures a new user with a valid trial doesn't get locked out.
+  isTrialExpired = false;
+  // --- END OF FIX (PART 1) ---
+
   // --- Get all DOM elements ---
   const userEmailEl = document.getElementById("userEmail");
   const userAvatarEl = document.getElementById("userAvatar");
@@ -1734,22 +1752,17 @@ async function updateUserInfo() {
   const menuUserNameEl = document.getElementById("menuUserName");
   const menuUserEmailEl = document.getElementById("menuUserEmail");
   const trialTimerEl = document.getElementById("trialTimer");
-  
-  // --- THIS IS THE FIX (PART 1) ---
-  // Get chat form elements
   const chatInput = document.getElementById("input");
   const chatSendBtn = document.getElementById("sendBtn");
   const voiceBtn = document.getElementById("voiceBtn");
 
   // Re-enable the form by default when this function runs.
-  // This handles a user with an expired trial logging out and a new user logging in.
   if (chatInput) {
     chatInput.disabled = false;
-    chatInput.placeholder = "Ask AILA anything…";
+    chatInput.placeholder = "Ask AILA anything, or type ‘/’ for commands…";
   }
   if (chatSendBtn) chatSendBtn.disabled = false;
   if (voiceBtn) voiceBtn.disabled = false;
-  // --- END OF FIX (PART 1) ---
 
   // --- Fetch session from Supabase ---
   const {
@@ -1783,7 +1796,7 @@ async function updateUserInfo() {
     const trialDays =
       typeof customTrialDays === "number" && customTrialDays >= 0
         ? customTrialDays
-        : 30; // Default to 30 days
+        : 30; // Default is 30 days
 
     let trialEndDate = new Date(
       new Date(user.created_at).setDate(
@@ -1802,7 +1815,8 @@ async function updateUserInfo() {
         clearInterval(trialInterval);
 
         // --- THIS IS THE FIX (PART 2) ---
-        // If the trial expires, disable the chat functionality.
+        // Set the global flag to true and disable the chat.
+        isTrialExpired = true;
         if (chatInput) {
             chatInput.disabled = true;
             chatInput.placeholder = "Your trial has expired.";
@@ -1836,17 +1850,17 @@ async function updateUserInfo() {
     if (trialTimerEl) trialTimerEl.textContent = "--:--:--:--";
   }
 }
-
-// --- START: Navigation Sidebar Logic ---
 function setupNavigation() {
   // Get ALL elements from the DOM
   const navSidebar = document.getElementById("navSidebar");
   const sidebarToggleBtn = document.getElementById("sidebarToggleBtn");
   const mobileNavToggle = document.getElementById("mobileNavToggle");
   const newChatBtn = document.getElementById("newChatBtn");
+  const contactDevBtn = document.getElementById("contactDevBtn"); // <-- ADD THIS
   const userProfileBtn = document.getElementById("userProfile");
   const userMenu = document.getElementById("userMenu");
   const logoutBtn = document.getElementById("logoutBtn");
+
   // --- Mobile Swipe Gesture Logic ---
   let touchStartX = 0;
   let touchEndX = 0;
@@ -1858,7 +1872,6 @@ function setupNavigation() {
     if (window.innerWidth > 900) return;
 
     // 1. SWIPE-TO-OPEN (Left to Right)
-    // Check if the sidebar is closed and the swipe started from the left edge
     if (
       !navSidebar.classList.contains("expanded") &&
       touchStartX < edgeThreshold
@@ -1869,7 +1882,6 @@ function setupNavigation() {
     }
 
     // 2. SWIPE-TO-CLOSE (Right to Left)
-    // Check if the sidebar is already open
     if (navSidebar.classList.contains("expanded")) {
       if (touchStartX - touchEndX > swipeThreshold) {
         navSidebar.classList.remove("expanded"); // Close sidebar
@@ -1923,6 +1935,22 @@ function setupNavigation() {
       }
     });
   }
+  
+// --- START: CONTACT DEVELOPER BUTTON LOGIC ---
+if (contactDevBtn) {
+  contactDevBtn.addEventListener("click", () => {
+    const email = "narvasajoshua61@gmail.com";
+    const subject = "enter your concern here";
+    
+    // This creates a URL that opens a pre-filled Gmail compose window.
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}`;
+    
+    // Open the URL in a new browser tab.
+    window.open(gmailUrl, "_blank");
+  });
+}
+// --- END: CONTACT DEVELOPER BUTTON LOGIC ---
+
 
   // --- User Profile Menu Logic ---
   if (userProfileBtn && userMenu) {
@@ -1977,7 +2005,6 @@ function setupNavigation() {
     }
   });
 }
-// --- END: Navigation Sidebar Logic ---
 // --- START: SECURE ADMIN FUNCTION ---
 // This function securely calls our Supabase Edge Function.
 async function adminSetTrialDays(targetEmail, days) {
