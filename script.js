@@ -1745,7 +1745,7 @@ async function updateUserInfo() {
   // This handles a user with an expired trial logging out and a new user logging in.
   if (chatInput) {
     chatInput.disabled = false;
-    chatInput.placeholder = "Ask AILA anything, or type ‘/’ for commands…";
+    chatInput.placeholder = "Ask AILA anything…";
   }
   if (chatSendBtn) chatSendBtn.disabled = false;
   if (voiceBtn) voiceBtn.disabled = false;
