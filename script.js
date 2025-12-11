@@ -1450,6 +1450,11 @@ function setupAuthModal() {
   const pinContainer = document.getElementById("pinContainer");
   const pinConfirmGroup = document.getElementById("pinConfirmGroup");
   const pinConfirmContainer = document.getElementById("pinConfirmContainer");
+  
+  // --- START: PIN VISIBILITY ELEMENTS ---
+  const togglePinBtn = document.getElementById("togglePinBtn");
+  const togglePinConfirmBtn = document.getElementById("togglePinConfirmBtn");
+  // --- END: PIN VISIBILITY ELEMENTS ---
 
   const successScreen = document.getElementById("successScreen");
   const successMessage = document.getElementById("successMessage");
@@ -1482,6 +1487,30 @@ function setupAuthModal() {
   function closeAuthModal() {
     authModal.classList.add("hidden");
   }
+  
+// --- START: NEW PIN TOGGLE FUNCTION ---
+function togglePinVisibility(container, button) {
+    const inputs = container.querySelectorAll('.pin-digit');
+    const eyeIcon = button.querySelector('.eye-icon'); // The REGULAR eye
+    const eyeOffIcon = button.querySelector('.eye-off-icon'); // The SLASHED eye
+
+    const isCurrentlyHidden = inputs[0].type === 'password';
+
+    if (isCurrentlyHidden) {
+        // It's hidden, so SHOW it
+        inputs.forEach(input => { input.type = 'text'; });
+        // And update icon to show the OPEN eye (representing the new "visible" state)
+        eyeIcon.style.display = 'block';
+        eyeOffIcon.style.display = 'none';
+    } else {
+        // It's visible, so HIDE it
+        inputs.forEach(input => { input.type = 'password'; });
+        // And update icon to show the SLASHED eye (representing the new "hidden" state)
+        eyeIcon.style.display = 'none';
+        eyeOffIcon.style.display = 'block';
+    }
+}
+// --- END: NEW PIN TOGGLE FUNCTION ---
 
   // (This entire function replaces the old setAuthState function)
   function setAuthState(newState) {
@@ -1558,7 +1587,8 @@ function setupAuthModal() {
     const inputs = [...container.querySelectorAll(".pin-digit")];
     inputs.forEach((input, index) => {
       input.addEventListener("input", () => {
-        input.value = input.value.replace(/\D/g, "");
+        // Use 'tel' type but only allow digits via this regex
+        input.value = input.value.replace(/\\D/g, "");
         if (input.value && index < inputs.length - 1) inputs[index + 1].focus();
       });
       input.addEventListener("keydown", (e) => {
@@ -1594,6 +1624,16 @@ function setupAuthModal() {
       e.preventDefault();
       setAuthState("login");
     });
+  
+  // --- START: ADD PIN VISIBILITY LISTENERS ---
+  if (togglePinBtn) {
+      togglePinBtn.addEventListener("click", () => togglePinVisibility(pinContainer, togglePinBtn));
+  }
+  if (togglePinConfirmBtn) {
+      togglePinConfirmBtn.addEventListener("click", () => togglePinVisibility(pinConfirmContainer, togglePinConfirmBtn));
+  }
+  // --- END: ADD PIN VISIBILITY LISTENERS ---
+
 
   if (googleLoginBtn) {
     googleLoginBtn.addEventListener("click", async (e) => {
@@ -1684,9 +1724,8 @@ function setupAuthModal() {
             // --- THIS IS THE FIX ---
             await logUserEventToSheet(email, username, "PIN Registration");
 
-            showCustomAlert("Registered successfully!", "success");
-            localStorage.setItem("loggedInUserName", username);
-            setTimeout(() => showWelcomeAndEnter(email, true), 1500);
+            showCustomAlert("Registered successfully! Please check your email to verify your account.", "success");
+            // No automatic login on register anymore
           } else {
             // Login
             const { data, error } = await _supabase.auth.signInWithPassword({

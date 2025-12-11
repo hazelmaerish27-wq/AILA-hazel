@@ -3289,3 +3289,36 @@ textarea#input::-webkit-scrollbar-thumb:hover {
 .chat-form #input:disabled {
   background-color: rgba(0, 0, 0, 0.1);
 }
+/* --- PIN Visibility Toggle --- */
+.pin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px; /* Align with PIN input boxes */
+  margin-bottom: 8px;
+}
+
+.pin-header .pin-description {
+  margin: 0; /* Remove default margin to align properly */
+}
+
+.pin-visibility-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.pin-visibility-btn:hover {
+  color: var(--accent1);
+}
+
+.pin-visibility-btn svg {
+  width: 18px;
+  height: 18px;
+}
