@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Developer</title>
+    <!-- Link to your main stylesheet to reuse variables and fonts -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Link to the new form-specific stylesheet -->
+    <link rel="stylesheet" href="form.css">
+</head>
+<body>
+    <header class="form-header">
+        <a href="index.html" class="back-btn">&larr; Back to AILA</a>
+    </header>
+    <main class="form-container">
+        <h1>Contact Developer</h1>
+        <p>If you have any questions, feedback, or need help with your trial, please fill out the form below. I'll get back to you as soon as possible.</p>
+        
+        <!-- The form is now handled by form.js -->
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="name">Your Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Your Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="6" required></textarea>
+            </div>
+            <button type="submit" class="submit-btn" id="submitBtn">Send Message</button>
+        </form>
+        <p id="successMessage" style="display:none; color: var(--success); text-align: center; margin-top: 15px;">Your message has been sent successfully!</p>
+    </main>
+
+    <!-- This new script will handle the form submission -->
+    <script src="form.js"></script>
+</body>
+</html>

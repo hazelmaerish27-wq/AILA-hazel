@@ -1,8 +1,21 @@
-// --- START: Supabase Client Initialization ---
+// BACK_END LINKS AND API KEY
+
+
+// SUPABASE URL
 const SUPABASE_URL = "https://woqlvcgryahmcejdlcqz.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
+const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
+// domain URL
 const AILA_URL = "https://ailearningassistant.edgone.app";
+// APPSCRIPT URL
+const SCRIPT_API_URL ="https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
+// N8N PRODUCTION URL
+const CHAT_WEBHOOK = "https://levercrafter.app.n8n.cloud/webhook/ictworkflow";
+// OFFLINE RESPONSE APPSCRIPT URL
+const OFFLINE_DATA_URL ="https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
+// FEEDBACK FORM URL
+const FEEDBACK_FORM_URL = "https://forms.gle/cNRtaUZBwDuPoUk77";
+
+// --- START: Supabase Client Initialization ---
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let isTrialExpired = false;
@@ -30,7 +43,7 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
     await logUserEventToSheet(session.user.email, displayName, eventType);
 
     // 4. Cleanly reload the page to start the app
-    window.location.assign("https://ailearningassistant.edgeone.app/");
+    window.location.assign(AILA_URL);
     return;
   }
 
@@ -44,8 +57,6 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-const SCRIPT_API_URL =
-  "https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 const SFX = {
   loadingAmbient: "sfx/loading-ambient.mp3",
   glassBreak: "sfx/glass-break.mp3",
@@ -417,9 +428,6 @@ function playSound(url, volume = 1.0) {
     console.warn(`Could not play sound effect: ${url}`, error);
   }
 }
-// N8N chat webhook link constant
-const CHAT_WEBHOOK = "https://levercrafter.app.n8n.cloud/webhook/ictworkflow";
-const OFFLINE_DATA_URL ="https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".dropdown")) {
     const allDropdowns = document.querySelectorAll(".dropdown");
@@ -455,7 +463,7 @@ if (feedbackBtn) {
 
     setTimeout(() => {
       // feedback form link here
-      window.open("https://forms.gle/cNRtaUZBwDuPoUk77", "_blank"); // put your google form link here
+      window.open(FEEDBACK_FORM_URL, "_blank"); // put your google form link here
       setTimeout(() => {
         feedbackBtn.innerHTML = originalText;
         feedbackBtn.disabled = false;
@@ -738,7 +746,7 @@ safe(() => {
       fb.setAttribute("aria-busy", "true");
       const original = fb.innerHTML;
       fb.innerHTML = "⏳";
-      window.open("https://forms.gle/cNRtaUZBwDuPoUk77", "_blank"); // put your google form link here
+      window.open(FEEDBACK_FORM_URL, "_blank"); // put your google form link here
       setTimeout(() => {
         fb.innerHTML = original;
         fb.removeAttribute("aria-busy");
@@ -864,7 +872,7 @@ function sendToBackend(text, askSuggestions = false) {
   }
 
   // N8N fetch url
-  fetch("https://levercrafter.app.n8n.cloud/webhook/ictworkflow", {
+  fetch(CHAT_WEBHOOK, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -1995,22 +2003,14 @@ function setupNavigation() {
     });
   }
 
-  // --- START: CONTACT DEVELOPER BUTTON LOGIC ---
+  // --- START: CONTACT DEVELOPER BUTTON LOGIC (Updated) ---
   if (contactDevBtn) {
     contactDevBtn.addEventListener("click", () => {
-      const email = "narvasajoshua61@gmail.com";
-      const subject = "enter your concern here";
-
-      // This creates a URL that opens a pre-filled Gmail compose window.
-      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(
-        subject
-      )}`;
-
-      // Open the URL in a new browser tab.
-      window.open(gmailUrl, "_blank");
+      // This now navigates the user to your new, dedicated contact form page.
+      window.location.href = 'form.html';
     });
   }
-  // --- END: CONTACT DEVELOPER BUTTON LOGIC ---
+  // --- END: CONTACT DEVELOPER BUTTON LOGIC (Updated) ---
 
   // --- User Profile Menu Logic ---
   if (userProfileBtn && userMenu) {
