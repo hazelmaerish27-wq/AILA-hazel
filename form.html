@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" href="icon.png" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Developer</title>
@@ -13,11 +14,12 @@
     <header class="form-header">
         <a href="index.html" class="back-btn">&larr; Back to AILA</a>
     </header>
-    <main class="form-container">
+
+    <!-- The main form container -->
+    <main class="form-container" id="form-main-container">
         <h1>Contact Developer</h1>
         <p>If you have any questions, feedback, or need help with your trial, please fill out the form below. I'll get back to you as soon as possible.</p>
         
-        <!-- The form is now handled by form.js -->
         <form id="contactForm">
             <div class="form-group">
                 <label for="name">Your Name</label>
@@ -33,10 +35,16 @@
             </div>
             <button type="submit" class="submit-btn" id="submitBtn">Send Message</button>
         </form>
-        <p id="successMessage" style="display:none; color: var(--success); text-align: center; margin-top: 15px;">Your message has been sent successfully!</p>
     </main>
 
-    <!-- This new script will handle the form submission -->
+    <!-- THIS IS THE NEW SUCCESS SCREEN, HIDDEN BY DEFAULT -->
+    <div id="success-container" style="display:none; text-align: center; color: #e8fbff; padding: 20px;">
+        <h1>Message Sent!</h1>
+        <p style="color: var(--muted); font-size: 16px; line-height: 1.6;">Thank you for reaching out. I'll get back to you as soon as possible.</p>
+        <button id="resetFormBtn" class="submit-btn" style="margin-top: 20px; max-width: 300px;">Submit Another Message</button>
+    </div>
+
+    <!-- This script will handle the form submission -->
     <script src="form.js"></script>
 </body>
 </html>
