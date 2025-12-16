@@ -51,8 +51,7 @@
   width: 130px;
   height: 130px;
   /* A powerful glow that respects the logo's transparent areas */
-  filter: drop-shadow(0 0 10px var(--accent1))
-    drop-shadow(0 0 25px var(--accent1));
+  filter: drop-shadow(0 0 10px var(--accent1)) drop-shadow(0 0 25px var(--accent1));
   /* A new, smoother up-and-down floating animation */
   animation: smoothFloat 4s ease-in-out infinite;
   transition: opacity 0.2s ease;
@@ -132,16 +131,21 @@
 /* --- Loading Screen Tip --- */
 #loading-tip {
   text-align: center;
-  transition: opacity 0.5s ease; /* Animation for smooth appearance */
+  transition: opacity 0.5s ease;
+  /* Animation for smooth appearance */
   color: var(--muted);
   font-size: 13px;
-  max-width: 280px; /* Constrain width for better readability */
-  margin-top: 15px; /* Space above the tip */
-  opacity: 0; /* Start as invisible */
+  max-width: 280px;
+  /* Constrain width for better readability */
+  margin-top: 15px;
+  /* Space above the tip */
+  opacity: 0;
+  /* Start as invisible */
 }
 
 #loading-tip strong {
-  color: var(--accent1); /* Make the "TIP:" text stand out */
+  color: var(--accent1);
+  /* Make the "TIP:" text stand out */
 }
 
 /* --- Status Overlay and Loader --- */
@@ -573,11 +577,9 @@ body {
   max-width: 95vw;
   height: 100vh;
   max-height: 92vh;
-  background: linear-gradient(
-    180deg,
-    var(--glass-2),
-    rgba(255, 255, 255, 0.006)
-  );
+  background: linear-gradient(180deg,
+      var(--glass-2),
+      rgba(255, 255, 255, 0.006));
   border-radius: 14px;
   box-shadow: 0 20px 60px rgba(2, 8, 20, 0.75);
   display: flex;
@@ -670,6 +672,15 @@ body {
   flex-shrink: 0;
   z-index: 10;
 }
+
+/* --- START: Composer Disabled State --- */
+.composer.composer-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  /* This is the key: it blocks all clicks and interactions */
+}
+
+/* --- END: Composer Disabled State --- */
 
 .faq-buttons {
   display: flex;
@@ -918,11 +929,9 @@ body {
 }
 
 .faq-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.015),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.015),
+      rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   padding: 8px 12px;
@@ -963,11 +972,9 @@ body {
 }
 
 .sugg-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.02),
-    rgba(44, 33, 33, 0.01)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.02),
+      rgba(44, 33, 33, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   padding: 8px 12px;
@@ -984,11 +991,9 @@ body {
 }
 
 .orient-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.025),
-    rgba(255, 255, 255, 0.015)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.025),
+      rgba(255, 255, 255, 0.015));
   border: 1px solid rgba(255, 255, 255, 0.05);
   color: #e6fbff;
   padding: 8px 12px;
@@ -1092,6 +1097,7 @@ body {
 }
 
 @keyframes wave {
+
   0%,
   100% {
     transform: scaleY(0.2);
@@ -1260,11 +1266,9 @@ textarea#input.voice-active {
 }
 
 .welcome-btn {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.015),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.015),
+      rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.03);
   color: #e6fbff;
   border-radius: 10px;
@@ -1341,31 +1345,70 @@ textarea#input.voice-active {
   background-clip: content-box;
 }
 
-/* --- Final Composer & Pill Text Area Style --- */
-.footer-disclaimer {
-  position: absolute !important;
-  padding-top: 20px;
+/* --- START: New Multi-line Footer Styles --- */
+
+/* This styles the new container for your legal links */
+.footer-links {
+  position: absolute;
   bottom: 7px;
-  /* Sits at the very bottom */
+  /* Positions it at the very bottom */
+  left: 0;
+  right: 0;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  /* Creates space between the links and the separator */
+}
+
+/* This repositions the main disclaimer text to sit above the new links */
+.footer-disclaimer {
+  position: absolute;
+  bottom: 23px;
+  /* Moves it up to make space for the links */
   left: 0;
   right: 0;
   text-align: center;
   font-size: 12px;
   color: var(--muted);
+  padding: 0 10px;
+  box-sizing: border-box;
 }
 
+/* This styles the "Privacy Policy" and "Data Deletion" links */
+.footer-link {
+  color: var(--muted);
+  font-size: 11px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--accent1);
+  text-decoration: underline;
+}
+
+/* This styles the "|" separator between the links */
+.footer-separator {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* --- END: New Multi-line Footer Styles --- */
 .composer {
+  scale: 0.98;
   border-top: none !important;
   display: flex !important;
   gap: 10px !important;
   position: absolute !important;
-  bottom: 0;
+  bottom: 10;
   left: 8px;
   right: 5px;
   z-index: 200;
   border-top: none !important;
   padding-left: 10px;
-  padding-right: 15px;
+  padding-right: px;
   border-radius: 100px !important;
   padding-bottom: 12.5px;
 }
@@ -1414,11 +1457,9 @@ textarea#input.voice-active {
 
 .modal-content {
   scale: 0.95;
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0.01)
-  );
+  background: linear-gradient(160deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.01));
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -1608,7 +1649,7 @@ textarea#input.voice-active {
 }
 
 /* When the button is active, expand the content next to it */
-.module-dropdown-btn.active + .module-dropdown-content {
+.module-dropdown-btn.active+.module-dropdown-content {
   max-height: 500px;
   /* A height large enough for your content */
 }
@@ -1647,6 +1688,10 @@ textarea#input.voice-active {
 
 /* --- Mobile View Enhancements --- */
 @media (max-width: 640px) {
+  .msg.user {
+    font-size: 14px;
+  }
+
   /* 1. Reset the page to prevent any scrolling or extra space. */
   html,
   body {
@@ -1657,6 +1702,7 @@ textarea#input.voice-active {
     overflow-y: scroll;
     overflow-x: hidden;
   }
+
   /* --- Auth Modal adjustments for mobile --- */
   .msg.bot {
     background: transparent;
@@ -1906,7 +1952,7 @@ textarea#input.voice-active {
 
   .footer-disclaimer {
     position: fixed;
-    bottom: 7;
+    bottom: 23;
     left: 0;
     right: 0;
     text-align: center;
@@ -1940,11 +1986,9 @@ textarea#input.voice-active {
   }
 
   .welcome-btn {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.015),
-      rgba(255, 255, 255, 0.01)
-    );
+    background: linear-gradient(180deg,
+        rgba(255, 255, 255, 0.015),
+        rgba(255, 255, 255, 0.01));
     border: 1px solid rgba(255, 255, 255, 0.03);
     color: #e6fbff;
     padding: 5px 15px;
@@ -2063,6 +2107,7 @@ textarea#input.voice-active {
 }
 
 @keyframes scale {
+
   0%,
   100% {
     transform: none;
@@ -2215,6 +2260,7 @@ textarea#input.voice-active {
 }
 
 @keyframes scale {
+
   0%,
   100% {
     transform: none;
@@ -2309,6 +2355,7 @@ textarea#input.voice-active {
 }
 
 @keyframes float-up-down {
+
   0%,
   100% {
     transform: translateY(0);
@@ -2387,11 +2434,9 @@ textarea#input.voice-active {
 }
 
 .auth-modal-content {
-  background: linear-gradient(
-    160deg,
-    rgba(255, 255, 255, 0.05),
-    rgba(255, 255, 255, 0.02)
-  );
+  background: linear-gradient(160deg,
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.02));
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   padding: 24px;
@@ -2698,6 +2743,7 @@ input:-webkit-autofill:active {
   width: 18px;
   height: 18px;
 }
+
 /* Add this CSS rule to your style.css file */
 
 .facebook-login-btn {
@@ -2706,7 +2752,8 @@ input:-webkit-autofill:active {
   justify-content: center;
   width: 100%;
   padding: 10px;
-  margin-top: 12px; /* Adds space above the button */
+  margin-top: 12px;
+  /* Adds space above the button */
   background-color: transparent;
   color: #e6fbff;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2721,7 +2768,8 @@ input:-webkit-autofill:active {
 }
 
 .facebook-login-btn:hover {
-  background-color: #166fe5; /* A slightly darker blue for hover */
+  background-color: #166fe5;
+  /* A slightly darker blue for hover */
 }
 
 /* This makes sure the "OR" separator has space around it */
@@ -2770,7 +2818,7 @@ input:-webkit-autofill:active {
 }
 
 /* New position for the EXPANDED sidebar */
-.nav-sidebar.expanded ~ .user-menu {
+.nav-sidebar.expanded~.user-menu {
   left: 15px;
   /* Move it back to the left edge inside the wide sidebar */
 }
@@ -3059,6 +3107,7 @@ input:-webkit-autofill:active {
 }
 
 @media (max-width: 640px) {
+
   /* Make the header a simple row */
   .header {
     display: flex;
@@ -3278,6 +3327,7 @@ textarea#input::-webkit-scrollbar-thumb:hover {
 #floating-expander::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.35);
 }
+
 /* --- Disabled Chat Form --- */
 .chat-form #input:disabled,
 .chat-form #sendBtn:disabled,
@@ -3289,17 +3339,20 @@ textarea#input::-webkit-scrollbar-thumb:hover {
 .chat-form #input:disabled {
   background-color: rgba(0, 0, 0, 0.1);
 }
+
 /* --- PIN Visibility Toggle --- */
 .pin-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 4px; /* Align with PIN input boxes */
+  padding: 0 4px;
+  /* Align with PIN input boxes */
   margin-bottom: 8px;
 }
 
 .pin-header .pin-description {
-  margin: 0; /* Remove default margin to align properly */
+  margin: 0;
+  /* Remove default margin to align properly */
 }
 
 .pin-visibility-btn {

@@ -788,6 +788,14 @@ function showTyping() {
       .play()
       .catch((e) => console.warn("Typing sound failed to play:", e));
   }
+
+  // --- THIS IS THE FIX ---
+  // Add the disabled class and disable the inputs.
+  document.querySelector('.composer').classList.add('composer-disabled');
+  document.getElementById('input').disabled = true;
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('voiceBtn').disabled = true;
+  // --- END OF FIX ---
 }
 function hideTyping() {
   const t = document.getElementById("typingIndicator");
@@ -800,6 +808,14 @@ function hideTyping() {
     typingSound.currentTime = 0;
     typingSound = null;
   }
+
+  // --- THIS IS THE FIX ---
+  // Remove the disabled class and re-enable the inputs.
+  document.querySelector('.composer').classList.remove('composer-disabled');
+  document.getElementById('input').disabled = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('voiceBtn').disabled = false;
+  // --- END OF FIX ---
 }
 /* send to backend; use offlineResponses if offline or network fails */
 function sendToBackend(text, askSuggestions = false) {
