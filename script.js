@@ -1923,7 +1923,7 @@ function setupNavigation() {
     // We increase the swipe distance required to 50px to prevent accidental swipes.
     const swipeThreshold = 50; 
     // We also restrict the swipe-to-open gesture to the first 40px of the screen edge.
-    const edgeThreshold = 40; 
+    const edgeThreshold = 100; 
     // --- END: THIS IS THE FIX ---
   
     function handleSwipeGesture() {
