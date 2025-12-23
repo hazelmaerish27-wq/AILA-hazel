@@ -9,7 +9,7 @@ const AILA_URL = "https://ailearningassistant.edgone.app";
 // APPSCRIPT URL
 const SCRIPT_API_URL ="https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 // N8N PRODUCTION URL
-const CHAT_WEBHOOK = "https://levercrafter.app.n8n.cloud/webhook/ictworkflow";
+const CHAT_WEBHOOK = "http://localhost:5678/webhook/ictworkflow";
 // OFFLINE RESPONSE APPSCRIPT URL
 const OFFLINE_DATA_URL ="https://script.google.com/macros/s/AKfycbxyBAMvcSxdV_Gbc8JIKB1yJRPw0ocQKpczfZ8KLp4Gln2LgWTTbFar3ugjODGrqjiE/exec";
 // FEEDBACK FORM URL
