@@ -13,7 +13,6 @@ ng-text-container {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10000; /* High z-index to stay on top */
   -webkit-tap-highlight-color: transparent;
 }
 

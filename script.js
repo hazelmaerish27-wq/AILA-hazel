@@ -41,7 +41,11 @@ _supabase.auth.onAuthStateChange(async (event, session) => {
 
     // 3. THIS IS THE FIX: Log the event to your Google Sheet before redirecting
     await logUserEventToSheet(session.user.email, displayName, eventType);
-
+    
+    window.location.assign(AILA_URL);
+    
+    setTimeout(() => {
+  }, 2000);
     // 4. Cleanly reload the page to start the app
     window.location.assign(AILA_URL);
     return;
@@ -1162,7 +1166,7 @@ async function logUserEventToSheet(email, username, eventType) {
       },
       body: JSON.stringify(payload),
     });
-    console.log(`Successfully logged '${eventType}' for ${username} to sheet.`);
+    console.log(`Successfully logged '${eventType}' for ${username}.`);
   } catch (error) {
     console.error("Error logging user event to Google Sheet:", error);
   }
@@ -1174,7 +1178,7 @@ async function logUserEventToSheet(email, username, eventType) {
 async function loadOfflineData() {
   // First, check if the URL has been set.
   // --- THIS IS THE FIX (Part 1): Corrected the condition ---
-  if (!OFFLINE_DATA_URL || OFFLINE_DATA_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+  if (!OFFLINE_DATA_URL || OFFLINE_DATA_URL === SCRIPT_API_URL) {
     console.error("Critical Error: OFFLINE_DATA_URL is not configured in script.js.");
     offlineResponses = {
       Error: "Offline responses are not configured. Please contact the administrator.",
@@ -1193,11 +1197,10 @@ async function loadOfflineData() {
     // Try to parse the response as JSON. This will fail if your script returns an HTML error page or plain text.
     const data = await response.json();
     offlineResponses = data;
-    console.log("Offline responses loaded successfully from Google Sheet.");
+    console.log("Offline responses loaded successfully.");
 
   } catch (error) {
     console.error("Could not load offline data. This can happen for several reasons:", error);
-    console.info("Common issues are: \n1. The OFFLINE_DATA_URL is incorrect. \n2. The Google App Script is not deployed correctly (it must be set to 'Anyone' under 'Who has access'). \n3. The script has a bug and is returning an error page (HTML) instead of valid JSON.");
 
     // Hardcoded fallback
     offlineResponses = {
