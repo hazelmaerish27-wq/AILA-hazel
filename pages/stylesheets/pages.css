@@ -1,17 +1,98 @@
 /* --- General Body and Background --- */
 body {
     background: linear-gradient(120deg, var(--bg1), var(--bg2), var(--bg3));
+    background-attachment: fixed; /* Keep the gradient fixed */
     background-size: 300% 300%;
     animation: grad 14s ease infinite;
     color: #e8fbff;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
     margin: 0;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Prevent body from scrolling */
     display: flex;
-    flex: 1;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
 }
-h1, h2 { color: #E8FBFF; border-bottom: 1px solid #30363D; padding-bottom: 10px; }
-a { color: #3B82F6; }
-code { background-color: #161B22; padding: 2px 5px; border-radius: 4px; }
+
+/* --- Header Styling --- */
+.form-header {
+    width: 100%;
+    max-width: 800px; /* Align with container */
+    flex-shrink: 0; /* Prevent from shrinking */
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+.back-btn:hover {
+    color: var(--accent1);
+}
+
+/* --- Main Content Container --- */
+.container {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 30px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    overflow-y: auto; /* Make the container scrollable */
+}
+
+/* --- Custom Scrollbar for Container --- */
+.container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+h1, h2 {
+    color: #E8FBFF;
+    border-bottom: 1px solid #30363D;
+    padding-bottom: 10px;
+    margin-top: 0;
+}
+
+a {
+    color: var(--accent1);
+}
+
+code {
+    background-color: #161B22;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+/* --- Mobile View Adjustments --- */
+@media (max-width: 840px) {
+    body {
+        padding: 10px;
+    }
+    .form-header {
+        margin-bottom: 15px;
+    }
+    .container {
+        padding: 20px;
+    }
+}
