@@ -2077,7 +2077,9 @@ function setupNavigation() {
   // --- START: DEV TOOLS BUTTON LOGIC ---
   const devToolsBtn = document.getElementById("devToolsBtn");
   if (devToolsBtn) {
-    devToolsBtn.addEventListener("click", openDevToolsModal);
+    devToolsBtn.addEventListener("click", () => {
+        window.location.href = "admin/index.html";
+    });
   }
   // --- END: DEV TOOLS BUTTON LOGIC ---
 
