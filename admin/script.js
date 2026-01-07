@@ -9,18 +9,34 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // ========== User Table & Pop-up Logic ========== //
 
 // Fetch users from Supabase backend
-async function fetchUsers() {
+// Pagination state
+let currentPage = 1;
+let currentSearch = '';
+let totalPages = 1;
+
+async function fetchUsers(page = 1, search = '') {
   try {
     const { data: { session } } = await _supabase.auth.getSession();
+    
+    const params = new URLSearchParams();
+    params.append('page', page);
+    if (search) {
+      params.append('search', search);
+    }
     
     const { data, error } = await _supabase.functions.invoke('get-users', {
       headers: {
         'Authorization': `Bearer ${session?.access_token || ''}`
-      }
+      },
+      body: { page, search }
     });
     
     if (error) throw error;
     if (data.error) throw new Error(data.error);
+    
+    // Store pagination info
+    currentPage = data.pagination?.page || 1;
+    totalPages = data.pagination?.totalPages || 1;
     
     // Map API response to table format
     return (data.users || []).map(user => {
@@ -77,6 +93,12 @@ function renderUserTable(users) {
     const totalCount = document.getElementById('totalUsersCount');
     table.innerHTML = '';
     totalCount.textContent = users.length;
+    
+    // Update pagination UI
+    document.getElementById('currentPageNum').textContent = currentPage;
+    document.getElementById('totalPageNum').textContent = totalPages;
+    document.getElementById('prevBtn').disabled = currentPage <= 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages;
     
     users.forEach((user, idx) => {
         const tr = document.createElement('tr');
@@ -332,38 +354,88 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Setup column selection button
   const columnsBtn = document.getElementById('columnsBtn');
   if (columnsBtn) {
-    columnsBtn.addEventListener('click', openColumnsModal);
+    columnsBtn.addEventListener('click', openColumnsDropdown);
   }
 });
 
 // Setup search functionality
 function setupSearchListener() {
   const searchInput = document.getElementById('searchInput');
+  const searchFilterDropdown = document.getElementById('searchFilterDropdown');
+  
   if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      const filteredUsers = allUsers.filter(user => 
-        user.email.toLowerCase().includes(searchTerm) ||
-        (user.name && user.name.toLowerCase().includes(searchTerm)) ||
-        user.id.toLowerCase().includes(searchTerm)
-      );
-      renderUserTable(filteredUsers);
-      updateTrialCountdowns();
+    searchInput.addEventListener('input', performSearch);
+  }
+  
+  if (searchFilterDropdown) {
+    searchFilterDropdown.addEventListener('change', () => {
+      // Update placeholder based on selected filter
+      const selected = searchFilterDropdown.value;
+      const placeholders = {
+        'email': 'Search by email',
+        'uid': 'Search by user ID',
+        'name': 'Search by name',
+        'phone': 'Search by phone'
+      };
+      searchInput.placeholder = placeholders[selected] || 'Search...';
+      performSearch();
     });
   }
 }
 
+async function performSearch() {
+  const searchInput = document.getElementById('searchInput');
+  const searchTerm = searchInput.value.toLowerCase();
+  
+  // Store current search term
+  currentSearch = searchTerm;
+  currentPage = 1; // Reset to page 1 when searching
+  
+  // Fetch users with search and page 1
+  const users = await fetchUsers(1, searchTerm);
+  renderUserTable(users);
+  updateTrialCountdowns();
+  updatePaginationInfo();
+}
+
 // Column visibility management
-function openColumnsModal() {
-  document.getElementById('columnsModal').classList.remove('hidden');
+function openColumnsDropdown() {
+  document.getElementById('columnsDropdown').classList.toggle('hidden');
 }
 
-function closeColumnsModal() {
-  document.getElementById('columnsModal').classList.add('hidden');
+function closeColumnsDropdown() {
+  document.getElementById('columnsDropdown').classList.add('hidden');
 }
 
-function saveColumns() {
-  const checkboxes = document.querySelectorAll('#columnsModal .column-checkbox input');
+// Pagination functions
+async function goToPage(pageNum) {
+  const users = await fetchUsers(pageNum, currentSearch);
+  renderUserTable(users);
+  updateTrialCountdowns();
+  updatePaginationInfo();
+  // Scroll to top
+  document.querySelector('.user-table-scroll')?.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function nextPage() {
+  if (currentPage < totalPages) {
+    goToPage(currentPage + 1);
+  }
+}
+
+async function prevPage() {
+  if (currentPage > 1) {
+    goToPage(currentPage - 1);
+  }
+}
+
+function updatePaginationInfo() {
+  // Update pagination display if you add pagination UI
+  console.log(`Page ${currentPage} of ${totalPages}`);
+}
+
+function saveColumnsAndClose() {
+  const checkboxes = document.querySelectorAll('#columnsDropdown .column-checkbox input');
   const visibleColumns = Array.from(checkboxes)
     .filter(cb => cb.checked)
     .map(cb => cb.dataset.column);
@@ -373,12 +445,16 @@ function saveColumns() {
   
   // Update table visibility
   updateTableColumnVisibility(visibleColumns);
-  closeColumnsModal();
+  closeColumnsDropdown();
+}
+
+function saveColumns() {
+  saveColumnsAndClose();
 }
 
 function resetColumns() {
-  const defaultColumns = ['avatar', 'uid', 'name', 'email', 'phone', 'providers', 'provider_type', 'trial'];
-  const checkboxes = document.querySelectorAll('#columnsModal .column-checkbox input');
+  const defaultColumns = ['uid', 'name', 'email', 'phone', 'providers', 'provider_type'];
+  const checkboxes = document.querySelectorAll('#columnsDropdown .column-checkbox input');
   checkboxes.forEach(cb => {
     cb.checked = defaultColumns.includes(cb.dataset.column);
   });
@@ -386,15 +462,19 @@ function resetColumns() {
   // Clear localStorage
   localStorage.removeItem('visibleColumns');
   
-  // Update table visibility
+  // Update table visibility immediately
   updateTableColumnVisibility(defaultColumns);
-  closeColumnsModal();
 }
 
 function updateTableColumnVisibility(visibleColumns) {
-  // Hide all column headers and cells
+  // Always show avatar and trial columns, hide others
   document.querySelectorAll('[data-column]').forEach(el => {
-    el.style.display = 'none';
+    const col = el.getAttribute('data-column');
+    if (col === 'avatar' || col === 'trial') {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
   });
   
   // Show selected columns
@@ -412,18 +492,20 @@ function loadColumnPreferences() {
     updateTableColumnVisibility(visibleColumns);
     
     // Update checkboxes
-    const checkboxes = document.querySelectorAll('#columnsModal .column-checkbox input');
+    const checkboxes = document.querySelectorAll('#columnsDropdown .column-checkbox input');
     checkboxes.forEach(cb => {
       cb.checked = visibleColumns.includes(cb.dataset.column);
     });
   }
 }
 
-// Close modal when clicking outside
+// Close dropdown when clicking outside
 document.addEventListener('click', (e) => {
-  const modal = document.getElementById('columnsModal');
-  if (modal && !modal.classList.contains('hidden') && !modal.contains(e.target) && e.target.id !== 'columnsBtn') {
-    closeColumnsModal();
+  const dropdown = document.getElementById('columnsDropdown');
+  const columnsWrapper = document.querySelector('.columns-dropdown-wrapper');
+  
+  if (dropdown && columnsWrapper && !columnsWrapper.contains(e.target)) {
+    dropdown.classList.add('hidden');
   }
 });
 

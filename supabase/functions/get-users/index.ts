@@ -28,49 +28,45 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '',
     )
 
-    // Get all users from auth.users table with proper pagination
+
+    // Parse query params for pagination and search
+    const url = new URL(req.url)
+    const pageParam = parseInt(url.searchParams.get('page') || '1', 10)
+    const pageSizeParam = parseInt(url.searchParams.get('pageSize') || '30', 10)
+    const search = url.searchParams.get('search')?.toLowerCase() || ''
+
+    // Always fetch all users for search, otherwise fetch only the requested page
     let allAuthUsers = []
     let page = 1
     let hasMore = true
-    const pageSize = 100
-    
+    const fetchPageSize = 100
     while (hasMore) {
       try {
         const { data, error } = await supabaseAdmin.auth.admin.listUsers({
           page,
-          perPage: pageSize
+          perPage: fetchPageSize
         })
-        
         if (error) {
           console.error('Auth error on page', page, ':', error)
           break
         }
-        
         if (!data || !data.users || data.users.length === 0) {
           hasMore = false
           break
         }
-        
         allAuthUsers = allAuthUsers.concat(data.users)
-        
-        // If we got fewer users than the page size, we've reached the end
-        if (data.users.length < pageSize) {
+        if (data.users.length < fetchPageSize) {
           hasMore = false
         }
-        
         page++
       } catch (err) {
         console.error('Error fetching page', page, ':', err)
         break
       }
     }
-    
-    console.log(`Fetched ${allAuthUsers.length} total users from ${page} pages`)
-    
-    const users = { users: allAuthUsers }
 
     // Transform users data for frontend
-    const transformedUsers = (users?.users || []).map(user => ({
+    let transformedUsers = (allAuthUsers || []).map(user => ({
       id: user.id,
       email: user.email,
       name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown',
@@ -81,8 +77,27 @@ serve(async (req) => {
       user_metadata: user.user_metadata || {},
     }))
 
+    // Filter by search if provided
+    if (search) {
+      transformedUsers = transformedUsers.filter(user =>
+        user.email?.toLowerCase().includes(search) ||
+        user.name?.toLowerCase().includes(search)
+      )
+    }
+
+    // Paginate results
+    const total = transformedUsers.length
+    const totalPages = Math.ceil(total / pageSizeParam)
+    const paginatedUsers = transformedUsers.slice((pageParam - 1) * pageSizeParam, pageParam * pageSizeParam)
+
     return new Response(
-      JSON.stringify({ users: transformedUsers }),
+      JSON.stringify({
+        users: paginatedUsers,
+        page: pageParam,
+        pageSize: pageSizeParam,
+        total,
+        totalPages
+      }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
 

@@ -42,9 +42,43 @@
                 </div>
 
                 <div class="filter-controls">
-                    <button class="filter-btn" id="columnsBtn">
-                        All columns
-                    </button>
+                    <div class="columns-dropdown-wrapper">
+                        <button class="filter-btn" id="columnsBtn">
+                            All columns
+                        </button>
+                        <div id="columnsDropdown" class="columns-dropdown hidden">
+                            <div class="columns-dropdown-content">
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="uid" checked> UID
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="name" checked> Display name
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="email" checked> Email
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="phone" checked> Phone
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="providers" checked> Providers
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="provider_type" checked> Provider type
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="created_at"> Created at
+                                </label>
+                                <label class="column-checkbox">
+                                    <input type="checkbox" data-column="last_signin"> Last sign in at
+                                </label>
+                            </div>
+                            <div class="columns-dropdown-footer">
+                                <button class="dropdown-btn reset" onclick="resetColumns()">Reset</button>
+                                <button class="dropdown-btn save" onclick="saveColumnsAndClose()">Save</button>
+                            </div>
+                        </div>
+                    </div>
                     <button class="filter-btn sorted-btn">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px; display: inline-block; margin-right: 4px;">
                             <path d="M12 5v14M19 12l-7 7-7-7"></path>
@@ -87,57 +121,17 @@
 
             <!-- Footer -->
             <div class="admin-footer">
-                <span>Total: <strong id="totalUsersCount">0</strong> users</span>
+                <div class="footer-left">
+                    <span>Total: <strong id="totalUsersCount">0</strong> users</span>
+                </div>
+                <div class="footer-pagination">
+                    <button class="pagination-btn" onclick="prevPage()" id="prevBtn">← Previous</button>
+                    <span class="pagination-info"><span id="currentPageNum">1</span> / <span id="totalPageNum">1</span></span>
+                    <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next →</button>
+                </div>
             </div>
         </div>
     </main>
-
-    <!-- Column Selection Modal -->
-    <div id="columnsModal" class="modal-backdrop hidden">
-        <div class="modal-content columns-modal">
-            <div class="modal-header">
-                <h2>Select Columns to Show</h2>
-                <button class="modal-close-btn" onclick="closeColumnsModal()">&times;</button>
-            </div>
-            <div class="modal-body columns-list">
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="avatar" checked> Avatar
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="uid" checked> UID
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="name" checked> Display name
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="email" checked> Email
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="phone" checked> Phone
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="providers" checked> Providers
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="provider_type" checked> Provider type
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="trial" checked> Trial Countdown
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="created_at"> Created at
-                </label>
-                <label class="column-checkbox">
-                    <input type="checkbox" data-column="last_signin"> Last sign in at
-                </label>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn cancel" onclick="closeColumnsModal()">Cancel</button>
-                <button class="modal-btn reset" onclick="resetColumns()">Reset</button>
-                <button class="modal-btn save" onclick="saveColumns()">Save</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Modal for setting trial days -->
     <div id="trialModal" class="modal-backdrop hidden">
