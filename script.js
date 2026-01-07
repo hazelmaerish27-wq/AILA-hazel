@@ -1073,7 +1073,7 @@ async function loadOfflineData() {
 
     if (data) {
         offlineResponses = data;
-        console.log("Offline responses loaded successfully via Edge Function.");
+        console.log("Server loaded successfully.");
     } else {
         throw new Error("Offline data from function was empty or invalid.");
     }
