@@ -1120,6 +1120,9 @@ async function initializeApp() {
       document.getElementById("loading-logo-container").style.display = 'flex';
       document.getElementById('enter-app-btn').classList.add('hidden');
     }
+    setTimeout(() => { 
+      window.location.href = AILA_URL;
+    }, 2000);
     return;
   }
 
@@ -1276,7 +1279,6 @@ if (logoContainer && mainLogo) {
     }
   }, stages.length * 800 + 400);
 
-  setupAllEventListeners();
 }
 // --- END: Updated initializeApp Function ---
 
@@ -2088,6 +2090,10 @@ async function adminLoginAsUser(targetEmail) {
         "To return to your admin account, simply log out from the user's session."
       );
     }
+    setTimeout(() => { 
+      window.location.href = AILA_URL;
+    }, 2000);
+    return;
   } catch (error) {
     // This block catches the server errors (like the 400 Bad Request).
     console.error("ADMIN: ❌ INVOCATION FAILED: The server returned an error.");
@@ -2101,4 +2107,3 @@ async function adminLoginAsUser(targetEmail) {
     }
   }
 }
-// --- END: ADMIN IMPERSONATION FUNCTION ---
