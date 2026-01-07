@@ -1122,7 +1122,7 @@ async function initializeApp() {
     }
     setTimeout(() => { 
       window.location.href = AILA_URL;
-    }, 2000);
+    }, 1000);
     return;
   }
 
