@@ -613,7 +613,7 @@ body {
 .composer {
   position: sticky;
   margin-bottom: 20px;
-  bottom: 0;
+  bottom: 1.5vh;
   padding: 12px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.03);
   display: flex;
@@ -747,7 +747,9 @@ body {
 }
 
 .logo-area:hover {
-  animation: logoFloat 2.6s ease-in-out infinite;
+  box-shadow: 0 26px 68px rgba(0, 210, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transform: scale(1.06) rotate(2deg);
 }
 
 @keyframes logoFloat {
@@ -3154,7 +3156,6 @@ textarea#input {
   /* Prevents manual resizing by the user */
   overflow-y: auto;
   /* Shows a scrollbar ONLY when max-height is reached */
-
   /* Dynamic Height Control */
   min-height: 55px;
   /* The initial and minimum height */
@@ -3213,7 +3214,7 @@ textarea#input::-webkit-scrollbar-thumb:hover {
 /* --- 1. The Main Content Area --- */
 /* Adds space at the bottom for the composer. */
 .main {
-  padding-bottom: 30px !important;
+  padding-bottom: 20px !important;
   transition: padding-bottom 0.2s ease-out;
 }
 
