@@ -2,7 +2,7 @@
 const SUPABASE_URL = "https://woqlvcgryahmcejdlcqz.supabase.co";
 const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
 // domain URL
-const AILA_URL = "https://ailearningassistant.edgone.app";
+const AILA_URL = "https://ailearningassistant.edgeone.app";
 // --- START: Supabase Client Initialization ---
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -2048,13 +2048,12 @@ async function adminSetTrialDays(targetEmail, days) {
     // This is the check for the project mismatch
     if (error.message.includes("Function not found")) {
       console.error(
-        "❗ CRITICAL: The function was not found. It might be deployed to the wrong Supabase project. Please redeploy to 'AILA-USERDATA'."
+        "❗ CRITICAL: The function was not found. It might be deployed to the wrong Supabase project. Please redeploy to your project."
       );
     }
   }
 }
 // --- END: SECURE ADMIN FUNCTION ---
-// --- START: ADMIN IMPERSONATION FUNCTION ---
 // This function allows an admin to securely log in as another user.
 // --- START: ADMIN IMPERSONATION FUNCTION (with better error handling) ---
 async function adminLoginAsUser(targetEmail) {
