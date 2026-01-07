@@ -2011,8 +2011,6 @@ function setupNavigation() {
     }
   });
 }
-// --- START: SECURE ADMIN FUNCTION ---
-// This function securely calls our Supabase Edge Function.
 async function adminSetTrialDays(targetEmail, days) {
   if (!targetEmail || typeof days !== "number") {
     console.error(
@@ -2026,34 +2024,34 @@ async function adminSetTrialDays(targetEmail, days) {
   );
 
   try {
-    // This securely calls the 'set-trial-days' Edge Function.
-    // The user's authentication token is automatically sent to verify they are an admin.
     const { data, error } = await _supabase.functions.invoke("set-trial-days", {
       body: { targetEmail, days },
     });
 
-    if (error) throw error;
+    if (error) throw error; // This will be caught by the catch block below
 
-    // The success or error message now comes directly from our secure function.
+    // This handles errors returned gracefully from the function itself
     if (data.error) {
-      console.error(`ADMIN: ❌ FAILED: ${data.error}`);
+      console.error(`ADMIN: ❌ FUNCTION FAILED: ${data.error}`);
     } else {
-      console.log(data.message);
+      console.log(`ADMIN: ✅ SUCCESS: ${data.message}`);
       console.log(
-        "ADMIN: 👉 The user must log out and log back in to see the change take effect."
+        "ADMIN: 👉 The user must log out and log back in for the change to take effect."
       );
     }
   } catch (error) {
-    console.error("❌ INVOCATION FAILED:", error.message);
-    // This is the check for the project mismatch
-    if (error.message.includes("Function not found")) {
-      console.error(
-        "❗ CRITICAL: The function was not found. It might be deployed to the wrong Supabase project. Please redeploy to your project."
-      );
+    // This is the crucial part for debugging.
+    console.error("ADMIN: ❌ INVOCATION FAILED: The server returned an error.");
+
+    // The real error message is often nested inside the 'context' object.
+    if (error.context && error.context.error) {
+      console.error("ADMIN: ❗ SERVER SAYS:", error.context.error);
+    } else {
+      // If the structure is different, log the entire object for inspection.
+      console.error("ADMIN: ❗ Raw error object:", error);
     }
   }
 }
-// --- END: SECURE ADMIN FUNCTION ---
 // This function allows an admin to securely log in as another user.
 // --- START: ADMIN IMPERSONATION FUNCTION (with better error handling) ---
 async function adminLoginAsUser(targetEmail) {
