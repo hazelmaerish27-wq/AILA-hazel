@@ -1,52 +1,105 @@
+// ========== Supabase Configuration ========== //
+const SUPABASE_URL = "https://woqlvcgryahmcejdlcqz.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3p6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
+const DEVELOPER_EMAILS = ["narvasajoshua61@gmail.com", "levercrafter@gmail.com"];
+
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // ========== User Table & Pop-up Logic ========== //
 
-// Sample: Fetch users from backend (replace with real API call)
+// Fetch users from Supabase backend
 async function fetchUsers() {
-    // Replace with your backend endpoint
-    // Example response structure:
-    return [
-        {
-            id: 'user-1',
-            email: 'user1@example.com',
-            name: 'User One',
-            created_at: '2025-12-01T10:00:00Z',
-            last_sign_in_at: '2026-01-07T15:00:00Z',
-            role: 'user',
-            trial_end: '2026-01-15T00:00:00Z', // ISO string
-        },
-        {
-            id: 'user-2',
-            email: 'user2@example.com',
-            name: 'User Two',
-            created_at: '2025-12-10T12:00:00Z',
-            last_sign_in_at: '2026-01-06T09:00:00Z',
-            role: 'admin',
-            trial_end: '2026-01-10T00:00:00Z',
-        },
-    ];
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    
+    const { data, error } = await _supabase.functions.invoke('get-users', {
+      headers: {
+        'Authorization': `Bearer ${session?.access_token || ''}`
+      }
+    });
+    
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    
+    // Map API response to table format
+    return (data.users || []).map(user => {
+      const trialDays = user.user_metadata?.custom_trial_days || 30;
+      
+      // Safely parse created_at date
+      let createdDate = new Date();
+      if (user.created_at) {
+        try {
+          const parsed = new Date(user.created_at);
+          if (!isNaN(parsed.getTime())) {
+            createdDate = parsed;
+          }
+        } catch (e) {
+          console.warn('Invalid date for user', user.id, user.created_at);
+        }
+      }
+      
+      // Calculate trial end date
+      let trialEndDate = new Date();
+      try {
+        trialEndDate = new Date(createdDate.getTime() + trialDays * 24 * 60 * 60 * 1000);
+        if (isNaN(trialEndDate.getTime())) {
+          trialEndDate = new Date();
+        }
+      } catch (e) {
+        console.warn('Error calculating trial end date for user', user.id);
+        trialEndDate = new Date();
+      }
+      
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name || user.user_metadata?.full_name || 'N/A',
+        created_at: user.created_at || new Date().toISOString(),
+        last_sign_in_at: user.last_sign_in_at || null,
+        role: user.role || 'user',
+        trial_end: trialEndDate.toISOString(),
+        trial_days: trialDays,
+        avatar_url: user.avatar_url,
+        user_metadata: user.user_metadata || {}
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    alert('Failed to load users: ' + error.message);
+    return [];
+  }
 }
 
 // Render the user table
 function renderUserTable(users) {
     const table = document.getElementById('userTableBody');
+    const totalCount = document.getElementById('totalUsersCount');
     table.innerHTML = '';
+    totalCount.textContent = users.length;
+    
     users.forEach((user, idx) => {
         const tr = document.createElement('tr');
         tr.dataset.userId = user.id;
-        // Use a placeholder or user avatar from metadata if available
         const avatar = user.avatar_url || user.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || user.email || 'User');
+        const createdDate = formatDate(user.created_at);
+        const lastSignInDate = formatDate(user.last_sign_in_at);
+        
         tr.innerHTML = `
-            <td>${idx + 1}</td>
-            <td><img src="${avatar}" alt="avatar" class="user-avatar"></td>
-            <td>${user.id}</td>
-            <td>${user.email}</td>
-            <td>${user.name || ''}</td>
-            <td>${formatDate(user.created_at)}</td>
-            <td>${formatDate(user.last_sign_in_at)}</td>
-            <td>${user.role || ''}</td>
-            <td><span class="trial-countdown" data-trial-end="${user.trial_end}"></span></td>
+            <td class="avatar-col" data-column="avatar"><img src="${avatar}" alt="avatar" class="user-avatar"></td>
+            <td class="uid-text" data-column="uid">${user.id}</td>
+            <td data-column="name">${user.name || '-'}</td>
+            <td data-column="email">${user.email}</td>
+            <td data-column="phone">-</td>
+            <td data-column="providers">Google</td>
+            <td data-column="provider_type">Social</td>
+            <td data-column="trial"><span class="trial-countdown" data-trial-end="${user.trial_end}"></span></td>
+            <td data-column="created_at" style="display:none;">${createdDate}</td>
+            <td data-column="last_signin" style="display:none;">${lastSignInDate}</td>
         `;
-        tr.addEventListener('click', (e) => onUserRowClick(e, user, idx));
+        tr.addEventListener('click', (e) => {
+            onUserRowClick(e, user, idx);
+        });
         table.appendChild(tr);
     });
 }
@@ -101,21 +154,137 @@ function onUserRowClick(event, user, idx) {
     currentPopup = popup;
 }
 
-// Modern action handlers (replace with real logic)
-function banUser(userId) { alert('Ban user: ' + userId); if (currentPopup) currentPopup.remove(); }
-function setTrialDate(userId) { alert('Set trial date for: ' + userId); if (currentPopup) currentPopup.remove(); }
-function loginAsUser(userId) { alert('Login as: ' + userId); if (currentPopup) currentPopup.remove(); }
-function sendRecoveryLink(userId) { alert('Send recovery link to: ' + userId); if (currentPopup) currentPopup.remove(); }
-function sendGmail(userId) { alert('Send Gmail to: ' + userId); if (currentPopup) currentPopup.remove(); }
+// ========== Action Handlers ========== //
 
-// Dummy action handlers
-function banUser(userId) {
-    alert('Ban user: ' + userId);
+// Ban a user
+async function banUser(userId) {
+  if (!confirm('Are you sure you want to ban this user?')) return;
+  
+  try {
+    const { data, error } = await _supabase.functions.invoke('ban-user', {
+      body: { userId }
+    });
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    
+    alert('User banned successfully');
     if (currentPopup) currentPopup.remove();
+    await loadUsersAndRefresh();
+  } catch (error) {
+    console.error('Error banning user:', error);
+    alert('Failed to ban user: ' + error.message);
+  }
 }
-function setTrialDate(userId) {
-    alert('Set trial date for: ' + userId);
+
+// Set trial days for a user
+async function setTrialDate(userId) {
+  const days = prompt('Enter number of trial days:', '30');
+  if (days === null) return;
+  
+  const daysNum = parseInt(days, 10);
+  if (isNaN(daysNum) || daysNum < 0) {
+    alert('Please enter a valid number');
+    return;
+  }
+  
+  try {
+    // Find the user email from allUsers array
+    const user = allUsers.find(u => u.id === userId);
+    if (!user || !user.email) {
+      alert('User email not found');
+      return;
+    }
+    
+    const { data, error } = await _supabase.functions.invoke('set-trial-days', {
+      body: { targetEmail: user.email, days: daysNum }
+    });
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    
+    alert(`Trial days set to ${daysNum} successfully`);
     if (currentPopup) currentPopup.remove();
+    await loadUsersAndRefresh();
+  } catch (error) {
+    console.error('Error setting trial days:', error);
+    alert('Failed to set trial days: ' + error.message);
+  }
+}
+
+// Login as a user (impersonate)
+async function loginAsUser(userId) {
+  if (!confirm('Generate a magic login link for this user?')) return;
+  
+  try {
+    // Find the user email from allUsers array
+    const user = allUsers.find(u => u.id === userId);
+    if (!user || !user.email) {
+      alert('User email not found');
+      return;
+    }
+    
+    const { data, error } = await _supabase.functions.invoke('impersonate-user', {
+      body: { targetEmail: user.email }
+    });
+    if (error) throw error;
+    if (data.error) throw new Error(data.error);
+    
+    if (data.magicLink) {
+      window.open(data.magicLink, '_blank');
+      alert('Magic link opened in a new tab');
+    } else {
+      throw new Error('No magic link returned');
+    }
+    if (currentPopup) currentPopup.remove();
+  } catch (error) {
+    console.error('Error generating login link:', error);
+    alert('Failed to generate login link: ' + error.message);
+  }
+}
+
+// Send recovery/reset password link
+async function sendRecoveryLink(userId) {
+  if (!confirm('Send password recovery email to this user?')) return;
+  
+  try {
+    const userEmail = getUserEmailById(userId);
+    if (!userEmail) throw new Error('User email not found');
+    
+    const { error } = await _supabase.auth.resetPasswordForEmail(userEmail);
+    if (error) throw error;
+    
+    alert('Recovery email sent successfully');
+    if (currentPopup) currentPopup.remove();
+  } catch (error) {
+    console.error('Error sending recovery link:', error);
+    alert('Failed to send recovery link: ' + error.message);
+  }
+}
+
+// Send Gmail to user
+async function sendGmail(userId) {
+  const userEmail = getUserEmailById(userId);
+  if (!userEmail) {
+    alert('User email not found');
+    return;
+  }
+  
+  // Open Gmail compose with the user's email
+  const gmailUrl = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${encodeURIComponent(userEmail)}`;
+  window.open(gmailUrl, '_blank');
+  if (currentPopup) currentPopup.remove();
+}
+
+// Helper: Get user email by ID
+function getUserEmailById(userId) {
+  const user = allUsers.find(u => u.id === userId);
+  return user ? user.email : null;
+}
+
+// Helper: Reload users and refresh table
+async function loadUsersAndRefresh() {
+  const users = await fetchUsers();
+  renderUserTable(users);
+  updateTrialCountdowns();
 }
 
 // Real-time trial countdown
@@ -142,263 +311,121 @@ function updateTrialCountdowns() {
 setInterval(updateTrialCountdowns, 1000);
 
 // On page load, fetch and render users
+let allUsers = [];
+
 window.addEventListener('DOMContentLoaded', async () => {
-    const users = await fetchUsers();
-    renderUserTable(users);
-    updateTrialCountdowns();
+  const { data: { session } } = await _supabase.auth.getSession();
+  
+  // Security check
+  if (!session || !DEVELOPER_EMAILS.includes(session.user.email)) {
+    window.location.replace('../index.html');
+    return;
+  }
+  
+  allUsers = await fetchUsers();
+  console.log('Loaded users:', allUsers);
+  renderUserTable(allUsers);
+  updateTrialCountdowns();
+  setupSearchListener();
+  loadColumnPreferences();
+  
+  // Setup column selection button
+  const columnsBtn = document.getElementById('columnsBtn');
+  if (columnsBtn) {
+    columnsBtn.addEventListener('click', openColumnsModal);
+  }
 });
+
+// Setup search functionality
+function setupSearchListener() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredUsers = allUsers.filter(user => 
+        user.email.toLowerCase().includes(searchTerm) ||
+        (user.name && user.name.toLowerCase().includes(searchTerm)) ||
+        user.id.toLowerCase().includes(searchTerm)
+      );
+      renderUserTable(filteredUsers);
+      updateTrialCountdowns();
+    });
+  }
+}
+
+// Column visibility management
+function openColumnsModal() {
+  document.getElementById('columnsModal').classList.remove('hidden');
+}
+
+function closeColumnsModal() {
+  document.getElementById('columnsModal').classList.add('hidden');
+}
+
+function saveColumns() {
+  const checkboxes = document.querySelectorAll('#columnsModal .column-checkbox input');
+  const visibleColumns = Array.from(checkboxes)
+    .filter(cb => cb.checked)
+    .map(cb => cb.dataset.column);
+  
+  // Save to localStorage
+  localStorage.setItem('visibleColumns', JSON.stringify(visibleColumns));
+  
+  // Update table visibility
+  updateTableColumnVisibility(visibleColumns);
+  closeColumnsModal();
+}
+
+function resetColumns() {
+  const defaultColumns = ['avatar', 'uid', 'name', 'email', 'phone', 'providers', 'provider_type', 'trial'];
+  const checkboxes = document.querySelectorAll('#columnsModal .column-checkbox input');
+  checkboxes.forEach(cb => {
+    cb.checked = defaultColumns.includes(cb.dataset.column);
+  });
+  
+  // Clear localStorage
+  localStorage.removeItem('visibleColumns');
+  
+  // Update table visibility
+  updateTableColumnVisibility(defaultColumns);
+  closeColumnsModal();
+}
+
+function updateTableColumnVisibility(visibleColumns) {
+  // Hide all column headers and cells
+  document.querySelectorAll('[data-column]').forEach(el => {
+    el.style.display = 'none';
+  });
+  
+  // Show selected columns
+  visibleColumns.forEach(col => {
+    document.querySelectorAll(`[data-column="${col}"]`).forEach(el => {
+      el.style.display = '';
+    });
+  });
+}
+
+function loadColumnPreferences() {
+  const saved = localStorage.getItem('visibleColumns');
+  if (saved) {
+    const visibleColumns = JSON.parse(saved);
+    updateTableColumnVisibility(visibleColumns);
+    
+    // Update checkboxes
+    const checkboxes = document.querySelectorAll('#columnsModal .column-checkbox input');
+    checkboxes.forEach(cb => {
+      cb.checked = visibleColumns.includes(cb.dataset.column);
+    });
+  }
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('columnsModal');
+  if (modal && !modal.classList.contains('hidden') && !modal.contains(e.target) && e.target.id !== 'columnsBtn') {
+    closeColumnsModal();
+  }
+});
+
 
 // ========== End User Table & Pop-up Logic ========== //
-const SUPABASE_URL = "https://woqlvcgryahmcejdlcqz.supabase.co";
-const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
-
-const { createClient } = supabase;
-const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// --- START: Security Check ---
-const DEVELOPER_EMAILS = ["narvasajoshua61@gmail.com", "levercrafter@gmail.com"];
-
-let allUsers = []; // Store all users for filtering/sorting
-let currentSort = { field: 'created', direction: 'desc' };
-let selectedUserEmail = null;
-
-_supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === "SIGNED_IN") {
-        if (!session || !DEVELOPER_EMAILS.includes(session.user.email)) {
-            window.location.replace("../index.html");
-        } else {
-            await loadAllUsers();
-            startGlobalTrialTimer();
-        }
-    } else if (event === "SIGNED_OUT") {
-        window.location.replace("../index.html");
-    }
-});
-// --- END: Security Check ---
-
-async function loadAllUsers() {
-    const loadingMessage = document.getElementById('loading-message');
-    const userTableContainer = document.getElementById('user-table-container');
-
-    try {
-        const { data, error } = await _supabase.functions.invoke('get-all-users');
-
-        if (error) throw error;
-        if (data.error) throw new Error(data.error);
-
-        allUsers = data.users.map(user => {
-            const trialDays = user.user_metadata.custom_trial_days !== undefined ? user.user_metadata.custom_trial_days : 30;
-            const trialEndDate = new Date(new Date(user.created_at).setDate(new Date(user.created_at).getDate() + trialDays));
-            const isExpired = new Date() > trialEndDate;
-            
-            return {
-                ...user,
-                trialDays,
-                trialEndDate,
-                isExpired,
-                displayName: user.user_metadata.full_name || 'N/A'
-            };
-        });
-
-        renderTable();
-        loadingMessage.classList.add('hidden');
-        userTableContainer.classList.remove('hidden');
-        attachEventListeners();
-
-    } catch (error) {
-        loadingMessage.textContent = `Error loading users: ${error.message}`;
-        console.error(error);
-    }
-}
-
-function renderTable() {
-    const userTableBody = document.querySelector('#user-table tbody');
-    userTableBody.innerHTML = '';
-
-    // Filter
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value;
-
-    let filteredUsers = allUsers.filter(user => {
-        const matchesSearch = user.email.toLowerCase().includes(searchTerm) || 
-                              user.displayName.toLowerCase().includes(searchTerm);
-        const matchesStatus = statusFilter === 'all' || 
-                              (statusFilter === 'active' && !user.isExpired) || 
-                              (statusFilter === 'expired' && user.isExpired);
-        return matchesSearch && matchesStatus;
-    });
-
-    // Sort
-    filteredUsers.sort((a, b) => {
-        let valA, valB;
-        switch(currentSort.field) {
-            case 'email': valA = a.email; valB = b.email; break;
-            case 'name': valA = a.displayName; valB = b.displayName; break;
-            case 'created': valA = new Date(a.created_at); valB = new Date(b.created_at); break;
-            case 'status': valA = a.isExpired; valB = b.isExpired; break;
-            default: valA = new Date(a.created_at); valB = new Date(b.created_at);
-        }
-
-        if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
-        if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
-        return 0;
-    });
-
-    filteredUsers.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${user.email}</td>
-            <td>${user.displayName}</td>
-            <td>${new Date(user.created_at).toLocaleDateString()}</td>
-            <td class="${user.isExpired ? 'expired' : 'active'}">
-                ${user.isExpired ? 'Expired' : 'Active'} (${user.trialDays} days)
-            </td>
-            <td>
-                <button class="action-btn options-btn" data-email="${user.email}">Options</button>
-            </td>
-        `;
-        userTableBody.appendChild(row);
-    });
-
-    // Re-attach listeners for the new buttons
-    document.querySelectorAll('.options-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            selectedUserEmail = e.target.dataset.email;
-            openOptionsModal(selectedUserEmail);
-        });
-    });
-}
-
-function attachEventListeners() {
-    // Search & Filter
-    document.getElementById('searchInput').addEventListener('input', renderTable);
-    document.getElementById('statusFilter').addEventListener('change', renderTable);
-
-    // Sorting
-    document.querySelectorAll('th[data-sort]').forEach(th => {
-        th.addEventListener('click', () => {
-            const field = th.dataset.sort;
-            if (currentSort.field === field) {
-                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-            } else {
-                currentSort.field = field;
-                currentSort.direction = 'asc';
-            }
-            renderTable();
-        });
-    });
-
-    // Modal Close Buttons
-    document.querySelectorAll('.modal-close-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById(btn.dataset.modal).classList.add('hidden');
-        });
-    });
-
-    // Options Modal Buttons
-    document.getElementById('optSetTrial').addEventListener('click', () => {
-        document.getElementById('optionsModal').classList.add('hidden');
-        document.getElementById('modalUserEmail').textContent = selectedUserEmail;
-        document.getElementById('trialModal').classList.remove('hidden');
-    });
-
-    document.getElementById('optLoginAs').addEventListener('click', async () => {
-        if (confirm(`Login as ${selectedUserEmail}?`)) {
-            await adminLoginAsUser(selectedUserEmail);
-        }
-    });
-
-    document.getElementById('optBanUser').addEventListener('click', () => {
-        alert('Ban functionality coming soon!');
-    });
-
-    document.getElementById('optResetPwd').addEventListener('click', async () => {
-        if (confirm(`Send password reset email to ${selectedUserEmail}?`)) {
-            const { error } = await _supabase.auth.resetPasswordForEmail(selectedUserEmail);
-            if (error) alert('Error: ' + error.message);
-            else alert('Password reset email sent.');
-        }
-    });
-
-    document.getElementById('optSendEmail').addEventListener('click', () => {
-        window.location.href = `mailto:${selectedUserEmail}`;
-    });
-
-    // Set Trial Form
-    document.getElementById('setTrialForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const days = parseInt(document.getElementById('trialDaysInput').value, 10);
-        if (!isNaN(days)) {
-            await adminSetTrialDays(selectedUserEmail, days);
-            document.getElementById('trialModal').classList.add('hidden');
-            loadAllUsers(); // Refresh data
-        }
-    });
-}
-
-function openOptionsModal(email) {
-    document.getElementById('optionsUserEmail').textContent = email;
-    document.getElementById('optionsModal').classList.remove('hidden');
-}
-
-function startGlobalTrialTimer() {
-    const timerEl = document.getElementById('trial-timer');
-    
-    setInterval(() => {
-        // Just showing a simple running clock or aggregate stat for now
-        // as "remaining time left for all users" is ambiguous.
-        // Let's show the count of active users vs total.
-        if (allUsers.length > 0) {
-            const activeCount = allUsers.filter(u => !u.isExpired).length;
-            timerEl.textContent = `${activeCount} Active / ${allUsers.length} Total Users`;
-        }
-    }, 1000);
-}
-
-// --- Admin Actions ---
-
-async function adminSetTrialDays(targetEmail, days) {
-  try {
-    const { data, error } = await _supabase.functions.invoke("set-trial-days", {
-      body: { targetEmail, days },
-    });
-    if (error) throw error;
-    if (data.error) {
-      alert(`Error: ${data.error}`);
-    } else {
-      alert(`Success: ${data.message}`);
-    }
-  } catch (error) {
-    console.error("Invocation failed:", error);
-    alert("Failed to update trial days.");
-  }
-}
-
-async function adminLoginAsUser(targetEmail) {
-  try {
-    const { data, error } = await _supabase.functions.invoke("impersonate-user", {
-        body: { targetEmail },
-      }
-    );
-    if (error) throw error;
-    if (data.error) {
-      alert(`Error: ${data.error}`);
-    } else {
-      window.open(data.magicLink, '_blank');
-    }
-  } catch (error) {
-    console.error("Invocation failed:", error);
-    alert("Failed to generate login link.");
-  }
-}
-
-// Initial check
-(async () => {
-    const { data: { session } } = await _supabase.auth.getSession();
-    if (!session || !DEVELOPER_EMAILS.includes(session.user.email)) {
-        window.location.replace("../index.html");
-    } else {
-        await loadAllUsers();
-        startGlobalTrialTimer();
-    }
-})();

@@ -10,55 +10,134 @@
 <body>
     <header>
         <div class="header-content">
-            <h1>AILA Admin Dashboard</h1>
-            <div class="header-right">
-                <div id="trial-timer-container">
-                    <span>Trial Time Left: </span>
-                    <span id="trial-timer">Loading...</span>
-                </div>
-                <a href="../index.html" class="back-link">← Back to App</a>
+            <div class="header-left">
+                <img src="../icons/ailalogo.png" alt="AILA Logo" class="aila-logo">
+                <h1>AILA Admin Dashboard</h1>
             </div>
+            <a href="../index.html" class="back-link">← Back to App</a>
         </div>
     </header>
 
     <main>
-        <div class="controls-container">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search users...">
+        <div class="admin-container">
+            <!-- Header -->
+            <div class="admin-header">
+                <h1>Users</h1>
             </div>
-            <div class="filter-box">
-                <select id="statusFilter">
-                    <option value="all">All Status</option>
-                    <option value="active">Active</option>
-                    <option value="expired">Expired</option>
-                </select>
-            </div>
-        </div>
 
-        <div id="loading-message">Loading user data...</div>
-        <div class="user-table-wrapper">
-            <div class="user-table-scroll">
-                <table class="user-table" id="user-table">
-                    <thead>
-                        <tr>
-                            <th class="freeze-col">#</th>
-                            <th class="freeze-col"></th>
-                            <th>User ID</th>
-                            <th>Email</th>
-                            <th>Name</th>
-                            <th>Created At</th>
-                            <th>Last Sign In</th>
-                            <th>Role</th>
-                            <th>Trial Countdown</th>
-                        </tr>
-                    </thead>
-                    <tbody id="userTableBody">
-                        <!-- Rows will be populated by script.js -->
-                    </tbody>
-                </table>
+            <!-- Controls -->
+            <div class="admin-controls">
+                <div class="search-section">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <select class="search-filter-dropdown" id="searchFilterDropdown">
+                        <option value="email">Email</option>
+                        <option value="uid">User ID</option>
+                        <option value="name">Name</option>
+                        <option value="phone">Phone number</option>
+                    </select>
+                    <input type="text" class="search-input" placeholder="Search..." id="searchInput">
+                </div>
+
+                <div class="filter-controls">
+                    <button class="filter-btn" id="columnsBtn">
+                        All columns
+                    </button>
+                    <button class="filter-btn sorted-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 12px; height: 12px; display: inline-block; margin-right: 4px;">
+                            <path d="M12 5v14M19 12l-7 7-7-7"></path>
+                        </svg>
+                        Sorted by user ID
+                    </button>
+                    <button class="refresh-btn" onclick="location.reload()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 4v6h6M23 20v-6h-6"></path>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64M3.51 15A9 9 0 0 0 18.36 18.36"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="user-table-wrapper">
+                <div class="user-table-scroll">
+                    <table class="user-table" id="user-table">
+                        <thead>
+                            <tr>
+                                <th class="freeze-col avatar-col" data-column="avatar">Avatar</th>
+                                <th class="uid-col" data-column="uid">UID</th>
+                                <th data-column="name">Display name</th>
+                                <th data-column="email">Email</th>
+                                <th data-column="phone">Phone</th>
+                                <th data-column="providers">Providers</th>
+                                <th data-column="provider_type">Provider type</th>
+                                <th data-column="trial">Trial Countdown</th>
+                                <th data-column="created_at" style="display:none;">Created at</th>
+                                <th data-column="last_signin" style="display:none;">Last sign in at</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- Rows will be populated by script.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="admin-footer">
+                <span>Total: <strong id="totalUsersCount">0</strong> users</span>
             </div>
         </div>
     </main>
+
+    <!-- Column Selection Modal -->
+    <div id="columnsModal" class="modal-backdrop hidden">
+        <div class="modal-content columns-modal">
+            <div class="modal-header">
+                <h2>Select Columns to Show</h2>
+                <button class="modal-close-btn" onclick="closeColumnsModal()">&times;</button>
+            </div>
+            <div class="modal-body columns-list">
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="avatar" checked> Avatar
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="uid" checked> UID
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="name" checked> Display name
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="email" checked> Email
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="phone" checked> Phone
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="providers" checked> Providers
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="provider_type" checked> Provider type
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="trial" checked> Trial Countdown
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="created_at"> Created at
+                </label>
+                <label class="column-checkbox">
+                    <input type="checkbox" data-column="last_signin"> Last sign in at
+                </label>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="closeColumnsModal()">Cancel</button>
+                <button class="modal-btn reset" onclick="resetColumns()">Reset</button>
+                <button class="modal-btn save" onclick="saveColumns()">Save</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Modal for setting trial days -->
     <div id="trialModal" class="modal-backdrop hidden">
