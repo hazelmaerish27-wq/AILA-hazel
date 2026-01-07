@@ -13,30 +13,54 @@ const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 let currentPage = 1;
 let currentSearch = '';
 let totalPages = 1;
+let currentSortColumn = 'uid';
+let currentSortDirection = 'asc';
 
 async function fetchUsers(page = 1, search = '') {
   try {
     const { data: { session } } = await _supabase.auth.getSession();
     
+    if (!session || !session.access_token) {
+      throw new Error('No active session. Please log in first.');
+    }
+    
+    // Build query string
     const params = new URLSearchParams();
     params.append('page', page);
+    params.append('pageSize', '30');
     if (search) {
       params.append('search', search);
     }
     
-    const { data, error } = await _supabase.functions.invoke('get-users', {
+    // Make direct fetch request to the edge function with query params
+    const url = `${SUPABASE_URL}/functions/v1/get-users?${params.toString()}`;
+    console.log('Fetching:', url);
+    console.log('Auth token present:', !!session.access_token);
+    
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${session?.access_token || ''}`
-      },
-      body: { page, search }
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json'
+      }
     });
     
-    if (error) throw error;
+    console.log('Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('Response data:', data);
+    
     if (data.error) throw new Error(data.error);
     
     // Store pagination info
-    currentPage = data.pagination?.page || 1;
-    totalPages = data.pagination?.totalPages || 1;
+    currentPage = data.page || 1;
+    totalPages = data.totalPages || 1;
     
     // Map API response to table format
     return (data.users || []).map(user => {
@@ -92,7 +116,7 @@ function renderUserTable(users) {
     const table = document.getElementById('userTableBody');
     const totalCount = document.getElementById('totalUsersCount');
     table.innerHTML = '';
-    totalCount.textContent = users.length;
+    totalCount.textContent = users.length > 0 ? `${users.length} of ${totalPages > 1 ? (currentPage - 1) * 30 + users.length + (totalPages - currentPage) * 30 : users.length}` : '0';
     
     // Update pagination UI
     document.getElementById('currentPageNum').textContent = currentPage;
@@ -103,6 +127,7 @@ function renderUserTable(users) {
     users.forEach((user, idx) => {
         const tr = document.createElement('tr');
         tr.dataset.userId = user.id;
+        tr.dataset.userEmail = user.email;
         const avatar = user.avatar_url || user.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || user.email || 'User');
         const createdDate = formatDate(user.created_at);
         const lastSignInDate = formatDate(user.last_sign_in_at);
@@ -210,15 +235,16 @@ async function setTrialDate(userId) {
   }
   
   try {
-    // Find the user email from allUsers array
-    const user = allUsers.find(u => u.id === userId);
-    if (!user || !user.email) {
+    // Get user email from the DOM row
+    const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+    const userEmail = row?.dataset.userEmail;
+    if (!userEmail) {
       alert('User email not found');
       return;
     }
     
     const { data, error } = await _supabase.functions.invoke('set-trial-days', {
-      body: { targetEmail: user.email, days: daysNum }
+      body: { targetEmail: userEmail, days: daysNum }
     });
     if (error) throw error;
     if (data.error) throw new Error(data.error);
@@ -237,15 +263,16 @@ async function loginAsUser(userId) {
   if (!confirm('Generate a magic login link for this user?')) return;
   
   try {
-    // Find the user email from allUsers array
-    const user = allUsers.find(u => u.id === userId);
-    if (!user || !user.email) {
+    // Get user email from the DOM row
+    const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+    const userEmail = row?.dataset.userEmail;
+    if (!userEmail) {
       alert('User email not found');
       return;
     }
     
     const { data, error } = await _supabase.functions.invoke('impersonate-user', {
-      body: { targetEmail: user.email }
+      body: { targetEmail: userEmail }
     });
     if (error) throw error;
     if (data.error) throw new Error(data.error);
@@ -268,7 +295,8 @@ async function sendRecoveryLink(userId) {
   if (!confirm('Send password recovery email to this user?')) return;
   
   try {
-    const userEmail = getUserEmailById(userId);
+    const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+    const userEmail = row?.dataset.userEmail;
     if (!userEmail) throw new Error('User email not found');
     
     const { error } = await _supabase.auth.resetPasswordForEmail(userEmail);
@@ -284,7 +312,8 @@ async function sendRecoveryLink(userId) {
 
 // Send Gmail to user
 async function sendGmail(userId) {
-  const userEmail = getUserEmailById(userId);
+  const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+  const userEmail = row?.dataset.userEmail;
   if (!userEmail) {
     alert('User email not found');
     return;
@@ -453,7 +482,7 @@ function saveColumns() {
 }
 
 function resetColumns() {
-  const defaultColumns = ['uid', 'name', 'email', 'phone', 'providers', 'provider_type'];
+  const defaultColumns = ['uid', 'name', 'email', 'phone', 'providers', 'provider_type', 'created_at', 'last_signin'];
   const checkboxes = document.querySelectorAll('#columnsDropdown .column-checkbox input');
   checkboxes.forEach(cb => {
     cb.checked = defaultColumns.includes(cb.dataset.column);
@@ -467,8 +496,13 @@ function resetColumns() {
 }
 
 function updateTableColumnVisibility(visibleColumns) {
+  // Only affect table cells, not dropdown elements
+  const table = document.getElementById('userTableBody');
+  const tableHead = document.querySelector('table thead');
+  if (!table) return;
+  
   // Always show avatar and trial columns, hide others
-  document.querySelectorAll('[data-column]').forEach(el => {
+  table.querySelectorAll('[data-column]').forEach(el => {
     const col = el.getAttribute('data-column');
     if (col === 'avatar' || col === 'trial') {
       el.style.display = '';
@@ -477,11 +511,28 @@ function updateTableColumnVisibility(visibleColumns) {
     }
   });
   
+  // Hide/show headers as well
+  if (tableHead) {
+    tableHead.querySelectorAll('[data-column]').forEach(el => {
+      const col = el.getAttribute('data-column');
+      if (col === 'avatar' || col === 'trial') {
+        el.style.display = '';
+      } else {
+        el.style.display = 'none';
+      }
+    });
+  }
+  
   // Show selected columns
   visibleColumns.forEach(col => {
-    document.querySelectorAll(`[data-column="${col}"]`).forEach(el => {
+    table.querySelectorAll(`[data-column="${col}"]`).forEach(el => {
       el.style.display = '';
     });
+    if (tableHead) {
+      tableHead.querySelectorAll(`[data-column="${col}"]`).forEach(el => {
+        el.style.display = '';
+      });
+    }
   });
 }
 
