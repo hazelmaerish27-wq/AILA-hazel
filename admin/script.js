@@ -453,11 +453,48 @@ setInterval(updateTrialCountdowns, 1000);
 // On page load, fetch and render users
 let allUsers = [];
 
+// Show unauthorized message
+function showUnauthorizedMessage(message) {
+  const main = document.querySelector('main');
+  if (!main) return;
+  
+  main.innerHTML = `
+    <div style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 1.5rem;
+    ">
+      <div style="
+        font-size: 2rem;
+        font-weight: 600;
+        color: #c9d1d9;
+        text-align: center;
+      ">
+        ${message}
+      </div>
+      <a href="../index.html" style="
+        padding: 0.7rem 1.5rem;
+        background: #238636;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: background 0.2s;
+      " onmouseover="this.style.background='#2ea043'" onmouseout="this.style.background='#238636'">
+        ← Back to App
+      </a>
+    </div>
+  `;
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   const { data: { session } } = await _supabase.auth.getSession();
   
   if (!session) {
-    window.location.replace('../index.html');
+    showUnauthorizedMessage('You must be logged in');
     return;
   }
   
@@ -487,7 +524,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   // Security check - user must be an admin
   if (!adminEmails.includes(session.user.email)) {
-    window.location.replace('../index.html');
+    showUnauthorizedMessage('Not enough permissions. You must be an admin to access this page.');
     return;
   }
   
