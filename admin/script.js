@@ -499,6 +499,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
   
   // Fetch admins from database
+  let adminFetchSucceeded = false;
   try {
     const response = await fetch(`${SUPABASE_URL}/functions/v1/manage-admins`, {
       method: 'POST',
@@ -512,14 +513,21 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (response.ok) {
       const data = await response.json();
       adminEmails = data.admins.map((admin) => admin.email);
+      adminFetchSucceeded = true;
+      console.log('✅ Admin list fetched successfully:', adminEmails);
     } else {
-      // Fallback to local check if function fails
-      console.warn('Could not fetch admins from database');
-      adminEmails = [session.user.email];
+      console.error('❌ Failed to fetch admins. Response status:', response.status);
+      const errorText = await response.text();
+      console.error('Response body:', errorText);
     }
   } catch (error) {
-    console.error('Error fetching admins:', error);
-    adminEmails = [session.user.email];
+    console.error('❌ Error fetching admins:', error);
+  }
+  
+  // If we couldn't fetch the admin list, block access
+  if (!adminFetchSucceeded || adminEmails.length === 0) {
+    showUnauthorizedMessage('Not enough permissions. You must be an admin to access this page.');
+    return;
   }
   
   // Security check - user must be an admin
