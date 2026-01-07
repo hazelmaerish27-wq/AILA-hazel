@@ -1550,6 +1550,8 @@ function setupAuthModal() {
     const usernameGroup = document.getElementById("usernameGroup");
     const pinGroup = document.getElementById("pinGroup");
     const pinConfirmGroup = document.getElementById("pinConfirmGroup");
+    const privacyAcceptanceGroup = document.getElementById("privacyAcceptanceGroup");
+    const privacyCheckbox = document.getElementById("privacyCheckbox");
     const registerLink = document.getElementById("registerLink");
     const forgotPasswordLink = document.getElementById("forgotPasswordLink");
     const backToLoginLink = document.getElementById("backToLoginLink");
@@ -1564,6 +1566,8 @@ function setupAuthModal() {
     pinGroup.style.display = "block";
     usernameGroup.classList.add("hidden");
     pinConfirmGroup.classList.add("hidden");
+    privacyAcceptanceGroup.classList.add("hidden");
+    authActionBtn.disabled = false;
     registerLink.style.display = "inline";
     forgotPasswordLink.style.display = "inline";
     backToLoginLink.classList.add("hidden");
@@ -1578,6 +1582,9 @@ function setupAuthModal() {
       separator.style.display = "none";
       usernameGroup.classList.remove("hidden");
       pinConfirmGroup.classList.remove("hidden");
+      privacyAcceptanceGroup.classList.remove("hidden");
+      privacyCheckbox.checked = false; // Reset checkbox
+      authActionBtn.disabled = true; // Disable until privacy is accepted
 
       // Adjust links
       registerLink.style.display = "none";
@@ -1668,6 +1675,15 @@ function showWelcomeAndEnter(email, isNewUser) {
   }
   // --- END: ADD PIN VISIBILITY LISTENERS ---
 
+  // --- START: PRIVACY CHECKBOX LISTENER ---
+  const privacyCheckbox = document.getElementById("privacyCheckbox");
+  if (privacyCheckbox) {
+    privacyCheckbox.addEventListener("change", () => {
+      authActionBtn.disabled = !privacyCheckbox.checked;
+    });
+  }
+  // --- END: PRIVACY CHECKBOX LISTENER ---
+
   if (googleLoginBtn) {
     googleLoginBtn.addEventListener("click", async (e) => {
       e.preventDefault();
@@ -1743,6 +1759,12 @@ function showWelcomeAndEnter(email, isNewUser) {
             if (!username.trim()) throw new Error("Username cannot be empty.");
             if (pin !== pinConfirm)
               throw new Error("The PINs you entered do not match.");
+            
+            // Check if privacy policy is accepted
+            const privacyCheckbox = document.getElementById("privacyCheckbox");
+            if (!privacyCheckbox || !privacyCheckbox.checked) {
+              throw new Error("You must accept the Privacy Policy to register.");
+            }
 
             // --- START: THIS IS THE FIX ---
             // Step 1: Sign up the user. Supabase automatically signs them in on success.
