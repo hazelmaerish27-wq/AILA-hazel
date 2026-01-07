@@ -400,7 +400,35 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
             <span class="nav-text">Dev Tools</span>
         </button>
+          
+          <!-- START: CONVERSATION HISTORY BUTTON -->
+          <button id="historyToggleBtn" class="new-chat-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="nav-text">History</span>
+          </button>
+          <!-- END: CONVERSATION HISTORY BUTTON -->
         </div>
+
+        <!-- START: CONVERSATION HISTORY SECTION -->
+        <div id="historySection" class="history-section hidden">
+          <div class="history-header">
+            <h3>Conversation History</h3>
+            <input 
+              type="text" 
+              id="historySearch" 
+              class="history-search" 
+              placeholder="Search conversations..."
+            >
+          </div>
+          <div id="historyList" class="history-list">
+            <!-- Conversations will be loaded here -->
+          </div>
+        </div>
+        <!-- END: CONVERSATION HISTORY SECTION -->
+        
         <div class="nav-footer">
           <button id="userProfile" class="user-profile">
             <!-- The user's Google Picture or Initial will go here -->

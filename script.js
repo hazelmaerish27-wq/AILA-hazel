@@ -5,6 +5,12 @@ const SUPABASE_URL = "https://woqlvcgryahmcejdlcqz.supabase.co";
 const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
 // domain URL
 const AILA_URL = "https://ailearningassistant.edgeone.app";
+
+// ========== CONVERSATION HISTORY GLOBALS ========== //
+let currentConversationId = null;
+let conversationMessages = [];
+// ========== END CONVERSATION HISTORY GLOBALS ========== //
+
 // --- START: Supabase Client Initialization ---
 const { createClient } = supabase;
 const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -640,6 +646,12 @@ function appendMessage(
 
   messagesEl.appendChild(wrap);
   messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // Auto-save conversation after each message
+  setTimeout(() => {
+    saveConversation();
+  }, 500);
+
   return wrap;
 }
 
@@ -1963,6 +1975,9 @@ async function updateUserInfo() {
     trialStatusEl.textContent = "";
     if (trialTimerEl) trialTimerEl.textContent = "--:--:--:--";
   }
+
+  // Load conversation history for the user
+  loadConversationHistory();
 }
 // --- START: DEV TOOLS MODAL ---
 function openDevToolsModal() {
@@ -2142,6 +2157,27 @@ function setupNavigation() {
   }
   // --- END: DEV TOOLS BUTTON LOGIC ---
 
+  // --- START: CONVERSATION HISTORY BUTTON LOGIC ---
+  const historyToggleBtn = document.getElementById("historyToggleBtn");
+  const historySection = document.getElementById("historySection");
+  const historySearch = document.getElementById("historySearch");
+
+  if (historyToggleBtn && historySection) {
+    historyToggleBtn.addEventListener("click", () => {
+      historySection.classList.toggle("hidden");
+      if (!historySection.classList.contains("hidden")) {
+        loadConversationHistory();
+      }
+    });
+  }
+
+  if (historySearch) {
+    historySearch.addEventListener("input", (e) => {
+      searchConversations(e.target.value);
+    });
+  }
+  // --- END: CONVERSATION HISTORY BUTTON LOGIC ---
+
   // --- User Profile Menu Logic ---
   if (userProfileBtn && userMenu) {
     userProfileBtn.addEventListener("click", (e) => {
@@ -2288,3 +2324,283 @@ async function adminLoginAsUser(targetEmail) {
     }
   }
 }
+// ========== CONVERSATION HISTORY FUNCTIONS ========== //
+
+async function saveConversation(title = "") {
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+
+    const messagesContainer = document.getElementById("messages");
+    const messages = [];
+    
+    if (messagesContainer) {
+      messagesContainer.querySelectorAll(".msg").forEach((el) => {
+        const isUser = el.classList.contains("user");
+        const content = el.innerText || el.textContent;
+        messages.push({
+          role: isUser ? "user" : "assistant",
+          content: content.trim(),
+        });
+      });
+    }
+
+    if (messages.length === 0) return;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/conversation-history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "save",
+        conversationId: currentConversationId,
+        title: title,
+        messages: messages,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to save conversation");
+      return;
+    }
+
+    const data = await response.json();
+    if (data.id && !currentConversationId) {
+      currentConversationId = data.id;
+    }
+    
+    console.log("✅ Conversation saved");
+  } catch (error) {
+    console.error("Error saving conversation:", error);
+  }
+}
+
+async function loadConversationHistory() {
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/conversation-history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ action: "list" }),
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    renderConversationHistory(data.conversations || []);
+  } catch (error) {
+    console.error("Error loading conversation history:", error);
+  }
+}
+
+function renderConversationHistory(conversations) {
+  const historyList = document.getElementById("historyList");
+  if (!historyList) return;
+
+  historyList.innerHTML = "";
+
+  if (conversations.length === 0) {
+    historyList.innerHTML = '<p style="color: #8b949e; font-size: 12px; text-align: center;">No conversations yet</p>';
+    return;
+  }
+
+  conversations.forEach((conv) => {
+    const item = document.createElement("div");
+    item.className = "history-item";
+    if (conv.id === currentConversationId) {
+      item.classList.add("active");
+    }
+
+    const title = document.createElement("div");
+    title.className = "history-item-title";
+    title.textContent = conv.title;
+    title.title = conv.title;
+
+    const actions = document.createElement("div");
+    actions.className = "history-item-actions";
+
+    const renameBtn = document.createElement("button");
+    renameBtn.className = "history-action-btn";
+    renameBtn.innerHTML = '✏️';
+    renameBtn.title = "Rename";
+    renameBtn.onclick = (e) => {
+      e.stopPropagation();
+      renameConversation(conv.id, conv.title);
+    };
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "history-action-btn delete";
+    deleteBtn.innerHTML = '🗑️';
+    deleteBtn.title = "Delete";
+    deleteBtn.onclick = (e) => {
+      e.stopPropagation();
+      deleteConversation(conv.id, conv.title);
+    };
+
+    actions.appendChild(renameBtn);
+    actions.appendChild(deleteBtn);
+
+    item.appendChild(title);
+    item.appendChild(actions);
+
+    item.onclick = () => loadConversation(conv.id);
+
+    historyList.appendChild(item);
+  });
+}
+
+async function loadConversation(conversationId) {
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/conversation-history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "load",
+        conversationId: conversationId,
+      }),
+    });
+
+    if (!response.ok) {
+      alert("Failed to load conversation");
+      return;
+    }
+
+    const data = await response.json();
+    currentConversationId = data.id;
+    conversationMessages = data.messages;
+
+    // Clear current messages
+    const messagesContainer = document.getElementById("messages");
+    if (messagesContainer) {
+      messagesContainer.innerHTML = "";
+    }
+
+    // Render loaded messages
+    data.messages.forEach((msg) => {
+      if (msg.role === "user") {
+        appendMessage(msg.content, "user");
+      } else {
+        appendMessage(msg.content, "bot");
+      }
+    });
+
+    // Update history UI
+    loadConversationHistory();
+
+    console.log("✅ Conversation loaded");
+  } catch (error) {
+    console.error("Error loading conversation:", error);
+  }
+}
+
+async function deleteConversation(conversationId, title) {
+  if (!confirm(`Delete "${title}"?`)) return;
+
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/conversation-history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "delete",
+        conversationId: conversationId,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Failed to delete");
+
+    if (currentConversationId === conversationId) {
+      currentConversationId = null;
+      const messagesContainer = document.getElementById("messages");
+      if (messagesContainer) messagesContainer.innerHTML = "";
+    }
+
+    loadConversationHistory();
+    console.log("✅ Conversation deleted");
+  } catch (error) {
+    console.error("Error deleting conversation:", error);
+    alert("Failed to delete conversation");
+  }
+}
+
+async function renameConversation(conversationId, currentTitle) {
+  const newTitle = prompt("Enter new title:", currentTitle);
+  if (!newTitle || newTitle === currentTitle) return;
+
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/conversation-history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "rename",
+        conversationId: conversationId,
+        title: newTitle,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Failed to rename");
+
+    loadConversationHistory();
+    console.log("✅ Conversation renamed");
+  } catch (error) {
+    console.error("Error renaming conversation:", error);
+    alert("Failed to rename conversation");
+  }
+}
+
+async function searchConversations(query) {
+  if (!query.trim()) {
+    loadConversationHistory();
+    return;
+  }
+
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session) return;
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/conversation-history`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        action: "search",
+        searchQuery: query,
+      }),
+    });
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    renderConversationHistory(data.conversations || []);
+  } catch (error) {
+    console.error("Error searching conversations:", error);
+  }
+}
+
+// ========== END CONVERSATION HISTORY FUNCTIONS ========== //

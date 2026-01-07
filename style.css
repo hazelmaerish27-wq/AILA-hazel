@@ -3370,3 +3370,135 @@ textarea#input::-webkit-scrollbar-thumb:hover {
   width: 18px;
   height: 18px;
 }
+
+/* ========== CONVERSATION HISTORY STYLES ========== */
+.history-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.history-section.hidden {
+  display: none;
+}
+
+.history-header {
+  margin-bottom: 10px;
+}
+
+.history-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-search {
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #c9d1d9;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.history-search:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent1);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  group: "history-item";
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 210, 255, 0.2);
+}
+
+.history-item.active {
+  background: rgba(0, 210, 255, 0.1);
+  border-color: var(--accent1);
+}
+
+.history-item-title {
+  flex: 1;
+  font-size: 12px;
+  color: #c9d1d9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.history-item-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.history-item:hover .history-item-actions {
+  opacity: 1;
+}
+
+.history-action-btn {
+  background: transparent;
+  border: none;
+  color: #8b949e;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.history-action-btn:hover {
+  color: #c9d1d9;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.history-action-btn.delete:hover {
+  color: #f85149;
+}
+
+/* Scrollbar styling for history list */
+.history-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.history-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
