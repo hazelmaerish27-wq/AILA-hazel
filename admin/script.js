@@ -1,3 +1,154 @@
+// ========== User Table & Pop-up Logic ========== //
+
+// Sample: Fetch users from backend (replace with real API call)
+async function fetchUsers() {
+    // Replace with your backend endpoint
+    // Example response structure:
+    return [
+        {
+            id: 'user-1',
+            email: 'user1@example.com',
+            name: 'User One',
+            created_at: '2025-12-01T10:00:00Z',
+            last_sign_in_at: '2026-01-07T15:00:00Z',
+            role: 'user',
+            trial_end: '2026-01-15T00:00:00Z', // ISO string
+        },
+        {
+            id: 'user-2',
+            email: 'user2@example.com',
+            name: 'User Two',
+            created_at: '2025-12-10T12:00:00Z',
+            last_sign_in_at: '2026-01-06T09:00:00Z',
+            role: 'admin',
+            trial_end: '2026-01-10T00:00:00Z',
+        },
+    ];
+}
+
+// Render the user table
+function renderUserTable(users) {
+    const table = document.getElementById('userTableBody');
+    table.innerHTML = '';
+    users.forEach((user, idx) => {
+        const tr = document.createElement('tr');
+        tr.dataset.userId = user.id;
+        // Use a placeholder or user avatar from metadata if available
+        const avatar = user.avatar_url || user.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || user.email || 'User');
+        tr.innerHTML = `
+            <td>${idx + 1}</td>
+            <td><img src="${avatar}" alt="avatar" class="user-avatar"></td>
+            <td>${user.id}</td>
+            <td>${user.email}</td>
+            <td>${user.name || ''}</td>
+            <td>${formatDate(user.created_at)}</td>
+            <td>${formatDate(user.last_sign_in_at)}</td>
+            <td>${user.role || ''}</td>
+            <td><span class="trial-countdown" data-trial-end="${user.trial_end}"></span></td>
+        `;
+        tr.addEventListener('click', (e) => onUserRowClick(e, user, idx));
+        table.appendChild(tr);
+    });
+}
+
+// Format date utility
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleString();
+}
+
+// Handle row click to show pop-up
+let currentPopup = null;
+function onUserRowClick(event, user, idx) {
+    if (currentPopup) currentPopup.remove();
+    const popup = document.createElement('div');
+    popup.className = 'user-popup-menu-modern';
+    // Use avatar and name for the header
+    const avatar = user.avatar_url || user.user_metadata?.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(user.name || user.email || 'User');
+    const displayName = user.name || user.user_metadata?.full_name || user.email.split('@')[0];
+    popup.innerHTML = `
+        <div class="popup-header">
+            <img src="${avatar}" alt="avatar" class="popup-avatar">
+            <div class="popup-user-info">
+                <div class="popup-user-name">${displayName}</div>
+                <div class="popup-user-email">${user.email}</div>
+            </div>
+        </div>
+        <div class="popup-actions">
+            <button class="popup-action-btn" onclick="banUser('${user.id}')">🚫 Ban</button>
+            <button class="popup-action-btn" onclick="setTrialDate('${user.id}')">⏳ Set Trial Days</button>
+            <button class="popup-action-btn" onclick="loginAsUser('${user.id}')">🔑 Login as</button>
+            <button class="popup-action-btn" onclick="sendRecoveryLink('${user.id}')">🔄 Send Recovery Link</button>
+            <button class="popup-action-btn" onclick="sendGmail('${user.id}')">📧 Send Gmail</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+    // Position pop-up near the row (use mouse event)
+    const rect = event.target.getBoundingClientRect();
+    popup.style.position = 'absolute';
+    popup.style.left = `${event.clientX + 10}px`;
+    popup.style.top = `${event.clientY + 10}px`;
+    popup.style.zIndex = 1000;
+    function closePopup(e) {
+        if (!popup.contains(e.target)) {
+            popup.remove();
+            document.removeEventListener('mousedown', closePopup);
+            currentPopup = null;
+        }
+    }
+    document.addEventListener('mousedown', closePopup);
+    currentPopup = popup;
+}
+
+// Modern action handlers (replace with real logic)
+function banUser(userId) { alert('Ban user: ' + userId); if (currentPopup) currentPopup.remove(); }
+function setTrialDate(userId) { alert('Set trial date for: ' + userId); if (currentPopup) currentPopup.remove(); }
+function loginAsUser(userId) { alert('Login as: ' + userId); if (currentPopup) currentPopup.remove(); }
+function sendRecoveryLink(userId) { alert('Send recovery link to: ' + userId); if (currentPopup) currentPopup.remove(); }
+function sendGmail(userId) { alert('Send Gmail to: ' + userId); if (currentPopup) currentPopup.remove(); }
+
+// Dummy action handlers
+function banUser(userId) {
+    alert('Ban user: ' + userId);
+    if (currentPopup) currentPopup.remove();
+}
+function setTrialDate(userId) {
+    alert('Set trial date for: ' + userId);
+    if (currentPopup) currentPopup.remove();
+}
+
+// Real-time trial countdown
+function updateTrialCountdowns() {
+    const now = new Date();
+    document.querySelectorAll('.trial-countdown').forEach(span => {
+        const end = new Date(span.dataset.trialEnd);
+        const diff = end - now;
+        if (isNaN(end.getTime())) {
+            span.textContent = 'N/A';
+        } else if (diff <= 0) {
+            span.textContent = 'Expired';
+            span.classList.add('expired');
+        } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+            span.textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
+            span.classList.remove('expired');
+        }
+    });
+}
+setInterval(updateTrialCountdowns, 1000);
+
+// On page load, fetch and render users
+window.addEventListener('DOMContentLoaded', async () => {
+    const users = await fetchUsers();
+    renderUserTable(users);
+    updateTrialCountdowns();
+});
+
+// ========== End User Table & Pop-up Logic ========== //
 const SUPABASE_URL = "https://woqlvcgryahmcejdlcqz.supabase.co";
 const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndvcWx2Y2dyeWFobWNlamRsY3F6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3NDg5NTMsImV4cCI6MjA4MDMyNDk1M30.PXL0hJ-8Hv7BP21Fly3tHXonJoxfVL0GNCY7oWXDKRA";
 

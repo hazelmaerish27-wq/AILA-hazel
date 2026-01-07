@@ -1,3 +1,172 @@
+/* Modern User Table Styles with Frozen Columns */
+.user-table-wrapper {
+  margin: 2rem auto;
+  max-width: 100%;
+  background: #181a1b;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px 0 rgba(0,0,0,0.12);
+  padding: 1.5rem 2rem;
+  overflow: hidden;
+}
+.user-table-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  border-radius: 12px;
+  max-height: 600px;
+  background: #23272a;
+}
+.user-table-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.user-table-scroll::-webkit-scrollbar-track {
+  background: #1a1d20;
+}
+.user-table-scroll::-webkit-scrollbar-thumb {
+  background: #3f444b;
+  border-radius: 4px;
+}
+.user-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #52575f;
+}
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #23272a;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  font-size: 1rem;
+  color: #f5f6fa;
+}
+.user-table th, .user-table td {
+  padding: 0.85rem 1.1rem;
+  text-align: left;
+  border: 1px solid #2c2f33;
+  border-left: 1px solid #2c2f33;
+}
+.user-table th:first-child,
+.user-table td:first-child {
+  border-left: 1px solid #2c2f33;
+}
+.user-table th {
+  background: #202225;
+  font-weight: 600;
+  color: #bfc7d5;
+  letter-spacing: 0.02em;
+  border-bottom: 2px solid #2c2f33;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.user-table th.freeze-col {
+  position: sticky;
+  z-index: 11;
+  background: #202225;
+}
+.user-table td.freeze-col {
+  position: sticky;
+  left: 0;
+  background: #23272a;
+  z-index: 5;
+}
+.user-table th.freeze-col {
+  left: 0;
+  z-index: 12;
+}
+.user-table th:nth-child(1) { left: 0; }
+.user-table th:nth-child(2) { left: 64px; }
+.user-table td:nth-child(1) { left: 0; }
+.user-table td:nth-child(2) { left: 64px; }
+.user-table tr {
+  transition: background 0.15s;
+}
+.user-table tr:hover {
+  background: #262a2e;
+  cursor: pointer;
+}
+.user-table tr:hover td {
+  background: #262a2e;
+}
+.user-table tr:hover td.freeze-col {
+  background: #262a2e;
+}
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2c2f33;
+    background: #23272a;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.10);
+}
+
+/* Modern Pop-up Menu Styles */
+.user-popup-menu-modern {
+    min-width: 260px;
+    background: #23272a;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.22);
+    padding: 1.2rem 1.2rem 0.7rem 1.2rem;
+    color: #f5f6fa;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    z-index: 1000;
+    animation: fadeInPop 0.18s cubic-bezier(.4,1.4,.6,1) both;
+}
+@keyframes fadeInPop {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.user-popup-menu-modern .popup-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.1rem;
+}
+.user-popup-menu-modern .popup-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #2c2f33;
+    margin-right: 1rem;
+    background: #23272a;
+}
+.user-popup-menu-modern .popup-user-info {
+    display: flex;
+    flex-direction: column;
+}
+.user-popup-menu-modern .popup-user-name {
+    font-size: 1.13rem;
+    font-weight: 600;
+    color: #f5f6fa;
+    margin-bottom: 0.18rem;
+}
+.user-popup-menu-modern .popup-user-email {
+    font-size: 0.97rem;
+    color: #bfc7d5;
+}
+.user-popup-menu-modern .popup-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 0.2rem;
+}
+.user-popup-menu-modern .popup-action-btn {
+    background: #202225;
+    color: #f5f6fa;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+    transition: background 0.13s, color 0.13s;
+    cursor: pointer;
+    outline: none;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.08);
+}
+.user-popup-menu-modern .popup-action-btn:hover {
+    background: #2c2f33;
+    color: #7ed957;
+}
 /* General Body Styles */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;

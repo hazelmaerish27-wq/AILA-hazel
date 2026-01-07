@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AILA - Admin Dashboard</title>
+    <title>chatAILA - Admin</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="../icon.png">
 </head>
@@ -36,21 +36,27 @@
         </div>
 
         <div id="loading-message">Loading user data...</div>
-        <div id="user-table-container" class="hidden">
-            <table id="user-table">
-                <thead>
-                    <tr>
-                        <th data-sort="email">Email <span class="sort-icon">↕</span></th>
-                        <th data-sort="name">Display Name <span class="sort-icon">↕</span></th>
-                        <th data-sort="created">Created At <span class="sort-icon">↕</span></th>
-                        <th data-sort="status">Trial Status <span class="sort-icon">↕</span></th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- User rows will be injected here by JavaScript -->
-                </tbody>
-            </table>
+        <div class="user-table-wrapper">
+            <div class="user-table-scroll">
+                <table class="user-table" id="user-table">
+                    <thead>
+                        <tr>
+                            <th class="freeze-col">#</th>
+                            <th class="freeze-col"></th>
+                            <th>User ID</th>
+                            <th>Email</th>
+                            <th>Name</th>
+                            <th>Created At</th>
+                            <th>Last Sign In</th>
+                            <th>Role</th>
+                            <th>Trial Countdown</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <!-- Rows will be populated by script.js -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
