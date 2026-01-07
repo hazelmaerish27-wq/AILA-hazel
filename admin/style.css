@@ -1,0 +1,193 @@
+/* General Body Styles */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #121416;
+    color: #E0E0E0;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Header Styles */
+header {
+    background-color: #1a1d1f;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #333;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #FFFFFF;
+}
+
+.back-link {
+    color: var(--accent-color, #007BFF);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--accent-hover, #0056b3);
+}
+
+/* Main Content Styles */
+main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#loading-message {
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 2rem;
+    color: #999;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Table Styles */
+#user-table-container {
+    overflow-x: auto;
+}
+
+#user-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+#user-table th, #user-table td {
+    padding: 12px 15px;
+    border: 1px solid #333;
+    text-align: left;
+}
+
+#user-table thead {
+    background-color: #25282a;
+}
+
+#user-table th {
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+#user-table tbody tr:nth-child(even) {
+    background-color: #1a1d1f;
+}
+
+#user-table tbody tr:hover {
+    background-color: #2a2d2f;
+}
+
+/* Action Button Styles */
+.action-btn {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-right: 5px;
+    transition: background-color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: #0056b3;
+}
+
+.action-btn.login-as-btn {
+    background-color: #28a745;
+}
+
+.action-btn.login-as-btn:hover {
+    background-color: #218838;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #25282a;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 450px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+#setTrialForm p {
+    margin-top: 0;
+}
+
+#setTrialForm input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background-color: #1a1d1f;
+    color: #E0E0E0;
+    font-size: 1rem;
+}
+
+.form-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.form-btn:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AILA - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../icon.png">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>AILA Admin Dashboard</h1>
+            <a href="../index.html" class="back-link">← Back to App</a>
+        </div>
+    </header>
+
+    <main>
+        <div id="loading-message">Loading user data...</div>
+        <div id="user-table-container" class="hidden">
+            <table id="user-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Display Name</th>
+                        <th>Created At</th>
+                        <th>Trial Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- User rows will be injected here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal for setting trial days -->
+    <div id="trialModal" class="modal-backdrop hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Set Trial Days</h2>
+                <button id="modalCloseBtn" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="setTrialForm">
+                    <p>Set trial days for <strong id="modalUserEmail"></strong>:</p>
+                    <input type="number" id="trialDaysInput" placeholder="Enter number of days" required>
+                    <button type="submit" class="form-btn">Set Trial</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>
