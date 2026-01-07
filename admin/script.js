@@ -985,4 +985,16 @@ async function removeAdmin(email) {
   }
 }
 
+// ========== Modal Management ========== //
+document.addEventListener('click', (e) => {
+  const closeBtn = e.target.closest('.modal-close-btn');
+  if (closeBtn) {
+    const modalId = closeBtn.dataset.modal;
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+});
+
 // ========== End User Table & Pop-up Logic ========== //
