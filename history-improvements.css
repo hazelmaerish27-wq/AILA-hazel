@@ -1,13 +1,13 @@
 /* ========== CONVERSATION HISTORY UI IMPROVEMENTS ========== */
 
-/* History section positioning - 20px below last button */
+/* History section positioning - minimal spacing above */
 .history-section {
-  margin-top: 20px;
+  margin-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 10px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   flex: 1;
   min-height: 0;
   overflow: hidden;
@@ -20,17 +20,17 @@
 /* History controls with filter */
 .history-controls {
   display: flex;
-  gap: 6px;
-  margin-bottom: 8px;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 
 .history-filter {
-  padding: 6px 8px;
+  padding: 4px 6px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  border-radius: 4px;
   color: #c9d1d9;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.2s ease;
   flex: 1;
@@ -89,9 +89,9 @@
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--accent1);
   color: #c9d1d9;
-  padding: 4px 6px;
-  border-radius: 4px;
-  font-size: 13px;
+  padding: 3px 4px;
+  border-radius: 3px;
+  font-size: 12px;
   font-weight: 500;
   width: 100%;
   box-sizing: border-box;

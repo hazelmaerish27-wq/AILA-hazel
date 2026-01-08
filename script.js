@@ -2273,6 +2273,20 @@ function setupNavigation() {
         toggleMobileNav(); // Close on mobile
       } else if (!isMobile) {
         navSidebar.classList.remove("expanded"); // Close on desktop
+        // Also close history section when sidebar closes on desktop
+        const historySection = document.getElementById("historySection");
+        if (historySection) {
+          historySection.classList.add("hidden");
+        }
+      }
+    }
+
+    // 3. Close history section if clicking outside sidebar on mobile
+    const historySection = document.getElementById("historySection");
+    const isMobile = window.innerWidth <= 900;
+    if (isMobile && historySection && !historySection.classList.contains("hidden")) {
+      if (!navSidebar.contains(e.target)) {
+        historySection.classList.add("hidden");
       }
     }
   });
